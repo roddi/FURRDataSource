@@ -6,7 +6,7 @@
 //  Copyright © 2015 Deecke,Roddi. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import FURRExtensions
 import FURRDiff
 
