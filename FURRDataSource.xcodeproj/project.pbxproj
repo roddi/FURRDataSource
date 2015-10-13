@@ -14,6 +14,8 @@
 		5698BA811B8DD292008805E2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; settings = {ASSET_TAGS = (); }; };
 		DD6449291BCD297100E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449271BCD297100E5F7FA /* FURRDiff.framework */; };
 		DD64492A1BCD297100E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449281BCD297100E5F7FA /* FURRExtensions.framework */; };
+		DD64492B1BCD30A300E5F7FA /* DataSource.swift in Headers */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; settings = {ATTRIBUTES = (Public, ); }; };
+		DD64492C1BCD31D000E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449281BCD297100E5F7FA /* FURRExtensions.framework */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5698BA471B8DD0CB008805E2 /* FURRDataSource.framework in Frameworks */,
+				DD64492C1BCD31D000E5F7FA /* FURRExtensions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +109,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5698BA401B8DD0CB008805E2 /* DataSource.h in Headers */,
+				DD64492B1BCD30A300E5F7FA /* DataSource.swift in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,8 +140,8 @@
 			buildConfigurationList = 5698BA531B8DD0CB008805E2 /* Build configuration list for PBXNativeTarget "FURRDataSourceTests" */;
 			buildPhases = (
 				5698BA421B8DD0CB008805E2 /* Sources */,
-				DD2E12B61BCCFDE000E5F7FA /* Run Carthage Copy Script */,
 				5698BA431B8DD0CB008805E2 /* Frameworks */,
+				DD2E12B61BCCFDE000E5F7FA /* Run Carthage Copy Script */,
 				5698BA441B8DD0CB008805E2 /* Resources */,
 				DD2E12BF1BCD217B00E5F7FA /* Run swiftlint */,
 			);
@@ -415,6 +419,10 @@
 		5698BA541B8DD0CB008805E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = DataSourceTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSourceTests;
@@ -425,6 +433,10 @@
 		5698BA551B8DD0CB008805E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = DataSourceTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSourceTests;
