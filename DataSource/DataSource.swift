@@ -22,8 +22,8 @@ public protocol TableViewItem: Equatable {
 }
 
 public struct Location<T> {
-    let tableView: UITableView
-    let sectionID: String
+    public let tableView: UITableView
+    public let sectionID: String
     public let item:T
 }
 
