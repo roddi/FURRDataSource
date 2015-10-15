@@ -155,7 +155,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         assert(newRows == inRows, "must be equal")
     }
 
-    func dequeueReusableCellWithIdentifier(identifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
+    public func dequeueReusableCellWithIdentifier(identifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
         guard let indexPath = indexPathForSectionID(inSectionID, rowItem: inItem) else {
             return nil
         }
