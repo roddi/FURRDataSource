@@ -389,9 +389,10 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
                 callback(atLocation: location)
             }
 
-            var rows = self.rowsBySectionID[location.sectionID]
-            rows?.removeAtIndex(indexPath.row)
-            self.rowsBySectionID[location.sectionID] = rows
+            if var rows = self.rowsBySectionID[location.sectionID] {
+                rows.removeAtIndex(indexPath.row)
+                self.updateRows(rows, section: location.sectionID, animated: true)
+            }
 
             if let callback = self.didDelete {
                 callback(item: location.item)
