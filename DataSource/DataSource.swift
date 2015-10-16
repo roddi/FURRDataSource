@@ -54,6 +54,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String,Array<T>>) -> Void)?
     public var canEdit: ((atLocation:Location<T>) -> Bool)?
     public var willDelete: ((atLocation:Location<T>) -> Void)?
+    public var didDelete: ((item: T) -> Void)?
 
     var reportingLevel: DataSourceReportingLevel = .Assert
     var printInRelease: Bool = false
@@ -380,13 +381,29 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
         switch editingStyle {
         case .Delete:
-            guard let callback = self.willDelete else {
-                return
-            }
             guard let location = self.locationForIndexPath(indexPath) else {
                 return
             }
-            callback(atLocation: location)
+
+            if let callback = self.willDelete {
+                callback(atLocation: location)
+            }
+
+            var rows = self.rowsBySectionID[location.sectionID]
+            rows?.removeAtIndex(indexPath.row)
+            self.rowsBySectionID[location.sectionID] = rows
+
+            if let callback = self.didDelete {
+                callback(item: location.item)
+            }
+
+            if let callback = self.didChangeSectionIDs {
+                let sectionID = location.sectionID
+                let rows = self.rowsBySectionID[sectionID]
+                if let rows_ = rows {
+                    callback(inSectionIDs: [sectionID:rows_])
+                }
+            }
 
         case .Insert:
             print(".Insert ????")
@@ -409,7 +426,8 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     }
 }
 
-// MARK - delegate
+    // MARK: - delegate
+
 extension DataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         guard let callback = self.didSelect else {

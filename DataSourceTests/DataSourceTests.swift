@@ -293,7 +293,43 @@ class DataSourceTests: XCTestCase {
     }
 
     func testDeleteItem() {
+        let (tableView,dataSource) = self.whenDelegate()
+        self.whenDataSource(dataSource, hasSectionIDs: ["a"])
+        self.whenDataSource(dataSource, hasRowIDs: ["0","1","2","3"], forSectionID: "a")
 
-        // XCTFail("test not yet impl'd")
+        let willDeleteExpectation = expectationWithDescription("will delete callback")
+        let didDeleteExpectation = expectationWithDescription("did delete callback")
+        let sectionChangedExpectation = expectationWithDescription("sections changed callback")
+
+        dataSource.willDelete = { (atLocation:Location<MockTVItem>) -> Void in
+            XCTAssert(atLocation.sectionID == "a")
+            XCTAssert(atLocation.item.identifier == "1")
+            willDeleteExpectation.fulfill()
+        }
+
+        dataSource.didDelete = { (item: MockTVItem) -> Void in
+            XCTAssert(item.identifier == "1")
+            didDeleteExpectation.fulfill()
+        }
+
+        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String,Array<MockTVItem>>) -> Void in
+            sectionChangedExpectation.fulfill()
+            XCTAssert(inSectionIDs.count == 1, "should be only one section")
+
+            guard let rows = inSectionIDs["a"] else {
+                XCTFail("no rows?")
+                return
+            }
+
+            let mappedIDs = rows.map({ (item) -> String in
+                return item.identifier
+            })
+
+            XCTAssert(mappedIDs == ["0","2","3"])
+
+        }
+
+        dataSource.tableView(tableView, commitEditingStyle: UITableViewCellEditingStyle.Delete, forRowAtIndexPath: NSIndexPath(forRow: 1, inSection: 0))
+        waitForExpectationsWithTimeout(10, handler: nil)
     }
 }
