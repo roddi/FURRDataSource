@@ -5,6 +5,7 @@
 //  Created by Ruotger Deecke on 27.07.15.
 //  Copyright © 2015 Deecke,Roddi. All rights reserved.
 //
+// swiftlint:disable file_length
 
 import Foundation
 import FURRExtensions
@@ -398,3 +399,5 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         actuallySelect(inLocation: location)
     }
 }
+
+// swiftlint:enable file_length
