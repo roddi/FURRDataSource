@@ -69,6 +69,12 @@ class DataSourceTests: XCTestCase {
         }
     }
 
+    func whenDataSource(inDataSource: DataSource<MockTVItem>, canEditItemAtSectionID inSectionID: String, rowID inRowID: String) {
+        inDataSource.canEdit = {(atLocation:Location<MockTVItem>) -> Bool in
+            return atLocation.sectionID == inSectionID && atLocation.item.identifier == inRowID
+        }
+    }
+
     func whenDataSource(inDataSource:DataSource<MockTVItem>, hasSectionIDs inSectionIDs:Array<String>) {
         inDataSource.updateSections(inSectionIDs, animated: true)
     }
@@ -272,8 +278,22 @@ class DataSourceTests: XCTestCase {
 
     }
 
-    func testDeleteItem() {
-        XCTFail("test not yet impl'd")
+    // testing: optional func tableView(_ tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool
+    func testCanEditItem() {
+        let (tableView,dataSource) = self.whenDelegate()
+        self.whenDataSource(dataSource, hasSectionIDs: ["a"])
+        self.whenDataSource(dataSource, hasRowIDs: ["0","1","2","3"], forSectionID: "a")
+
+        self.whenDataSource(dataSource, canEditItemAtSectionID: "a", rowID: "1")
+
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: 1, inSection: 0)) == true)
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: 0, inSection: 0)) == false)
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: 1000, inSection: 0)) == false)
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: 0, inSection: 1000)) == false)
     }
 
+    func testDeleteItem() {
+
+        // XCTFail("test not yet impl'd")
+    }
 }

@@ -52,6 +52,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     public var canMove: ((toLocation:Location<T>) -> Bool)?
     public var targetMovedItem: ((fromLocation:Location<T>, proposedLocation:LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
     public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String,Array<T>>) -> Void)?
+    public var canEdit: ((atLocation:Location<T>) -> Bool)?
     public var willDelete: ((atLocation:Location<T>) -> Void)?
 
     var reportingLevel: DataSourceReportingLevel = .Assert
@@ -234,6 +235,15 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         return (sectionID,item)
     }
 
+    private func locationForIndexPath(inIndexPath: NSIndexPath) -> Location<T>? {
+        guard let (sectionID, item) = self.sectionIDAndItemForIndexPath(inIndexPath) else {
+            return nil
+        }
+
+        let location = Location(tableView: self.tableView, sectionID: sectionID, item: item)
+        return location
+    }
+
     // MARK: - data source
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -383,8 +393,21 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         }
     }
 
-    // MARK - delegate
+    public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        guard let location = self.locationForIndexPath(indexPath) else {
+            return false
+        }
 
+        guard let callback = self.canEdit else {
+            return false
+        }
+
+        return callback(atLocation: location)
+    }
+}
+
+// MARK - delegate
+extension DataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         guard let actuallySelect = self.didSelect else {
             // if the client does not implement this callback...
