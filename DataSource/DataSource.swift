@@ -244,6 +244,18 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         return location
     }
 
+    private func locationWithOptionalItemForIndexPath(inIndexPath: NSIndexPath) -> LocationWithOptionalItem<T>? {
+        guard let (sectionID, rows) = self.sectionIDAndRowForSectionIndex(inIndexPath.section) else {
+            print("sectionID/row not found!")
+            return nil
+        }
+
+        let item = rows.optionalElementAtIndex(inIndexPath.row)
+        let location = LocationWithOptionalItem(tableView: tableView, sectionID: sectionID, item: item)
+
+        return location
+    }
+
     // MARK: - data source
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -266,13 +278,9 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
 
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let sectionID = self.sections[indexPath.section]
-
-        guard let items = self.rowsBySectionID[sectionID] else {
+        guard let location = self.locationForIndexPath(indexPath) else {
             preconditionFailure("rows not found")
         }
-
-        let location:Location<T> = Location(tableView: tableView, sectionID: sectionID, item: items[indexPath.row])
 
         return self.cell(forLocation: location)
     }
@@ -280,15 +288,13 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     public func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         guard let canActuallyMove = self.canMove else {
-            // callback not implemented, so... no!
+            // callback not implemented, so... no, you can't!
             return false
         }
 
-        guard let (sectionID, item) = self.sectionIDAndItemForIndexPath(indexPath) else {
-                return false
-            }
-
-        let location:Location<T> = Location(tableView: tableView, sectionID: sectionID, item: item)
+        guard let location = self.locationForIndexPath(indexPath) else {
+            return false
+        }
 
         return canActuallyMove(toLocation: location)
     }
@@ -338,23 +344,20 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             return proposedDestinationIndexPath
         }
 
-        guard let (fromSectionID, fromItem) = self.sectionIDAndItemForIndexPath(sourceIndexPath) else {
+        guard let fromLocation = self.locationForIndexPath(sourceIndexPath) else {
             print("source not found!")
             return proposedDestinationIndexPath
         }
 
-        let fromLocation = Location(tableView: tableView, sectionID: fromSectionID, item: fromItem)
-
-        guard let (toSectionID, toRows) = self.sectionIDAndRowForSectionIndex(proposedDestinationIndexPath.section) else {
+        guard let toLocation = self.locationWithOptionalItemForIndexPath(proposedDestinationIndexPath) else {
             print("destination section not found!")
             return proposedDestinationIndexPath
         }
 
-        let item = toRows.optionalElementAtIndex(proposedDestinationIndexPath.row)
-        let toLocation = LocationWithOptionalItem(tableView: tableView, sectionID: toSectionID, item: item)
-
+        // ask the our delegate where he/she wants the row
         let actualDestination = callback(fromLocation: fromLocation, proposedLocation: toLocation)
 
+        // check whether actual destination is OK
         if let item = actualDestination.item, let indexPath = indexPathForSectionID(actualDestination.sectionID, rowItem: item) {
             return indexPath
         }
@@ -374,16 +377,16 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     }
 
     public func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        guard let (sectionID, rowItem) = self.sectionIDAndItemForIndexPath(indexPath) else {
-            return
-        }
 
         switch editingStyle {
         case .Delete:
-            if let actuallyDelete = self.willDelete {
-                let location:Location<T> = Location(tableView: tableView, sectionID: sectionID, item: rowItem)
-                actuallyDelete(atLocation: location)
+            guard let callback = self.willDelete else {
+                return
             }
+            guard let location = self.locationForIndexPath(indexPath) else {
+                return
+            }
+            callback(atLocation: location)
 
         case .Insert:
             print(".Insert ????")
@@ -409,17 +412,15 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 // MARK - delegate
 extension DataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        guard let actuallySelect = self.didSelect else {
-            // if the client does not implement this callback...
+        guard let callback = self.didSelect else {
             return
         }
 
-        guard let (sectionID, item) = self.sectionIDAndItemForIndexPath(indexPath) else {
+        guard let location = self.locationForIndexPath(indexPath) else {
             return
         }
 
-        let location:Location<T> = Location(tableView: tableView, sectionID: sectionID, item: item)
-        actuallySelect(inLocation: location)
+        callback(inLocation: location)
     }
 }
 
