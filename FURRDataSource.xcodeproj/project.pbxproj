@@ -12,6 +12,7 @@
 		5698BA4C1B8DD0CB008805E2 /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA4B1B8DD0CB008805E2 /* DataSourceTests.swift */; };
 		5698BA571B8DD163008805E2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; settings = {ASSET_TAGS = (); }; };
 		5698BA811B8DD292008805E2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; settings = {ASSET_TAGS = (); }; };
+		DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */; settings = {ASSET_TAGS = (); }; };
 		DD6449291BCD297100E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449271BCD297100E5F7FA /* FURRDiff.framework */; };
 		DD64492A1BCD297100E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449281BCD297100E5F7FA /* FURRExtensions.framework */; };
 		DD64492B1BCD30A300E5F7FA /* DataSource.swift in Headers */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -36,6 +37,7 @@
 		5698BA4B1B8DD0CB008805E2 /* DataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
 		5698BA4D1B8DD0CB008805E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5698BA561B8DD163008805E2 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockTableView.swift; sourceTree = "<group>"; };
 		DD6449271BCD297100E5F7FA /* FURRDiff.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRDiff.framework; path = Carthage/Build/iOS/FURRDiff.framework; sourceTree = "<group>"; };
 		DD6449281BCD297100E5F7FA /* FURRExtensions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRExtensions.framework; path = Carthage/Build/iOS/FURRExtensions.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 			children = (
 				5698BA4B1B8DD0CB008805E2 /* DataSourceTests.swift */,
 				5698BA4D1B8DD0CB008805E2 /* Info.plist */,
+				DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */,
 			);
 			path = DataSourceTests;
 			sourceTree = "<group>";
@@ -269,6 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5698BA811B8DD292008805E2 /* DataSource.swift in Sources */,
+				DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */,
 				5698BA4C1B8DD0CB008805E2 /* DataSourceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

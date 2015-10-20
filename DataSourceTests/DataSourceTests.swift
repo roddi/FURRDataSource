@@ -48,8 +48,12 @@ class DataSourceTests: XCTestCase {
         super.tearDown()
     }
 
-    func whenDelegate() -> (UITableView,DataSource<MockTVItem>) {
-        let tableView = UITableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: .Plain)
+    // MARK: - given
+
+    // MARK: - when
+
+    func whenDelegate() -> (MockTableView,DataSource<MockTVItem>) {
+        let tableView = MockTableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: .Plain)
         let dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation) -> UITableViewCell in
             cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: inLocation.tableView)
         }
@@ -87,6 +91,10 @@ class DataSourceTests: XCTestCase {
         inDataSource.updateRows(rows, section: inSectionID, animated: true)
     }
 
+    // MARK: - then
+
+    // MARK: - test
+
     func testDataSourceSections() {
         let (tableView,dataSource) = self.whenDelegate()
 
@@ -104,15 +112,33 @@ class DataSourceTests: XCTestCase {
     func testDataSourceRows() {
         let (tableView,dataSource) = self.whenDelegate()
 
+        tableView.insertCallback = { print("insert \($0)") }
+        tableView.deleteCallback = { print("delete \($0)") }
+
         self.whenDataSource(dataSource, hasSectionIDs: ["a","b","c"])
 
         XCTAssert(dataSource.numberOfSectionsInTableView(tableView) == 3, "...")
 
         dataSource.updateRows([MockTVItem(identifier:"0"),MockTVItem(identifier:"1"),MockTVItem(identifier:"2")], section: "a", animated: true)
         XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: 0) == 3, "...")
+        XCTAssert(tableView.insertionIndexPaths == [NSIndexPath(forRow: 0, inSection: 0),NSIndexPath(forRow: 1, inSection: 0),NSIndexPath(forRow: 2, inSection: 0)])
+        XCTAssert(tableView.deletionIndexPaths == [])
+        tableView.insertionIndexPaths = []
 
+        dataSource.updateRows([MockTVItem(identifier:"0"),MockTVItem(identifier:"2"),MockTVItem(identifier:"3")], section: "a", animated: true)
+        XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: 0) == 3, "...")
+        XCTAssert(tableView.insertionIndexPaths == [NSIndexPath(forRow: 2, inSection: 0)])
+        XCTAssert(tableView.deletionIndexPaths == [NSIndexPath(forRow: 1, inSection: 0)])
+        tableView.insertionIndexPaths = []
+        tableView.deletionIndexPaths = []
+
+        print("")
         dataSource.updateRows([MockTVItem(identifier:"0"),MockTVItem(identifier:"5"),MockTVItem(identifier:"4"),MockTVItem(identifier:"2")], section: "a", animated: true)
         XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: 0) == 4, "...")
+        XCTAssert(tableView.insertionIndexPaths == [NSIndexPath(forRow: 1, inSection: 0),NSIndexPath(forRow: 2, inSection: 0)])
+        XCTAssert(tableView.deletionIndexPaths == [NSIndexPath(forRow: 3, inSection: 0)])
+        tableView.insertionIndexPaths = []
+        tableView.deletionIndexPaths = []
     }
 
     func testDataSourceWhenCompletelyEmpty() {
