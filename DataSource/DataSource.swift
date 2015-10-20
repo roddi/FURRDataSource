@@ -123,12 +123,14 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
         self.tableView.beginUpdates()
         var rowIndex = 0
+        var deleteRowIndex = 0
         for diff in diffs {
             switch diff.operation {
             case .Delete:
                 for _ in diff.array {
                     newRows.removeAtIndex(rowIndex)
-                    self.tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: rowIndex, inSection: sectionIndex)], withRowAnimation: .Automatic)
+                    self.tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: deleteRowIndex, inSection: sectionIndex)], withRowAnimation: .Automatic)
+                    deleteRowIndex++
                 }
             case .Insert:
                     for rowID in diff.array {
@@ -150,6 +152,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
             case .Equal:
                 rowIndex += diff.array.count
+                deleteRowIndex += diff.array.count
             }
         }
         self.rowsBySectionID[inSectionID] = newRows

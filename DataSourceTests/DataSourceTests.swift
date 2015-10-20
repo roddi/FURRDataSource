@@ -133,12 +133,38 @@ class DataSourceTests: XCTestCase {
         tableView.deletionIndexPaths = []
 
         print("")
+    }
+
+    func testDataSourceRowsDelete() {
+        let (tableView,dataSource) = self.whenDelegate()
+
+        tableView.insertCallback = { print("insert \($0)") }
+        tableView.deleteCallback = { print("delete \($0)") }
+
+        self.whenDataSource(dataSource, hasSectionIDs: ["a","b","c"])
+
+        XCTAssert(dataSource.numberOfSectionsInTableView(tableView) == 3, "...")
+
+        dataSource.updateRows([MockTVItem(identifier:"0"),MockTVItem(identifier:"1"),MockTVItem(identifier:"2")], section: "a", animated: true)
+        tableView.insertionIndexPaths = []
+        tableView.deletionIndexPaths = []
+
         dataSource.updateRows([MockTVItem(identifier:"0"),MockTVItem(identifier:"5"),MockTVItem(identifier:"4"),MockTVItem(identifier:"2")], section: "a", animated: true)
         XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: 0) == 4, "...")
         XCTAssert(tableView.insertionIndexPaths == [NSIndexPath(forRow: 1, inSection: 0),NSIndexPath(forRow: 2, inSection: 0)])
-        XCTAssert(tableView.deletionIndexPaths == [NSIndexPath(forRow: 3, inSection: 0)])
+        XCTAssertEqual(tableView.deletionIndexPaths, [NSIndexPath(forRow: 1, inSection: 0)])
         tableView.insertionIndexPaths = []
         tableView.deletionIndexPaths = []
+
+        print("")
+
+        dataSource.updateRows([MockTVItem(identifier:"0"),MockTVItem(identifier:"2")], section: "a", animated: true)
+        XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: 0) == 2, "...")
+        XCTAssert(tableView.insertionIndexPaths == [])
+        XCTAssertEqual(tableView.deletionIndexPaths, [NSIndexPath(forRow: 1, inSection: 0),NSIndexPath(forRow: 2, inSection: 0)])
+        tableView.insertionIndexPaths = []
+        tableView.deletionIndexPaths = []
+
     }
 
     func testDataSourceWhenCompletelyEmpty() {
