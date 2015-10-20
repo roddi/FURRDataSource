@@ -165,6 +165,16 @@ class DataSourceTests: XCTestCase {
         tableView.insertionIndexPaths = []
         tableView.deletionIndexPaths = []
 
+        dataSource.updateRows(["0","1","2","3","4","5"].map({ return MockTVItem(identifier:$0) }), section: "a", animated: true)
+        tableView.insertionIndexPaths = []
+        tableView.deletionIndexPaths = []
+
+        dataSource.updateRows(["0","2","4"].map({ return MockTVItem(identifier:$0) }), section: "a", animated: true)
+        XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: 0) == 3, "...")
+        XCTAssert(tableView.insertionIndexPaths == [])
+        XCTAssertEqual(tableView.deletionIndexPaths, [1,3,5].map({ return NSIndexPath(forRow: $0, inSection: 0)}))
+        tableView.insertionIndexPaths = []
+        tableView.deletionIndexPaths = []
     }
 
     func testDataSourceWhenCompletelyEmpty() {
