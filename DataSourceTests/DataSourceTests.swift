@@ -75,7 +75,7 @@ class DataSourceTests: XCTestCase {
         didCallDidSelectHandler = false
     }
 
-    func givenDataSourceCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+    func givenCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -85,7 +85,7 @@ class DataSourceTests: XCTestCase {
         }
     }
 
-    func givenDataSourceRetargetsToRowIDSectionID(rowID: String, sectionID: String) {
+    func givenRetargetsToRowIDSectionID(rowID: String, sectionID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -100,7 +100,7 @@ class DataSourceTests: XCTestCase {
         }
     }
 
-    func givenDataSourceCanEditItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+    func givenCanEditItemAtSectionID(inSectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -112,7 +112,7 @@ class DataSourceTests: XCTestCase {
 
     var didCallDidSelectHandler = false
 
-    func givenDataSourceWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
+    func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -158,7 +158,7 @@ class DataSourceTests: XCTestCase {
 
     // MARK: - when
 
-    func whenDataSourceHasSectionIDs(inSectionIDs:Array<String>) {
+    func whenUpdatingSectionIDs(inSectionIDs:Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -303,7 +303,7 @@ class DataSourceTests: XCTestCase {
     func testDataSourceRows() {
         self.givenDelegateAndDataSource()
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -323,7 +323,7 @@ class DataSourceTests: XCTestCase {
     func testDataSourceRowsDelete() {
         self.givenDelegateAndDataSource()
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -363,9 +363,9 @@ class DataSourceTests: XCTestCase {
 
     func testDidSelect() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceWillAllowSelectInSectionID("a", rowID: "1")
+        self.givenWillAllowSelectInSectionID("a", rowID: "1")
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -377,9 +377,9 @@ class DataSourceTests: XCTestCase {
 
     func testCanMove() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceCanMoveItemAtSectionID("a", rowID: "2")
+        self.givenCanMoveItemAtSectionID("a", rowID: "2")
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -391,11 +391,11 @@ class DataSourceTests: XCTestCase {
 
     func testMove() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceCanMoveItemAtSectionID("a", rowID: "2")
+        self.givenCanMoveItemAtSectionID("a", rowID: "2")
         self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
 
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -406,10 +406,10 @@ class DataSourceTests: XCTestCase {
 
     func testMoveBeyondLastItem() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceCanMoveItemAtSectionID("a", rowID: "1")
+        self.givenCanMoveItemAtSectionID("a", rowID: "1")
         self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -421,9 +421,9 @@ class DataSourceTests: XCTestCase {
 
     func testMoveAcrossSections() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceCanMoveItemAtSectionID("a", rowID: "3")
+        self.givenCanMoveItemAtSectionID("a", rowID: "3")
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "b")
@@ -469,10 +469,10 @@ class DataSourceTests: XCTestCase {
 
     func testMoveWithCorrectedTarget() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceCanMoveItemAtSectionID("a", rowID: "3")
-        self.givenDataSourceRetargetsToRowIDSectionID("1", sectionID: "a")
+        self.givenCanMoveItemAtSectionID("a", rowID: "3")
+        self.givenRetargetsToRowIDSectionID("1", sectionID: "a")
 
-        self.whenDataSourceHasSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a","b","c"])
 
         self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "b")
@@ -493,9 +493,9 @@ class DataSourceTests: XCTestCase {
     // testing: optional func tableView(_ tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool
     func testCanEditItem() {
         self.givenDelegateAndDataSource()
-        self.givenDataSourceCanEditItemAtSectionID("a", rowID: "1")
+        self.givenCanEditItemAtSectionID("a", rowID: "1")
 
-        self.whenDataSourceHasSectionIDs(["a"])
+        self.whenUpdatingSectionIDs(["a"])
         self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
 
         self.thenCanEditItemAtRow(1, section: 0, canMove: true)
@@ -506,7 +506,7 @@ class DataSourceTests: XCTestCase {
 
     func testDeleteItem() {
         self.givenDelegateAndDataSource()
-        self.whenDataSourceHasSectionIDs(["a"])
+        self.whenUpdatingSectionIDs(["a"])
         self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
 
         let willDeleteExpectation = expectationWithDescription("will delete callback")
