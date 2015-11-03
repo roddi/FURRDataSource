@@ -69,6 +69,7 @@ class DataSourceTests: XCTestCase {
         self.dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation) -> UITableViewCell in
             cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: inLocation.tableView)
         }
+        self.dataSource?.reportingLevel = .PreCondition
 
         tableView.insertCallback = { print("insert \($0)") }
         tableView.deleteCallback = { print("delete \($0)") }
@@ -171,6 +172,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
+
         dataSource.updateRows(self.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
     }
 
@@ -298,10 +300,24 @@ class DataSourceTests: XCTestCase {
         self.dataSource?.updateSections([], animated: true)
         self.thenNumberOfSectionsIs(0)
 
+        var didFail = false
+        self.dataSource?.fail = { (msg) -> Void in didFail = true }
+
+        self.dataSource?.updateSections(["a","a","a"], animated: true)
+        XCTAssert(didFail)
     }
 
     func testDataSourceRows() {
         self.givenDelegateAndDataSource()
+
+        var didWarn = false
+        self.dataSource?.warn = { (message: String?) -> Void in
+            didWarn = true
+        }
+
+        // trying to update non-existing section
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        XCTAssert(didWarn)
 
         self.whenUpdatingSectionIDs(["a","b","c"])
         self.thenNumberOfSectionsIs(3)
@@ -318,6 +334,11 @@ class DataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(3)
         self.thenInsertionRowsSectionsAre([[2,0]])
         self.thenDeletionRowsSectionsAre([[1,0]])
+
+        var didFail = false
+        self.dataSource?.fail = { (msg) -> Void in didFail = true }
+        self.whenUpdatingRowsWithIdentifiers(["0","0","0"], sectionID: "a")
+        XCTAssert(didFail)
     }
 
     func testDataSourceRowsDelete() {

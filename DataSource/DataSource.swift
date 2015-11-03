@@ -47,6 +47,8 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     private var sections: Array<String> = []
     private var rowsBySectionID: Dictionary<String,Array<T>> = Dictionary()
 
+    internal var fail: ((String) -> Void )?
+    internal var warn: ((String) -> Void )?
     public var cell: (forLocation:Location<T>) -> UITableViewCell
     public var didSelect: ((inLocation:Location<T>) -> Void)?
     public var canMove: ((toLocation:Location<T>) -> Bool)?
@@ -70,7 +72,23 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     // MARK: - updating
 
+    private func arrayContainsDupes<T:Equatable>(array: Array<T>) -> Bool {
+        for var i=0 ; i<array.count-1 ; i++ {
+            for var j=i+1 ; j<array.count; j++ {
+                if array[i] == array[j] {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+
+        if self.arrayContainsDupes(inSections) {
+            self.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
+        }
+
         let diffs = diffBetweenArrays(arrayA: self.sections, arrayB: inSections)
 
         var index = 0
@@ -99,6 +117,12 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         guard let sectionIndex = self.sectionIndexForSectionID(inSectionID) else {
+            self.warnWithMessage("sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
+            return
+        }
+
+        if self.arrayContainsDupes(inRows) {
+            self.failWithMessage("Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
             return
         }
 
@@ -428,7 +452,48 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
         return callback(atLocation: location)
     }
+
+    // MARK: - handling errors
+
+    private func reportWarningAccordingToLevel(message: String) {
+        switch self.reportingLevel {
+            // a warning will still trigger an assertion.
+        case .PreCondition:
+                preconditionFailure(message)
+
+        case .Assert:
+                assertionFailure(message)
+        case .Print:
+                print(message)
+        case .Silent:
+            // nothing to do here
+            break
+        }
+    }
+
+    private func failWithMessage(message: String) {
+        // when there's a fail block, we fail into that block otherwise
+        // we fail according to the reporting level
+        if let failBlock = self.fail {
+            failBlock(message)
+            return
+        }
+
+        preconditionFailure(message)
+    }
+
+    private func warnWithMessage(message: String) {
+        // when there's a fail block, we fail into that block otherwise
+        // we fail according to the reporting level
+        if let warnBlock = self.warn {
+            warnBlock(message)
+            return
+        }
+
+        self.reportWarningAccordingToLevel(message)
+    }
 }
+
 
     // MARK: - delegate
 
