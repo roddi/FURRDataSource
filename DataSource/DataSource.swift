@@ -7,7 +7,7 @@
 //
 // swiftlint:disable file_length
 
-import Foundation
+import UIKit
 import FURRExtensions
 import FURRDiff
 
@@ -72,20 +72,9 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     // MARK: - updating
 
-    private func arrayContainsDupes<T:Equatable>(array: Array<T>) -> Bool {
-        for var i=0 ; i<array.count-1 ; i++ {
-            for var j=i+1 ; j<array.count; j++ {
-                if array[i] == array[j] {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
 
-        if self.arrayContainsDupes(inSections) {
+        if inSections.containsDuplicatesFast() {
             self.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
         }
 
@@ -121,7 +110,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             return
         }
 
-        if self.arrayContainsDupes(inRows) {
+        if inRows.containsDuplicates() {
             self.failWithMessage("Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
             return
         }
