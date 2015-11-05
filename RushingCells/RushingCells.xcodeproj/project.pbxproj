@@ -18,15 +18,9 @@
 		5698BAB71B8DE499008805E2 /* Rusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BAB61B8DE499008805E2 /* Rusher.swift */; };
 		DD37A1A11BCD57BC00E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1971BCD563600E5F7FA /* FURRDiff.framework */; };
 		DD37A1A21BCD57BC00E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */; };
-		DD37A1A51BCD5DF700E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1971BCD563600E5F7FA /* FURRDiff.framework */; };
-		DD37A1A61BCD5DFA00E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */; };
-		DD37A1A71BCD5DFC00E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */; };
-		DD37A1A81BCD5DFF00E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1971BCD563600E5F7FA /* FURRDiff.framework */; };
-		DD4F3FF91BCE397B00E5F7FA /* Rusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BAB61B8DE499008805E2 /* Rusher.swift */; };
-		DD4F3FFA1BCE397C00E5F7FA /* Rusher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BAB61B8DE499008805E2 /* Rusher.swift */; };
 		DD4F3FFE1BCE472200E5F7FA /* FURRDiff.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1971BCD563600E5F7FA /* FURRDiff.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DD4F40001BCE472200E5F7FA /* FURRExtensions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		DD9137D61BEA620B00E5F7FA /* FURRDataSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD9137D51BEA620B00E5F7FA /* FURRDataSource.framework */; };
+		DD6285591BEBC3DF00E5F7FA /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6285581BEBC3DF00E5F7FA /* DataSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,7 +73,7 @@
 		5698BAB61B8DE499008805E2 /* Rusher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Rusher.swift; sourceTree = "<group>"; };
 		DD37A1971BCD563600E5F7FA /* FURRDiff.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRDiff.framework; path = ../Carthage/Build/iOS/FURRDiff.framework; sourceTree = "<group>"; };
 		DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRExtensions.framework; path = ../Carthage/Build/iOS/FURRExtensions.framework; sourceTree = "<group>"; };
-		DD9137D51BEA620B00E5F7FA /* FURRDataSource.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRDataSource.framework; path = "../build/Debug-iphoneos/FURRDataSource.framework"; sourceTree = "<group>"; };
+		DD6285581BEBC3DF00E5F7FA /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSource.swift; path = ../DataSource/DataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,7 +81,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD9137D61BEA620B00E5F7FA /* FURRDataSource.framework in Frameworks */,
 				DD37A1A11BCD57BC00E5F7FA /* FURRDiff.framework in Frameworks */,
 				DD37A1A21BCD57BC00E5F7FA /* FURRExtensions.framework in Frameworks */,
 			);
@@ -97,8 +90,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD37A1A51BCD5DF700E5F7FA /* FURRDiff.framework in Frameworks */,
-				DD37A1A61BCD5DFA00E5F7FA /* FURRExtensions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,8 +97,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD37A1A81BCD5DFF00E5F7FA /* FURRDiff.framework in Frameworks */,
-				DD37A1A71BCD5DFC00E5F7FA /* FURRExtensions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +106,7 @@
 		5698B9C91B8DCFE4008805E2 = {
 			isa = PBXGroup;
 			children = (
-				DD9137D51BEA620B00E5F7FA /* FURRDataSource.framework */,
+				DD6285571BEBC3CA00E5F7FA /* FURRDataSource */,
 				DD37A1971BCD563600E5F7FA /* FURRDiff.framework */,
 				DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */,
 				5698B9D41B8DCFE4008805E2 /* RushingCells */,
@@ -168,6 +157,14 @@
 				5698B9F91B8DCFE4008805E2 /* Info.plist */,
 			);
 			path = RushingCellsUITests;
+			sourceTree = "<group>";
+		};
+		DD6285571BEBC3CA00E5F7FA /* FURRDataSource */ = {
+			isa = PBXGroup;
+			children = (
+				DD6285581BEBC3DF00E5F7FA /* DataSource.swift */,
+			);
+			name = FURRDataSource;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -310,7 +307,6 @@
 			inputPaths = (
 				"$(SRCROOT)/../Carthage/Build/iOS/FURRExtensions.framework",
 				"$(SRCROOT)/../Carthage/Build/iOS/FURRDiff.framework",
-				"$(SRCROOT)/../Carthage/Build/iOS/FURRDataSource.framework",
 			);
 			name = "Run Carthage Copy Script";
 			outputPaths = (
@@ -371,6 +367,7 @@
 				5698BAB71B8DE499008805E2 /* Rusher.swift in Sources */,
 				5698B9DA1B8DCFE4008805E2 /* DetailViewController.swift in Sources */,
 				5698B9D81B8DCFE4008805E2 /* MasterViewController.swift in Sources */,
+				DD6285591BEBC3DF00E5F7FA /* DataSource.swift in Sources */,
 				5698B9D61B8DCFE4008805E2 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -379,7 +376,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD4F3FF91BCE397B00E5F7FA /* Rusher.swift in Sources */,
 				5698B9ED1B8DCFE4008805E2 /* RushingCellsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -388,7 +384,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD4F3FFA1BCE397C00E5F7FA /* Rusher.swift in Sources */,
 				5698B9F81B8DCFE4008805E2 /* RushingCellsUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -454,6 +449,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../Carthage/Build/iOS",
 					"$(inherited)",
+					"$(BUILD_DIR)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -469,6 +465,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = $;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -506,6 +503,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/../Carthage/Build/iOS",
 					"$(inherited)",
+					"$(BUILD_DIR)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -515,6 +513,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = $;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;

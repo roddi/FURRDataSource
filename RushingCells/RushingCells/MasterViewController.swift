@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import FURRDataSource
 
 class MasterViewController: UITableViewController {
 
