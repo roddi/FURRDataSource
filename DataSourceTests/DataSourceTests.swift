@@ -384,7 +384,8 @@ class DataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         self.thenNumberOfSectionsIs(0)
-        self.thenNumberOfRowsIs(0, sectionIndex: 0)
+
+        // note: asking for the number of rows in section 0 would result in a fail as we don't have a sectionID.
     }
 
     func testDidSelect() {
