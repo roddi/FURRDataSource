@@ -293,8 +293,14 @@ class DataSourceTests: XCTestCase {
     func testDataSourceSections() {
         self.givenDelegateAndDataSource()
 
-        self.dataSource?.updateSections(["a","b","c"], animated: true)
+        var sections = ["a","b","c"]
+        self.dataSource?.updateSections(sections, animated: true)
         self.thenNumberOfSectionsIs(3)
+        XCTAssert(sections == (self.dataSource?.sections())!)
+
+        // test whether it's actually const
+        sections = ["a","b","c","d"]
+        XCTAssert(sections != (self.dataSource?.sections())!)
 
         self.dataSource?.updateSections(["a","d","c"], animated: true)
         self.thenNumberOfSectionsIs(3)
@@ -332,6 +338,7 @@ class DataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[0,0],[1,0],[2,0]])
         self.thenDeletionRowsSectionsAre([])
+        XCTAssert(self.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
 
         self.givenDiffsAreCleared()
 

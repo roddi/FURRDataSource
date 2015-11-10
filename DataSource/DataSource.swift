@@ -44,7 +44,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     private let tableView: UITableView
 
-    private var sections: Array<String> = []
+    private var sectionsInternal: Array<String> = []
     private var rowsBySectionID: Dictionary<String,Array<T>> = Dictionary()
 
     internal var fail: ((String) -> Void )?
@@ -70,6 +70,22 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         self.tableView.delegate = self
     }
 
+    // MARK: - querying
+
+    public func sections() -> [String] {
+        let section = self.sectionsInternal
+        return section
+    }
+
+    public func rowsForSection(section: String) -> [T] {
+        if let rows = self.rowsBySectionID[section] {
+            return rows
+        }
+        else {
+            return []
+        }
+    }
+
     // MARK: - updating
 
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
@@ -78,7 +94,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             self.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
         }
 
-        let diffs = diffBetweenArrays(arrayA: self.sections, arrayB: inSections)
+        let diffs = diffBetweenArrays(arrayA: self.sectionsInternal, arrayB: inSections)
 
         var index = 0
         self.tableView.beginUpdates()
@@ -86,12 +102,12 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             switch diff.operation {
             case .Delete:
                 for _ in diff.array {
-                    self.sections.removeAtIndex(index)
+                    self.sectionsInternal.removeAtIndex(index)
                     self.tableView.deleteSections(NSIndexSet(index: index), withRowAnimation: .Automatic)
                 }
             case .Insert:
                 for string in diff.array {
-                    self.sections.insert(string, atIndex: index)
+                    self.sectionsInternal.insert(string, atIndex: index)
                     self.tableView.insertSections(NSIndexSet(index: index), withRowAnimation: .Automatic)
                     index++
                 }
@@ -101,7 +117,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         }
         self.tableView.endUpdates()
 
-        assert(self.sections == inSections, "should be equal now")
+        assert(self.sectionsInternal == inSections, "should be equal now")
     }
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
@@ -217,15 +233,15 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     }
 
     private func sectionIndexForSectionID(inSectionID: String) -> Int? {
-        guard self.sections.contains(inSectionID) else {
+        guard self.sectionsInternal.contains(inSectionID) else {
             return nil
         }
 
-        return self.sections.indexOf(inSectionID)
+        return self.sectionsInternal.indexOf(inSectionID)
     }
 
     private func sectionIDAndRowForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
-        guard let sectionID = self.sections.optionalElementAtIndex(inSectionIndex) else {
+        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSectionIndex) else {
             print("section not found at index \(inSectionIndex)")
             return nil
         }
@@ -276,12 +292,12 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     // MARK: - data source
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        let sections = self.sections
+        let sections = self.sectionsInternal
         return sections.count
     }
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        guard let sectionID = self.sections.optionalElementAtIndex(inSection) else {
+        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSection) else {
             self.failWithMessage("no section at index '\(inSection)'")
             return 0;
         }
