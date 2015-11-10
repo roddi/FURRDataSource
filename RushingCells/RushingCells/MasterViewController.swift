@@ -8,6 +8,10 @@
 
 import UIKit
 
+enum Breathing: String {
+    case Inhale, Exhale, Keep
+}
+
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
@@ -58,7 +62,7 @@ class MasterViewController: UITableViewController {
 
             self.dataSource?.updateSections(["first"], animated: false)
 
-            //self.testRush1()
+            self.testRush1()
         }
     }
 
@@ -80,13 +84,14 @@ class MasterViewController: UITableViewController {
 
     func insertNewObject(sender: AnyObject) {
         let rusher = self.newRusher()
-        var key = sectionIDs.last
-        if key == nil {
-            key = NSUUID().UUIDString
-            //self.dataSource?.updateSections([key!], animated: true)
+        let sectionID: String
+        if let sectionID_ = sectionIDs.last {
+            sectionID = sectionID_
         }
-        guard let sectionID = key else {
-            return
+        else {
+            sectionID = NSUUID().UUIDString
+            self.sectionIDs.append(sectionID)
+            self.dataSource?.updateSections(self.sectionIDs, animated: true)
         }
 
         var rows = self.objects[sectionID]
@@ -103,6 +108,7 @@ class MasterViewController: UITableViewController {
         if rows_.count > 5 {
             let newSectionID = NSUUID().UUIDString
             self.sectionIDs.append(newSectionID)
+            self.dataSource?.updateSections(self.sectionIDs, animated: true)
             self.objects.updateValue([], forKey: newSectionID)
             self.dataSource?.updateRows([], section: newSectionID, animated: true)
         }
@@ -130,7 +136,7 @@ class MasterViewController: UITableViewController {
     }
 
     // MARK: - rushing
-    /*
+
     func testRush1() {
         for _ in 0 ..< 12 {
             self.insertNewObject(self)
@@ -142,67 +148,84 @@ class MasterViewController: UITableViewController {
     }
 
     func testRush1b() {
-        objects.removeAtIndex(objects.count - 1)
-        objects.insert(newRusher(), atIndex: 7)
+        if let firstSectionID = self.sectionIDs.first, var rows = self.objects[firstSectionID] {
+            rows.removeAtIndex(rows.count - 1)
+            rows.insert(newRusher(), atIndex: 3)
+            self.objects[firstSectionID] = rows
 
-        self.dataSource?.updateRows(objects, section: kOnlySectionID, animated: true)
+            self.dataSource?.updateRows(rows, section: firstSectionID, animated: true)
+        }
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  500*1000*1000), dispatch_get_main_queue()) { () -> Void in
             self.rush()
         }
     }
 
-    private var count = 0
-    private var grow = true
-    func rush() {
-        if grow {
-            if objects.count > 100 {
-                grow = false
-            }
+    func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, breathe: Breathing) {
+        let sectionID: String
+
+        if let sectionID_ = self.sectionIDs.optionalElementAtIndex(sectionIndex) {
+            sectionID = sectionID_
         }
         else {
-            if objects.count < 5 {
-                grow = true
+            sectionID = NSUUID().UUIDString
+            self.sectionIDs.append(sectionID)
+            self.objects[sectionID] = []
+            self.dataSource?.updateSections(self.sectionIDs, animated: true)
+        }
+
+        guard var rows = self.objects[sectionID] else {
+            return
+        }
+
+        if breathe != .Inhale && deleteIndex < rows.count {
+            rows.removeAtIndex(deleteIndex)
+        }
+        if rows.count < insertIndex {
+            rows.append(newRusher())
+        }
+        else {
+            rows.insert(newRusher(), atIndex: insertIndex)
+        }
+        self.objects[sectionID] = rows
+
+        self.dataSource?.updateRows(rows, section: sectionID, animated: true)
+    }
+
+    private var count = 0
+    private var breatheCount = 0
+    private var breathe = Breathing.Inhale
+    func rush() {
+        if breathe == .Inhale {
+            if breatheCount > 100 {
+                breathe = .Exhale
             }
+            breatheCount += 1
+        }
+        else {
+            if breatheCount < 5 {
+                breathe = .Inhale
+            }
+            breatheCount -= 1
         }
 
         count++
-        let insertIndex = (count % 5) * 2
-        let deleteIndex = count % 13
-        let insertIndex2 = (count % 37) * 3
-        let deleteIndex2 = count % 3
+        let sectionIndex = (count % 37) * 3
+        let sectionIndex2 = (count % 5) * 2
 
-        let growString = grow ? "grow" : "shrink"
-        print("Rush! \(count) \(growString) -- rows: \(self.objects.count) ins: \(insertIndex)  del: \(deleteIndex)")
+        let insertIndex = (count % 5)
+        let deleteIndex = count % 3
+        let insertIndex2 = (count % 7)
+        let deleteIndex2 = count % 11
 
-        if deleteIndex < objects.count {
-            objects.removeAtIndex(deleteIndex)
-        }
-        if !grow && deleteIndex2 < objects.count {
-            objects.removeAtIndex(deleteIndex2)
-        }
+        print("Rush! \(count) \(breathe.rawValue) -- rows: \(self.objects.count) ins: \(insertIndex)  del: \(deleteIndex)")
 
-        if objects.count < insertIndex {
-            objects.append(newRusher())
-        }
-        else {
-            objects.insert(newRusher(), atIndex: insertIndex)
-        }
-
-        if grow {
-            if objects.count < insertIndex2 {
-                objects.append(newRusher())
-            }
-            else {
-                objects.insert(newRusher(), atIndex: insertIndex2)
-            }
-        }
-
-        self.dataSource?.updateRows(objects, section: kOnlySectionID, animated: true)
+        handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, breathe: .Keep)
+        handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, breathe: breathe)
 
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  350*1000*1000), dispatch_get_main_queue()) { () -> Void in
             self.rush()
         }
     }
-*/
+
 }

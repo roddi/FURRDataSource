@@ -71,8 +71,10 @@ class DataSourceTests: XCTestCase {
         }
         self.dataSource?.reportingLevel = .PreCondition
 
-        tableView.insertCallback = { print("insert \($0)") }
-        tableView.deleteCallback = { print("delete \($0)") }
+        tableView.insertRowsCallback = { print("insert rows \($0)") }
+        tableView.deleteRowsCallback = { print("delete rows \($0)") }
+        tableView.insertSectionsCallback = { print("insert sections \($0)") }
+        tableView.deleteSectionsCallback = { print("delete sections \($0)") }
         didCallDidSelectHandler = false
     }
 
@@ -296,6 +298,9 @@ class DataSourceTests: XCTestCase {
 
         self.dataSource?.updateSections(["a","d","c"], animated: true)
         self.thenNumberOfSectionsIs(3)
+
+        self.dataSource?.updateSections(["a","d","c","e"], animated: true)
+        self.thenNumberOfSectionsIs(4)
 
         self.dataSource?.updateSections([], animated: true)
         self.thenNumberOfSectionsIs(0)

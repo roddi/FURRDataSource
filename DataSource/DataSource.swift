@@ -282,13 +282,13 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
         guard let sectionID = self.sections.optionalElementAtIndex(inSection) else {
+            self.failWithMessage("no section at index '\(inSection)'")
             return 0;
         }
 
         guard let rows = self.rowsBySectionID[sectionID] else {
-            print("unknown section '\(sectionID)'")
+            // no rows for that sectionID. We don't warn as the sectionID might just be created.
             return 0
-            //preconditionFailure("rows not found")
         }
         return rows.count
     }
@@ -448,12 +448,12 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         switch self.reportingLevel {
             // a warning will still trigger an assertion.
         case .PreCondition:
-                preconditionFailure(message)
+            preconditionFailure("ERROR: \(message)")
 
         case .Assert:
-                assertionFailure(message)
+                assertionFailure("WARNING: \(message)")
         case .Print:
-                print(message)
+                print("WARNING: \(message)")
         case .Silent:
             // nothing to do here
             break
@@ -468,7 +468,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             return
         }
 
-        preconditionFailure(message)
+        preconditionFailure("FATAL ERROR: \(message)")
     }
 
     private func warnWithMessage(message: String) {
