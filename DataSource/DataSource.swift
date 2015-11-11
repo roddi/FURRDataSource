@@ -45,7 +45,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     private let tableView: UITableView
 
     private var sectionsInternal: Array<String> = []
-    private var rowsBySectionID: Dictionary<String,Array<T>> = Dictionary()
+    private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
@@ -53,7 +53,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     public var didSelect: ((inLocation:Location<T>) -> Void)?
     public var canMove: ((toLocation:Location<T>) -> Bool)?
     public var targetMovedItem: ((fromLocation:Location<T>, proposedLocation:LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
-    public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String,Array<T>>) -> Void)?
+    public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String, Array<T>>) -> Void)?
     public var canEdit: ((atLocation:Location<T>) -> Bool)?
     public var willDelete: ((atLocation:Location<T>) -> Void)?
     public var didDelete: ((item: T) -> Void)?
@@ -80,8 +80,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     public func rowsForSection(section: String) -> [T] {
         if let rows = self.rowsBySectionID[section] {
             return rows
-        }
-        else {
+        } else {
             return []
         }
     }
@@ -97,9 +96,9 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             return nil
         }
 
-        return (sectionID,item)
+        return (sectionID, item)
     }
-    
+
     // MARK: - updating
 
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
@@ -148,8 +147,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         let existingRows: [T]
         if let exRows = self.rowsBySectionID[inSectionID] {
             existingRows = exRows
-        }
-        else {
+        } else {
             existingRows = []
         }
 
@@ -187,8 +185,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
                             newRows.insert(newRow, atIndex: rowIndex)
                             self.tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: rowIndex, inSection: sectionIndex)], withRowAnimation: .Automatic)
                             rowIndex++
-                        }
-                        else {
+                        } else {
                             print("index not found for rowID '\(rowID)'")
                         }
                     }
@@ -265,7 +262,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
             return nil
         }
 
-        return (sectionID,rowArray)
+        return (sectionID, rowArray)
     }
 
     private func locationForIndexPath(inIndexPath: NSIndexPath) -> Location<T>? {
@@ -353,15 +350,14 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         rows = toRows
         if destinationIndexPath.row >= toRows.count {
             rows?.append(fromItem)
-        }
-        else {
+        } else {
             rows?.insert(fromItem, atIndex: destinationIndexPath.row)
         }
         self.rowsBySectionID[toSectionID] = rows
 
-        let sectionIDs = (fromSectionID == toSectionID) ? [fromSectionID] : [fromSectionID,toSectionID]
+        let sectionIDs = (fromSectionID == toSectionID) ? [fromSectionID] : [fromSectionID, toSectionID]
 
-        var changed:Dictionary<String,Array<T>> = Dictionary()
+        var changed: Dictionary<String, Array<T>> = Dictionary()
         for sectionID in sectionIDs {
             changed[sectionID] = self.rowsBySectionID[sectionID]
         }
@@ -402,8 +398,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
         if let rows = self.rowsBySectionID[actualDestination.sectionID] {
             return NSIndexPath(forRow: rows.count-1, inSection: sectionIndex)
-        }
-        else {
+        } else {
             print("actual destination section not found!")
             return proposedDestinationIndexPath
         }

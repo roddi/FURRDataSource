@@ -142,7 +142,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String,Array<MockTVItem>>) -> Void in
+        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -336,7 +336,7 @@ class DataSourceTests: XCTestCase {
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
 
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[0,0],[1,0],[2,0]])
+        self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([])
         XCTAssert(self.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
 
@@ -344,8 +344,8 @@ class DataSourceTests: XCTestCase {
 
         self.whenUpdatingRowsWithIdentifiers(["0","2","3"], sectionID: "a")
         self.thenNumberOfSectionsIs(3)
-        self.thenInsertionRowsSectionsAre([[2,0]])
-        self.thenDeletionRowsSectionsAre([[1,0]])
+        self.thenInsertionRowsSectionsAre([[2, 0]])
+        self.thenDeletionRowsSectionsAre([[1, 0]])
 
         var didFail = false
         self.dataSource?.fail = { (msg) -> Void in didFail = true }
@@ -364,8 +364,8 @@ class DataSourceTests: XCTestCase {
 
         self.whenUpdatingRowsWithIdentifiers(["0","5","4","2"], sectionID: "a")
         self.thenNumberOfRowsIs(4, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[1,0],[2,0]])
-        self.thenDeletionRowsSectionsAre([[1,0]])
+        self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre([[1, 0]])
 
         self.givenDiffsAreCleared()
 
@@ -374,7 +374,7 @@ class DataSourceTests: XCTestCase {
         self.whenUpdatingRowsWithIdentifiers(["0","2"], sectionID: "a")
         self.thenNumberOfRowsIs(2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1,0],[2,0]])
+        self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
 
         self.givenDiffsAreCleared()
 
@@ -384,7 +384,7 @@ class DataSourceTests: XCTestCase {
         self.whenUpdatingRowsWithIdentifiers(["0","2","4"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1,0],[3,0],[5,0]])
+        self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])
     }
 
     func testDataSourceWhenCompletelyEmpty() {
@@ -469,7 +469,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String,Array<MockTVItem>>) -> Void in
+        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<MockTVItem>>) -> Void in
             expectation.fulfill()
             XCTAssert(inSectionIDs.count == 2, "should be only two sections")
 
@@ -562,7 +562,7 @@ class DataSourceTests: XCTestCase {
             didDeleteExpectation.fulfill()
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String,Array<MockTVItem>>) -> Void in
+        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<MockTVItem>>) -> Void in
             sectionChangedExpectation.fulfill()
             XCTAssert(inSectionIDs.count == 1, "should be only one section")
 

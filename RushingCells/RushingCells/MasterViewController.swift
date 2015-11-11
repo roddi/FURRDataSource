@@ -6,6 +6,12 @@
 //  Copyright © 2015 Ruotger Deecke. All rights reserved.
 //
 
+// This is sample code, so I disable all of this.
+
+// swiftlint:disable type_body_length
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+
 import UIKit
 
 enum Breathing: String {
@@ -38,8 +44,7 @@ class MasterViewController: UITableViewController {
                 let dequeuedCell = self.dataSource?.dequeueReusableCellWithIdentifier("Cell", sectionID: inLocation.sectionID, item: inLocation.item)
                 if let cell_ = dequeuedCell {
                     cell = cell_
-                }
-                else {
+                } else {
                     cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "Cell")
                 }
                 let rusher = inLocation.item
@@ -52,7 +57,7 @@ class MasterViewController: UITableViewController {
             self.dataSource?.willDelete = { (atLocation:Location<Rusher>) -> Void in
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
-            self.dataSource?.didChangeSectionIDs = { (inSectionIDs:Dictionary<String,Array<Rusher>>) -> Void in
+            self.dataSource?.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<Rusher>>) -> Void in
             }
 
             self.dataSource?.updateSections(["first"], animated: false)
@@ -82,8 +87,7 @@ class MasterViewController: UITableViewController {
         let sectionID: String
         if let sectionID_ = self.dataSource?.sections().last {
             sectionID = sectionID_
-        }
-        else {
+        } else {
             sectionID = NSUUID().UUIDString
             if let dataSource_ = self.dataSource {
                 var sections = dataSource_.sections()
@@ -164,8 +168,7 @@ class MasterViewController: UITableViewController {
 
         if let sectionID_ = self.dataSource?.sections().optionalElementAtIndex(sectionIndex) {
             sectionID = sectionID_
-        }
-        else {
+        } else {
             sectionID = NSUUID().UUIDString
             if let dataSource_ = self.dataSource {
                 var sections = dataSource_.sections()
@@ -183,8 +186,7 @@ class MasterViewController: UITableViewController {
         }
         if rows.count < insertIndex {
             rows.append(newRusher())
-        }
-        else {
+        } else {
             rows.insert(newRusher(), atIndex: insertIndex)
         }
 
@@ -200,8 +202,7 @@ class MasterViewController: UITableViewController {
                 breathe = .Exhale
             }
             breatheCount += 1
-        }
-        else {
+        } else {
             if breatheCount < 5 {
                 breathe = .Inhale
             }
