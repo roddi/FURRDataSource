@@ -86,6 +86,20 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         }
     }
 
+    public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
+        let sectionIndex: Int = inIndexPath.section
+        guard let (sectionID, rowArray) = self.sectionIDAndRowForSectionIndex(sectionIndex) else {
+            return nil
+        }
+
+        guard let item = rowArray.optionalElementAtIndex(inIndexPath.row) else {
+            print("item not found at index \(inIndexPath.row) for sectionID \(sectionID)")
+            return nil
+        }
+
+        return (sectionID,item)
+    }
+    
     // MARK: - updating
 
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
@@ -252,20 +266,6 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         }
 
         return (sectionID,rowArray)
-    }
-
-    private func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
-        let sectionIndex: Int = inIndexPath.section
-        guard let (sectionID, rowArray) = self.sectionIDAndRowForSectionIndex(sectionIndex) else {
-            return nil
-        }
-
-        guard let item = rowArray.optionalElementAtIndex(inIndexPath.row) else {
-            print("item not found at index \(inIndexPath.row) for sectionID \(sectionID)")
-            return nil
-        }
-
-        return (sectionID,item)
     }
 
     private func locationForIndexPath(inIndexPath: NSIndexPath) -> Location<T>? {

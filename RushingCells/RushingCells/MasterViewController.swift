@@ -15,8 +15,6 @@ enum Breathing: String {
 class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
-    var objects = [String:[Rusher]]()
-    var sectionIDs = [String]()
     @IBOutlet weak var masterTableView: UITableView?
     var dataSource:DataSource<Rusher>? = nil
 
@@ -55,9 +53,6 @@ class MasterViewController: UITableViewController {
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
             self.dataSource?.didChangeSectionIDs = { (inSectionIDs:Dictionary<String,Array<Rusher>>) -> Void in
-                for (key,object) in inSectionIDs {
-                    self.objects.updateValue(object, forKey: key)
-                }
             }
 
             self.dataSource?.updateSections(["first"], animated: false)
@@ -85,16 +80,19 @@ class MasterViewController: UITableViewController {
     func insertNewObject(sender: AnyObject) {
         let rusher = self.newRusher()
         let sectionID: String
-        if let sectionID_ = sectionIDs.last {
+        if let sectionID_ = self.dataSource?.sections().last {
             sectionID = sectionID_
         }
         else {
             sectionID = NSUUID().UUIDString
-            self.sectionIDs.append(sectionID)
-            self.dataSource?.updateSections(self.sectionIDs, animated: true)
+            if let dataSource_ = self.dataSource {
+                var sections = dataSource_.sections()
+                sections.append(sectionID)
+                dataSource_.updateSections(sections, animated: true)
+            }
         }
 
-        var rows = self.objects[sectionID]
+        var rows = self.dataSource?.rowsForSection(sectionID)
         if rows == nil {
             rows = []
         }
@@ -103,14 +101,15 @@ class MasterViewController: UITableViewController {
         }
 
         rows_.append(rusher)
-        self.objects.updateValue(rows_, forKey: sectionID)
         self.dataSource?.updateRows(rows_, section: sectionID, animated: true)
         if rows_.count > 5 {
             let newSectionID = NSUUID().UUIDString
-            self.sectionIDs.append(newSectionID)
-            self.dataSource?.updateSections(self.sectionIDs, animated: true)
-            self.objects.updateValue([], forKey: newSectionID)
-            self.dataSource?.updateRows([], section: newSectionID, animated: true)
+            if let dataSource_ = self.dataSource {
+                var sections = dataSource_.sections()
+                sections.append(newSectionID)
+                dataSource_.updateSections(sections, animated: true)
+                dataSource_.updateRows([], section: newSectionID, animated: true)
+            }
         }
 
     }
@@ -122,14 +121,14 @@ class MasterViewController: UITableViewController {
             guard let indexPath = self.tableView.indexPathForSelectedRow else {
                 return
             }
-            let sectionID = self.sectionIDs[indexPath.section]
-            guard let object = objects[sectionID]?.optionalElementAtIndex(indexPath.row) else {
+            guard let (_, row) = self.dataSource?.sectionIDAndItemForIndexPath(indexPath) else {
                 return
             }
+
             // swiftlint:disable force_cast
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
             // swiftlint:enable force_cast
-            controller.detailItem = object.date
+            controller.detailItem = row.date
             controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -148,10 +147,9 @@ class MasterViewController: UITableViewController {
     }
 
     func testRush1b() {
-        if let firstSectionID = self.sectionIDs.first, var rows = self.objects[firstSectionID] {
+        if let firstSectionID = self.dataSource?.sections().first, var rows = self.dataSource?.rowsForSection(firstSectionID) {
             rows.removeAtIndex(rows.count - 1)
             rows.insert(newRusher(), atIndex: 3)
-            self.objects[firstSectionID] = rows
 
             self.dataSource?.updateRows(rows, section: firstSectionID, animated: true)
         }
@@ -164,17 +162,19 @@ class MasterViewController: UITableViewController {
     func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, breathe: Breathing) {
         let sectionID: String
 
-        if let sectionID_ = self.sectionIDs.optionalElementAtIndex(sectionIndex) {
+        if let sectionID_ = self.dataSource?.sections().optionalElementAtIndex(sectionIndex) {
             sectionID = sectionID_
         }
         else {
             sectionID = NSUUID().UUIDString
-            self.sectionIDs.append(sectionID)
-            self.objects[sectionID] = []
-            self.dataSource?.updateSections(self.sectionIDs, animated: true)
+            if let dataSource_ = self.dataSource {
+                var sections = dataSource_.sections()
+                sections.append(sectionID)
+                dataSource_.updateSections(sections, animated: true)
+            }
         }
 
-        guard var rows = self.objects[sectionID] else {
+        guard var rows = self.dataSource?.rowsForSection(sectionID) else {
             return
         }
 
@@ -187,7 +187,6 @@ class MasterViewController: UITableViewController {
         else {
             rows.insert(newRusher(), atIndex: insertIndex)
         }
-        self.objects[sectionID] = rows
 
         self.dataSource?.updateRows(rows, section: sectionID, animated: true)
     }
@@ -217,8 +216,6 @@ class MasterViewController: UITableViewController {
         let deleteIndex = count % 3
         let insertIndex2 = (count % 7)
         let deleteIndex2 = count % 11
-
-        print("Rush! \(count) \(breathe.rawValue) -- rows: \(self.objects.count) ins: \(insertIndex)  del: \(deleteIndex)")
 
         handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, breathe: .Keep)
         handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, breathe: breathe)
