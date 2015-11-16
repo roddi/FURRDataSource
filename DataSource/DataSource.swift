@@ -40,26 +40,32 @@ public struct LocationWithOptionalItem<T> {
     }
 }
 
-public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSource, UITableViewDelegate {
+public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
 
     private let tableView: UITableView
 
     private var sectionsInternal: Array<String> = []
     private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
 
+    // logging / failing
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
+    internal var reportingLevel: DataSourceReportingLevel = .Assert
+    private var printInRelease: Bool = false
+
+    // trampoline methods
     public var cell: (forLocation:Location<T>) -> UITableViewCell
     public var didSelect: ((inLocation:Location<T>) -> Void)?
     public var canMove: ((toLocation:Location<T>) -> Bool)?
     public var targetMovedItem: ((fromLocation:Location<T>, proposedLocation:LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
-    public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String, Array<T>>) -> Void)?
     public var canEdit: ((atLocation:Location<T>) -> Bool)?
     public var willDelete: ((atLocation:Location<T>) -> Void)?
     public var didDelete: ((item: T) -> Void)?
 
-    var reportingLevel: DataSourceReportingLevel = .Assert
-    var printInRelease: Bool = false
+    public var sectionHeaderTitle: ((sectionID: String) -> String)?
+    public var sectionFooterTitle: ((sectionID: String) -> String)?
+
+    public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String, Array<T>>) -> Void)?
 
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation:(inLocation:Location<T>) -> UITableViewCell) {
         self.tableView = inTableView
@@ -87,7 +93,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
 
     public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
         let sectionIndex: Int = inIndexPath.section
-        guard let (sectionID, rowArray) = self.sectionIDAndRowForSectionIndex(sectionIndex) else {
+        guard let (sectionID, rowArray) = self.sectionIDAndRowsForSectionIndex(sectionIndex) else {
             return nil
         }
 
@@ -251,7 +257,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         return self.sectionsInternal.indexOf(inSectionID)
     }
 
-    private func sectionIDAndRowForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
+    private func sectionIDAndRowsForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
         guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSectionIndex) else {
             print("section not found at index \(inSectionIndex)")
             return nil
@@ -275,7 +281,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
     }
 
     private func locationWithOptionalItemForIndexPath(inIndexPath: NSIndexPath) -> LocationWithOptionalItem<T>? {
-        guard let (sectionID, rows) = self.sectionIDAndRowForSectionIndex(inIndexPath.section) else {
+        guard let (sectionID, rows) = self.sectionIDAndRowsForSectionIndex(inIndexPath.section) else {
             print("sectionID/row not found!")
             return nil
         }
@@ -286,7 +292,47 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         return location
     }
 
-    // MARK: - data source
+    // MARK: - handling errors
+
+    private func reportWarningAccordingToLevel(message: String) {
+        switch self.reportingLevel {
+            // a warning will still trigger an assertion.
+        case .PreCondition:
+            preconditionFailure("ERROR: \(message)")
+
+        case .Assert:
+            assertionFailure("WARNING: \(message)")
+        case .Print:
+            print("WARNING: \(message)")
+        case .Silent:
+            // nothing to do here
+            break
+        }
+    }
+
+    private func failWithMessage(message: String) {
+        // when there's a fail block, we fail into that block otherwise
+        // we fail according to the reporting level
+        if let failBlock = self.fail {
+            failBlock(message)
+            return
+        }
+
+        preconditionFailure("FATAL ERROR: \(message)")
+    }
+
+    private func warnWithMessage(message: String) {
+        // when there's a fail block, we fail into that block otherwise
+        // we fail according to the reporting level
+        if let warnBlock = self.warn {
+            warnBlock(message)
+            return
+        }
+
+        self.reportWarningAccordingToLevel(message)
+    }
+
+    // MARK: - UITableViewDataSource
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         let sections = self.sectionsInternal
@@ -340,7 +386,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         rows?.removeAtIndex(sourceIndexPath.row)
         self.rowsBySectionID[fromSectionID] = rows
 
-        guard let (toSectionID, toRows) = self.sectionIDAndRowForSectionIndex(destinationIndexPath.section) else {
+        guard let (toSectionID, toRows) = self.sectionIDAndRowsForSectionIndex(destinationIndexPath.section) else {
             print("destination section not found!")
             return
         }
@@ -453,49 +499,38 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDataSo
         return callback(atLocation: location)
     }
 
-    // MARK: - handling errors
-
-    private func reportWarningAccordingToLevel(message: String) {
-        switch self.reportingLevel {
-            // a warning will still trigger an assertion.
-        case .PreCondition:
-            preconditionFailure("ERROR: \(message)")
-
-        case .Assert:
-                assertionFailure("WARNING: \(message)")
-        case .Print:
-                print("WARNING: \(message)")
-        case .Silent:
-            // nothing to do here
-            break
-        }
-    }
-
-    private func failWithMessage(message: String) {
-        // when there's a fail block, we fail into that block otherwise
-        // we fail according to the reporting level
-        if let failBlock = self.fail {
-            failBlock(message)
-            return
+    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(section) else {
+            self.warnWithMessage("section not found at index \(section)")
+            return nil
         }
 
-        preconditionFailure("FATAL ERROR: \(message)")
-    }
-
-    private func warnWithMessage(message: String) {
-        // when there's a fail block, we fail into that block otherwise
-        // we fail according to the reporting level
-        if let warnBlock = self.warn {
-            warnBlock(message)
-            return
+        guard let callback = self.sectionHeaderTitle else {
+            return nil
         }
 
-        self.reportWarningAccordingToLevel(message)
+        return callback(sectionID: sectionID)
+
     }
+
+    public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(section) else {
+            self.warnWithMessage("section not found at index \(section)")
+            return nil
+        }
+
+        guard let callback = self.sectionFooterTitle else {
+            return nil
+        }
+
+        return callback(sectionID: sectionID)
+    }
+
+
 }
 
 
-    // MARK: - delegate
+    // MARK: - UITableViewDelegate
 
 extension DataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

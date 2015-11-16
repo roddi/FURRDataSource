@@ -60,6 +60,9 @@ class MasterViewController: UITableViewController {
             self.dataSource?.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<Rusher>>) -> Void in
             }
 
+            self.dataSource?.sectionHeaderTitle = { return "header: \($0)" }
+            self.dataSource?.sectionFooterTitle = { return "footer: \($0)" }
+
             self.dataSource?.updateSections(["first"], animated: false)
 
             self.testRush1()
@@ -221,8 +224,10 @@ class MasterViewController: UITableViewController {
         handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, breathe: .Keep)
         handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, breathe: breathe)
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  350*1000*1000), dispatch_get_main_queue()) { () -> Void in
-            self.rush()
+        if count < 1000 {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  150*1000*1000), dispatch_get_main_queue()) { () -> Void in
+                self.rush()
+            }
         }
     }
 

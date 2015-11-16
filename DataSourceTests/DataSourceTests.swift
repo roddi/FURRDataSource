@@ -133,8 +133,10 @@ class DataSourceTests: XCTestCase {
             XCTFail("no table view")
             return
         }
-        tableView.deletionIndexPaths = []
-        tableView.insertionIndexPaths = []
+        tableView.deletionRowIndexPaths = []
+        tableView.insertionRowIndexPaths = []
+        tableView.insertionSectionIndexSet = NSMutableIndexSet()
+        tableView.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
     func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
@@ -157,6 +159,11 @@ class DataSourceTests: XCTestCase {
             XCTAssert(mappedIDs == rowIDs)
         }
 
+    }
+
+    func givenTableViewReflectsSectionIDsAsHeaderAndFooterTitles() {
+        self.dataSource?.sectionHeaderTitle = { return $0 }
+        self.dataSource?.sectionFooterTitle = { return $0+$0 }
     }
 
     // MARK: - when
@@ -230,13 +237,6 @@ class DataSourceTests: XCTestCase {
         XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: sectionIndex) == numberOfRows)
     }
 
-    let indexListMapper = { (indexList: [Int]) -> NSIndexPath in
-        if indexList.count != 2 {
-            return NSIndexPath(forItem: Int.max, inSection: Int.max)
-        }
-        return NSIndexPath(forItem: indexList[0], inSection: indexList[1])
-    }
-
     func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
         guard let tableView = self.tableView else {
             XCTFail("no table view")
@@ -245,7 +245,7 @@ class DataSourceTests: XCTestCase {
 
         let realIndexPaths = indexPaths.map(indexListMapper)
 
-        XCTAssert(tableView.insertionIndexPaths == realIndexPaths)
+        XCTAssert(tableView.insertionRowIndexPaths == realIndexPaths)
     }
 
     func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
@@ -256,7 +256,7 @@ class DataSourceTests: XCTestCase {
 
         let realIndexPaths = indexPaths.map(indexListMapper)
 
-        XCTAssert(tableView.deletionIndexPaths == realIndexPaths)
+        XCTAssert(tableView.deletionRowIndexPaths == realIndexPaths)
     }
 
     func thenCanSelectHandlerWasCalled() {
@@ -287,6 +287,34 @@ class DataSourceTests: XCTestCase {
         }
         XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove);
     }
+
+    func thenSectionHeaderTitle(forSectionIndex sectionIndex: Int, isString headerString: String, footerIsString footerString: String) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        guard let tableView = self.tableView else {
+            XCTFail("no table view")
+            return
+        }
+
+        let headerTitle = dataSource.tableView(tableView, titleForHeaderInSection: sectionIndex)
+        let footerTitle = dataSource.tableView(tableView, titleForFooterInSection: sectionIndex)
+
+        XCTAssertEqual(headerString, headerTitle)
+        XCTAssertEqual(footerString, footerTitle)
+    }
+
+    // MARK: - helper
+
+    let indexListMapper = { (indexList: [Int]) -> NSIndexPath in
+        if indexList.count != 2 {
+            return NSIndexPath(forItem: Int.max, inSection: Int.max)
+        }
+        return NSIndexPath(forItem: indexList[0], inSection: indexList[1])
+    }
+
+
 
     // MARK: - test
 
@@ -586,4 +614,14 @@ class DataSourceTests: XCTestCase {
         dataSource.tableView(tableView, commitEditingStyle: UITableViewCellEditingStyle.Delete, forRowAtIndexPath: NSIndexPath(forRow: 1, inSection: 0))
         waitForExpectationsWithTimeout(10, handler: nil)
     }
+
+    func testHeaderAndFooterTitles() {
+        self.givenDelegateAndDataSource()
+        self.givenTableViewReflectsSectionIDsAsHeaderAndFooterTitles()
+        self.whenUpdatingSectionIDs(["a", "b"])
+
+        self.thenSectionHeaderTitle(forSectionIndex: 0, isString: "a", footerIsString: "aa")
+        self.thenSectionHeaderTitle(forSectionIndex: 1, isString: "b", footerIsString: "bb")
+    }
+
 }

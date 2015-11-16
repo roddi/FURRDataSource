@@ -12,39 +12,37 @@ class MockTableView: UITableView {
 
     var insertRowsCallback: ((indexPaths: [NSIndexPath]) -> Void)?
     var deleteRowsCallback: ((indexPaths: [NSIndexPath]) -> Void)?
-
     var insertSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
     var deleteSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
 
-    var insertionIndexPaths: [NSIndexPath] = []
-    var deletionIndexPaths: [NSIndexPath] = []
-
-    var insertionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
-    var deletionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
+    var insertionRowIndexPaths: [NSIndexPath] = []
+    var deletionRowIndexPaths: [NSIndexPath] = []
+    var insertionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
+    var deletionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
 
     override func insertSections(sections: NSIndexSet, withRowAnimation animation: UITableViewRowAnimation) {
-        self.insertionIndexSet.addIndexes(sections)
+        self.insertionSectionIndexSet.addIndexes(sections)
         if let callback = insertSectionsCallback {
             callback(indexSet: sections)
         }
     }
 
     override func deleteSections(sections: NSIndexSet, withRowAnimation animation: UITableViewRowAnimation) {
-        self.deletionIndexSet.addIndexes(sections)
+        self.deletionSectionIndexSet.addIndexes(sections)
         if let callback = deleteSectionsCallback {
             callback(indexSet: sections)
         }
     }
 
     override func insertRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
-        self.insertionIndexPaths.appendContentsOf(indexPaths)
+        self.insertionRowIndexPaths.appendContentsOf(indexPaths)
         if let callback = self.insertRowsCallback {
             callback(indexPaths: indexPaths)
         }
     }
 
     override func deleteRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
-        self.deletionIndexPaths.appendContentsOf(indexPaths)
+        self.deletionRowIndexPaths.appendContentsOf(indexPaths)
         if let callback = self.deleteRowsCallback {
             callback(indexPaths: indexPaths)
         }
