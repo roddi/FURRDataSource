@@ -83,7 +83,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        dataSource.canMove = {(toLocation:Location<MockTVItem>) -> Bool in
+        dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
             return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
         }
     }
@@ -98,7 +98,7 @@ class DataSourceTests: XCTestCase {
             return
         }
         let location = LocationWithOptionalItem(tableView: tableView, sectionID: sectionID, item: MockTVItem(identifier: rowID))
-        dataSource.targetMovedItem = { (fromLocation:Location<MockTVItem>, proposedLocation:LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
+        dataSource.targetMovedItem = { (fromLocation: Location<MockTVItem>, proposedLocation: LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
             return location
         }
     }
@@ -108,7 +108,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        dataSource.canEdit = {(atLocation:Location<MockTVItem>) -> Bool in
+        dataSource.canEdit = {(atLocation: Location<MockTVItem>) -> Bool in
             return atLocation.sectionID == inSectionID && atLocation.item.identifier == inRowID
         }
     }
@@ -121,7 +121,7 @@ class DataSourceTests: XCTestCase {
             return
         }
         didCallDidSelectHandler = false
-        dataSource.didSelect = { (inLocation:Location<MockTVItem>) -> Void in
+        dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
             XCTAssert(inLocation.sectionID == "a")
             XCTAssert(inLocation.item.identifier == "1")
             self.didCallDidSelectHandler = true
@@ -144,7 +144,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -168,7 +168,7 @@ class DataSourceTests: XCTestCase {
 
     // MARK: - when
 
-    func whenUpdatingSectionIDs(inSectionIDs:Array<String>) {
+    func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -272,7 +272,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.tableView(tableView, canMoveRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove);
+        XCTAssert(dataSource.tableView(tableView, canMoveRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
 
     }
 
@@ -285,7 +285,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove);
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
     }
 
     func thenSectionHeaderTitle(forSectionIndex sectionIndex: Int, isString headerString: String, footerIsString footerString: String) {
@@ -497,7 +497,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             expectation.fulfill()
             XCTAssert(inSectionIDs.count == 2, "should be only two sections")
 
@@ -579,7 +579,7 @@ class DataSourceTests: XCTestCase {
             XCTFail()
             return
         }
-        dataSource.willDelete = { (atLocation:Location<MockTVItem>) -> Void in
+        dataSource.willDelete = { (atLocation: Location<MockTVItem>) -> Void in
             XCTAssert(atLocation.sectionID == "a")
             XCTAssert(atLocation.item.identifier == "1")
             willDeleteExpectation.fulfill()
@@ -590,7 +590,7 @@ class DataSourceTests: XCTestCase {
             didDeleteExpectation.fulfill()
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             sectionChangedExpectation.fulfill()
             XCTAssert(inSectionIDs.count == 1, "should be only one section")
 

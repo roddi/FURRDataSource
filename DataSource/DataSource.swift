@@ -54,18 +54,18 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelega
     private var printInRelease: Bool = false
 
     // trampoline methods
-    public var cell: (forLocation:Location<T>) -> UITableViewCell
-    public var didSelect: ((inLocation:Location<T>) -> Void)?
-    public var canMove: ((toLocation:Location<T>) -> Bool)?
-    public var targetMovedItem: ((fromLocation:Location<T>, proposedLocation:LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
-    public var canEdit: ((atLocation:Location<T>) -> Bool)?
-    public var willDelete: ((atLocation:Location<T>) -> Void)?
+    public var cell: (forLocation: Location<T>) -> UITableViewCell
+    public var didSelect: ((inLocation: Location<T>) -> Void)?
+    public var canMove: ((toLocation: Location<T>) -> Bool)?
+    public var targetMovedItem: ((fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
+    public var canEdit: ((atLocation: Location<T>) -> Bool)?
+    public var willDelete: ((atLocation: Location<T>) -> Void)?
     public var didDelete: ((item: T) -> Void)?
 
     public var sectionHeaderTitle: ((sectionID: String) -> String)?
     public var sectionFooterTitle: ((sectionID: String) -> String)?
 
-    public var didChangeSectionIDs: ((inSectionIDs:Dictionary<String, Array<T>>) -> Void)?
+    public var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
 
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation:(inLocation:Location<T>) -> UITableViewCell) {
         self.tableView = inTableView
@@ -157,7 +157,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelega
             existingRows = []
         }
 
-        var newRows:Array<T> = existingRows
+        var newRows: Array<T> = existingRows
 
         let newIdentifiers = inRows.map({ (inDataSourceItem) -> String in
             return inDataSourceItem.identifier
@@ -238,7 +238,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelega
             return nil
         }
 
-        guard let rows:Array<T> = self.rowsBySectionID[inSectionID] else {
+        guard let rows: Array<T> = self.rowsBySectionID[inSectionID] else {
             return nil
         }
 
@@ -263,7 +263,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelega
             return nil
         }
 
-        guard let rowArray:Array<T> = self.rowsBySectionID[sectionID] else {
+        guard let rowArray: Array<T> = self.rowsBySectionID[sectionID] else {
             print("row array not found for sectionID \(sectionID)")
             return nil
         }
@@ -342,7 +342,7 @@ public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelega
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
         guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSection) else {
             self.failWithMessage("no section at index '\(inSection)'")
-            return 0;
+            return 0
         }
 
         guard let rows = self.rowsBySectionID[sectionID] else {

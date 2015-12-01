@@ -22,7 +22,7 @@ class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
     @IBOutlet weak var masterTableView: UITableView?
-    var dataSource:DataSource<Rusher>? = nil
+    var dataSource: DataSource<Rusher>? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,12 +52,12 @@ class MasterViewController: UITableViewController {
                 cell.detailTextLabel?.text = rusher.identifier
                 return cell
             })
-            self.dataSource?.canEdit = { (atLocation:Location<Rusher>) -> Bool in return true }
-            self.dataSource?.canMove = { (toLocation:Location<Rusher>) -> Bool in return true }
-            self.dataSource?.willDelete = { (atLocation:Location<Rusher>) -> Void in
+            self.dataSource?.canEdit = { (atLocation: Location<Rusher>) -> Bool in return true }
+            self.dataSource?.canMove = { (toLocation: Location<Rusher>) -> Bool in return true }
+            self.dataSource?.willDelete = { (atLocation: Location<Rusher>) -> Void in
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
-            self.dataSource?.didChangeSectionIDs = { (inSectionIDs:Dictionary<String, Array<Rusher>>) -> Void in
+            self.dataSource?.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<Rusher>>) -> Void in
             }
 
             self.dataSource?.sectionHeaderTitle = { return "header: \($0)" }
