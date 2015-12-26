@@ -66,8 +66,8 @@ class DataSourceTests: XCTestCase {
             XCTFail("could not instantiate table view")
             return
         }
-        self.dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation) -> UITableViewCell in
-            cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: inLocation.tableView)
+        self.dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation: Location<MockTVItem>) -> UITableViewCell in
+            cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: tableView)
         }
         self.dataSource?.reportingLevel = .PreCondition
 
@@ -93,11 +93,8 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        guard let tableView = self.tableView else {
-            XCTFail("could not instantiate table view")
-            return
-        }
-        let location = LocationWithOptionalItem(tableView: tableView, sectionID: sectionID, item: MockTVItem(identifier: rowID))
+
+        let location = LocationWithOptionalItem(sectionID: sectionID, item: MockTVItem(identifier: rowID))
         dataSource.targetMovedItem = { (fromLocation: Location<MockTVItem>, proposedLocation: LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
             return location
         }

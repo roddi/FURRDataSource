@@ -23,18 +23,15 @@ public protocol DataItem: Equatable {
 }
 
 public struct Location<T> {
-    public let tableView: UITableView
     public let sectionID: String
     public let item:T
 }
 
 public struct LocationWithOptionalItem<T> {
-    public let tableView: UITableView
     public let sectionID: String
     public let item: T?
 
-    public init (tableView inTableView: UITableView, sectionID  inSectionID: String, item inItem: T?) {
-        self.tableView = inTableView
+    public init (sectionID  inSectionID: String, item inItem: T?) {
         self.sectionID = inSectionID
         self.item = inItem
     }
@@ -276,7 +273,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
             return nil
         }
 
-        let location = Location(tableView: self.tableView, sectionID: sectionID, item: item)
+        let location = Location(sectionID: sectionID, item: item)
         return location
     }
 
@@ -287,7 +284,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         }
 
         let item = rows.optionalElementAtIndex(inIndexPath.row)
-        let location = LocationWithOptionalItem(tableView: tableView, sectionID: sectionID, item: item)
+        let location = LocationWithOptionalItem(sectionID: sectionID, item: item)
 
         return location
     }
