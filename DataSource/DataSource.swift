@@ -18,7 +18,7 @@ enum DataSourceReportingLevel {
     case Silent /// always silently ignores everything
 }
 
-public protocol TableViewItem: Equatable {
+public protocol DataItem: Equatable {
     var identifier: String { get }
 }
 
@@ -40,7 +40,7 @@ public struct LocationWithOptionalItem<T> {
     }
 }
 
-public class DataSource <T where T: TableViewItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
+public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
 
     private let tableView: UITableView
 

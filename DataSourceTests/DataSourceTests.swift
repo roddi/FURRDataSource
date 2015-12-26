@@ -9,7 +9,7 @@
 
 import XCTest
 
-class MockTVItem: TableViewItem {
+class MockTVItem: DataItem {
     let identifier: String
 
     init (identifier: String) {

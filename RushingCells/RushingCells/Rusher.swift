@@ -8,7 +8,7 @@
 
 import UIKit
 
-class Rusher: TableViewItem {
+class Rusher: DataItem {
     let identifier: String
     var date: NSDate
 
