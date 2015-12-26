@@ -12,6 +12,10 @@ import XCTest
 class MockTVItem: DataItem {
     let identifier: String
 
+    class func mockTVItemsForIdentifiers(identifiers: [String]) -> [MockTVItem] {
+        return identifiers.map { return MockTVItem(identifier:$0) }
+    }
+
     init (identifier: String) {
         self.identifier = identifier
     }
@@ -51,12 +55,6 @@ class DataSourceTests: XCTestCase {
 
     var tableView: MockTableView? = nil
     var dataSource: DataSource<MockTVItem>? = nil
-
-    // MARK: - helper
-
-    func mockTVItemsForIdentifiers(identifiers: [String]) -> [MockTVItem] {
-        return identifiers.map { return MockTVItem(identifier:$0) }
-    }
 
     // MARK: - given
 
@@ -179,7 +177,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        dataSource.updateRows(self.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
+        dataSource.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
     }
 
     func whenSelectingRow(row: Int, section: Int) {
@@ -363,7 +361,7 @@ class DataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([])
-        XCTAssert(self.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
+        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
 
         self.givenDiffsAreCleared()
 
