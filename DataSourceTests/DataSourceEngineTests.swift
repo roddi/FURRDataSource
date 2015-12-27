@@ -12,14 +12,21 @@ class DataSourceEngineTests: XCTestCase {
 
     var engine = DataSourceEngine<MockTVItem>()
 
+    var insertionRowIndexPaths: [NSIndexPath] = []
+    var deletionRowIndexPaths: [NSIndexPath] = []
+    var insertionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
+    var deletionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
         self.engine = DataSourceEngine<MockTVItem>()
         self.engine.beginUpdates = {}
         self.engine.endUpdates = {}
-        self.engine.deleteSections = { indexSet in }
-        self.engine.insertSections = { indexSet in }
+        self.engine.deleteSections = { indexSet in self.deletionSectionIndexSet = indexSet }
+        self.engine.insertSections = { indexSet in self.insertionSectionIndexSet = indexSet }
+        self.engine.insertRowsAtIndexPaths = { indexPathArray in self.insertionRowIndexPaths.appendContentsOf(indexPathArray) }
+        self.engine.deleteRowsAtIndexPaths = { indexPathArray in self.deletionRowIndexPaths.appendContentsOf(indexPathArray) }
     }
 
     override func tearDown() {
@@ -90,10 +97,10 @@ class DataSourceEngineTests: XCTestCase {
     // MARK: - given
 
     func givenDiffsAreCleared() {
-//        tableView.deletionRowIndexPaths = []
-//        tableView.insertionRowIndexPaths = []
-//        tableView.insertionSectionIndexSet = NSMutableIndexSet()
-//        tableView.deletionSectionIndexSet = NSMutableIndexSet()
+        self.deletionRowIndexPaths = []
+        self.insertionRowIndexPaths = []
+        self.insertionSectionIndexSet = NSMutableIndexSet()
+        self.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
     // MARK: - when
@@ -113,29 +120,23 @@ class DataSourceEngineTests: XCTestCase {
     }
 
     func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
-        XCTAssert(engine.tableView(tableView, numberOfRowsInSection: sectionIndex) == numberOfRows)
+        if let sectionIDAndRows = engine.sectionIDAndRowsForSectionIndex(sectionIndex) {
+            XCTAssert(sectionIDAndRows.1.count == numberOfRows)
+        } else {
+            XCTFail()
+        }
     }
 
     func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
-        guard let tableView = self.tableView else {
-            XCTFail("no table view")
-            return
-        }
+        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
 
-        let realIndexPaths = indexPaths.map(indexListMapper)
-
-        XCTAssert(tableView.insertionRowIndexPaths == realIndexPaths)
+        XCTAssert(self.insertionRowIndexPaths == realIndexPaths)
     }
 
     func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
-        guard let tableView = self.tableView else {
-            XCTFail("no table view")
-            return
-        }
+        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
 
-        let realIndexPaths = indexPaths.map(indexListMapper)
-
-        XCTAssert(tableView.deletionRowIndexPaths == realIndexPaths)
+        XCTAssert(self.deletionRowIndexPaths == realIndexPaths)
     }
 
 }

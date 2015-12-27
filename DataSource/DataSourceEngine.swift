@@ -9,6 +9,7 @@
 import Foundation
 import FURRDiff
 
+
 internal class DataSourceEngine <T where T: DataItem> {
     private var sectionsInternal: Array<String> = []
     private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
@@ -30,6 +31,8 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - querying
 
+    // MARK: by id
+
     func sections() -> [String] {
         let section = self.sectionsInternal
         return section
@@ -42,6 +45,8 @@ internal class DataSourceEngine <T where T: DataItem> {
             return []
         }
     }
+
+    // MARK: by index
 
     func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
         let sectionIndex: Int = inIndexPath.section
@@ -57,7 +62,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return (sectionID, item)
     }
 
-    private func sectionIDAndRowsForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
+    func sectionIDAndRowsForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
         guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSectionIndex) else {
             print("section not found at index \(inSectionIndex)")
             return nil

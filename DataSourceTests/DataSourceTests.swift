@@ -310,7 +310,6 @@ class DataSourceTests: XCTestCase {
     }
 
 
-
     // MARK: - test
 
     func testDataSourceSections() {
