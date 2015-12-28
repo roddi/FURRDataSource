@@ -133,67 +133,6 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         }
     }
 
-    // MARK: - private
-/*
-    private func indexPathForSectionID(inSectionID: String, rowItem inRowItem: T) -> NSIndexPath? {
-        guard let sectionIndex = sectionIndexForSectionID(inSectionID) else {
-            return nil
-        }
-
-        guard let rows: Array<T> = self.rowsBySectionID[inSectionID] else {
-            return nil
-        }
-
-        guard let rowIndex = rows.indexOf(inRowItem) else {
-            return nil
-        }
-
-        return NSIndexPath(forRow: rowIndex, inSection: sectionIndex)
-    }
-
-    private func sectionIndexForSectionID(inSectionID: String) -> Int? {
-        guard self.sectionsInternal.contains(inSectionID) else {
-            return nil
-        }
-
-        return self.sectionsInternal.indexOf(inSectionID)
-    }
-
-    private func sectionIDAndRowsForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
-        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSectionIndex) else {
-            print("section not found at index \(inSectionIndex)")
-            return nil
-        }
-
-        guard let rowArray: Array<T> = self.rowsBySectionID[sectionID] else {
-            print("row array not found for sectionID \(sectionID)")
-            return nil
-        }
-
-        return (sectionID, rowArray)
-    }
-
-    private func locationForIndexPath(inIndexPath: NSIndexPath) -> Location<T>? {
-        guard let (sectionID, item) = self.sectionIDAndItemForIndexPath(inIndexPath) else {
-            return nil
-        }
-
-        let location = Location(sectionID: sectionID, item: item)
-        return location
-    }
-
-    private func locationWithOptionalItemForIndexPath(inIndexPath: NSIndexPath) -> LocationWithOptionalItem<T>? {
-        guard let (sectionID, rows) = self.sectionIDAndRowsForSectionIndex(inIndexPath.section) else {
-            print("sectionID/row not found!")
-            return nil
-        }
-
-        let item = rows.optionalElementAtIndex(inIndexPath.row)
-        let location = LocationWithOptionalItem(sectionID: sectionID, item: item)
-
-        return location
-    }
-*/
     // MARK: - UITableViewDataSource
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -219,7 +158,6 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
         return self.cell(forLocation: location)
     }
-
 
     public func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         guard let canActuallyMove = self.canMove else {
