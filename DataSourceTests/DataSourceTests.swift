@@ -67,7 +67,7 @@ class DataSourceTests: XCTestCase {
         self.dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation: Location<MockTVItem>) -> UITableViewCell in
             cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: tableView)
         }
-        self.dataSource?.reportingLevel = .PreCondition
+        self.dataSource?.setReportingLevel(.PreCondition)
 
         tableView.insertRowsCallback = { print("insert rows \($0)") }
         tableView.deleteRowsCallback = { print("delete rows \($0)") }
@@ -280,7 +280,8 @@ class DataSourceTests: XCTestCase {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
+        let indexPath = NSIndexPath(forRow: row, inSection: section)
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: indexPath) == canMove)
     }
 
     func thenSectionHeaderTitle(forSectionIndex sectionIndex: Int, isString headerString: String, footerIsString footerString: String) {
@@ -334,7 +335,7 @@ class DataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(0)
 
         var didFail = false
-        self.dataSource?.fail = { (msg) -> Void in didFail = true }
+        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
 
         self.dataSource?.updateSections(["a","a","a"], animated: true)
         XCTAssert(didFail)
@@ -344,9 +345,9 @@ class DataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         var didWarn = false
-        self.dataSource?.warn = { (message: String?) -> Void in
+        self.dataSource?.setWarnFunc({ (message: String?) -> Void in
             didWarn = true
-        }
+        })
 
         // trying to update non-existing section
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -370,7 +371,7 @@ class DataSourceTests: XCTestCase {
         self.thenDeletionRowsSectionsAre([[1, 0]])
 
         var didFail = false
-        self.dataSource?.fail = { (msg) -> Void in didFail = true }
+        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
         self.whenUpdatingRowsWithIdentifiers(["0","0","0"], sectionID: "a")
         XCTAssert(didFail)
     }

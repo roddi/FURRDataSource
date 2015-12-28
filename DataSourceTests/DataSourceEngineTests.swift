@@ -94,6 +94,45 @@ class DataSourceEngineTests: XCTestCase {
         XCTAssert(didFail)
     }
 
+    func testDataSourceRowsDelete() {
+        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.thenNumberOfSectionsIs(3)
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.givenDiffsAreCleared()
+
+        self.whenUpdatingRowsWithIdentifiers(["0","5","4","2"], sectionID: "a")
+        self.thenNumberOfRowsIs(4, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre([[1, 0]])
+
+        self.givenDiffsAreCleared()
+
+        print("")
+
+        self.whenUpdatingRowsWithIdentifiers(["0","2"], sectionID: "a")
+        self.thenNumberOfRowsIs(2, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre([])
+        self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
+
+        self.givenDiffsAreCleared()
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3","4","5"], sectionID: "a")
+        self.givenDiffsAreCleared()
+
+        self.whenUpdatingRowsWithIdentifiers(["0","2","4"], sectionID: "a")
+        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre([])
+        self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])
+    }
+
+    func testDataSourceWhenCompletelyEmpty() {
+
+        self.thenNumberOfSectionsIs(0)
+
+        // note: asking for the number of rows in section 0 would result in a fail as we don't have a sectionID.
+    }
+
     // MARK: - given
 
     func givenDiffsAreCleared() {

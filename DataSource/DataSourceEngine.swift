@@ -245,7 +245,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - handling errors
 
-    private func reportWarningAccordingToLevel(message: String) {
+    func reportWarningAccordingToLevel(message: String) {
         switch self.reportingLevel {
             // a warning will still trigger an assertion.
         case .PreCondition:
@@ -261,7 +261,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         }
     }
 
-    private func failWithMessage(message: String) {
+    func failWithMessage(message: String) {
         // when there's a fail block, we fail into that block otherwise
         // we fail according to the reporting level
         if let failBlock = self.fail {
@@ -272,7 +272,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         preconditionFailure("FATAL ERROR: \(message)")
     }
 
-    private func warnWithMessage(message: String) {
+    func warnWithMessage(message: String) {
         // when there's a fail block, we fail into that block otherwise
         // we fail according to the reporting level
         if let warnBlock = self.warn {

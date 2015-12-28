@@ -40,15 +40,21 @@ public struct LocationWithOptionalItem<T> {
 public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
 
     private let tableView: UITableView
+    private let engine: DataSourceEngine<T>
 
     private var sectionsInternal: Array<String> = []
     private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
 
     // logging / failing
-    internal var fail: ((String) -> Void )?
-    internal var warn: ((String) -> Void )?
-    internal var reportingLevel: DataSourceReportingLevel = .Assert
-    private var printInRelease: Bool = false
+    func setFailFunc(failFunc: (String) -> Void) {
+        self.engine.fail = failFunc
+    }
+    func setWarnFunc(warnFunc: (String) -> Void) {
+        self.engine.warn = warnFunc
+    }
+    func setReportingLevel(level: DataSourceReportingLevel) {
+        self.engine.reportingLevel = level
+    }
 
     // trampoline methods
     public var cell: (forLocation: Location<T>) -> UITableViewCell
@@ -65,6 +71,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     public var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
 
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation:(inLocation:Location<T>) -> UITableViewCell) {
+        self.engine = DataSourceEngine<T>()
         self.tableView = inTableView
         self.cell = inCellForLocation
 
@@ -107,7 +114,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
 
         if inSections.containsDuplicatesFast() {
-            self.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
+            self.engine.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
         }
 
         let diffs = diffBetweenArrays(arrayA: self.sectionsInternal, arrayB: inSections)
@@ -138,12 +145,12 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         guard let sectionIndex = self.sectionIndexForSectionID(inSectionID) else {
-            self.warnWithMessage("sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
+            self.engine.warnWithMessage("sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
             return
         }
 
         if inRows.containsDuplicates() {
-            self.failWithMessage("Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
+            self.engine.failWithMessage("Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
             return
         }
 
@@ -289,46 +296,6 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         return location
     }
 
-    // MARK: - handling errors
-
-    private func reportWarningAccordingToLevel(message: String) {
-        switch self.reportingLevel {
-            // a warning will still trigger an assertion.
-        case .PreCondition:
-            preconditionFailure("ERROR: \(message)")
-
-        case .Assert:
-            assertionFailure("WARNING: \(message)")
-        case .Print:
-            print("WARNING: \(message)")
-        case .Silent:
-            // nothing to do here
-            break
-        }
-    }
-
-    private func failWithMessage(message: String) {
-        // when there's a fail block, we fail into that block otherwise
-        // we fail according to the reporting level
-        if let failBlock = self.fail {
-            failBlock(message)
-            return
-        }
-
-        preconditionFailure("FATAL ERROR: \(message)")
-    }
-
-    private func warnWithMessage(message: String) {
-        // when there's a fail block, we fail into that block otherwise
-        // we fail according to the reporting level
-        if let warnBlock = self.warn {
-            warnBlock(message)
-            return
-        }
-
-        self.reportWarningAccordingToLevel(message)
-    }
-
     // MARK: - UITableViewDataSource
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -338,7 +305,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
         guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSection) else {
-            self.failWithMessage("no section at index '\(inSection)'")
+            self.engine.failWithMessage("no section at index '\(inSection)'")
             return 0
         }
 
@@ -498,7 +465,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let sectionID = self.sectionsInternal.optionalElementAtIndex(section) else {
-            self.warnWithMessage("section not found at index \(section)")
+            self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
 
@@ -512,7 +479,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         guard let sectionID = self.sectionsInternal.optionalElementAtIndex(section) else {
-            self.warnWithMessage("section not found at index \(section)")
+            self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
 
