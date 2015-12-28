@@ -42,9 +42,6 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     private let tableView: UITableView
     private let engine: DataSourceEngine<T>
 
-    private var sectionsInternal: Array<String> = []
-    private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
-
     // logging / failing
     func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
@@ -68,7 +65,9 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     public var sectionHeaderTitle: ((sectionID: String) -> String)?
     public var sectionFooterTitle: ((sectionID: String) -> String)?
 
-    public var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
+    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeFunc
+    }
 
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation:(inLocation:Location<T>) -> UITableViewCell) {
         self.engine = DataSourceEngine<T>()
@@ -78,141 +77,40 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         super.init()
         self.tableView.dataSource = self
         self.tableView.delegate = self
+        self.engine.beginUpdates = {self.tableView.beginUpdates()}
+        self.engine.endUpdates = {self.tableView.endUpdates()}
+        self.engine.deleteSections = { indexSet in self.tableView.deleteSections(indexSet, withRowAnimation: UITableViewRowAnimation.Automatic) }
+        self.engine.insertSections = { indexSet in self.tableView.insertSections(indexSet, withRowAnimation: UITableViewRowAnimation.Automatic) }
+        self.engine.deleteRowsAtIndexPaths = { indexPaths in self.tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: UITableViewRowAnimation.Automatic)}
+        self.engine.insertRowsAtIndexPaths = { indexPaths in self.tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: UITableViewRowAnimation.Automatic)}
+        self.engine.didChangeSectionIDs = { sectionIDs in }
     }
 
     // MARK: - querying
 
     public func sections() -> [String] {
-        let section = self.sectionsInternal
-        return section
+        return self.engine.sections()
     }
 
     public func rowsForSection(section: String) -> [T] {
-        if let rows = self.rowsBySectionID[section] {
-            return rows
-        } else {
-            return []
-        }
+        return self.engine.rowsForSection(section)
     }
 
     public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
-        let sectionIndex: Int = inIndexPath.section
-        guard let (sectionID, rowArray) = self.sectionIDAndRowsForSectionIndex(sectionIndex) else {
-            return nil
-        }
-
-        guard let item = rowArray.optionalElementAtIndex(inIndexPath.row) else {
-            print("item not found at index \(inIndexPath.row) for sectionID \(sectionID)")
-            return nil
-        }
-
-        return (sectionID, item)
+        return self.engine.sectionIDAndItemForIndexPath(inIndexPath)
     }
 
     // MARK: - updating
-
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
-
-        if inSections.containsDuplicatesFast() {
-            self.engine.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
-        }
-
-        let diffs = diffBetweenArrays(arrayA: self.sectionsInternal, arrayB: inSections)
-
-        var index = 0
-        self.tableView.beginUpdates()
-        for diff in diffs {
-            switch diff.operation {
-            case .Delete:
-                for _ in diff.array {
-                    self.sectionsInternal.removeAtIndex(index)
-                    self.tableView.deleteSections(NSIndexSet(index: index), withRowAnimation: .Automatic)
-                }
-            case .Insert:
-                for string in diff.array {
-                    self.sectionsInternal.insert(string, atIndex: index)
-                    self.tableView.insertSections(NSIndexSet(index: index), withRowAnimation: .Automatic)
-                    index++
-                }
-            case .Equal:
-                index += diff.array.count
-            }
-        }
-        self.tableView.endUpdates()
-
-        assert(self.sectionsInternal == inSections, "should be equal now")
+        self.engine.updateSections(inSections, animated: inAnimated)
     }
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
-        guard let sectionIndex = self.sectionIndexForSectionID(inSectionID) else {
-            self.engine.warnWithMessage("sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
-            return
-        }
-
-        if inRows.containsDuplicates() {
-            self.engine.failWithMessage("Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
-            return
-        }
-
-        let existingRows: [T]
-        if let exRows = self.rowsBySectionID[inSectionID] {
-            existingRows = exRows
-        } else {
-            existingRows = []
-        }
-
-        var newRows: Array<T> = existingRows
-
-        let newIdentifiers = inRows.map({ (inDataSourceItem) -> String in
-            return inDataSourceItem.identifier
-        })
-        let existingIdentifiers = existingRows.map({ (inDataSourceItem) -> String in
-            return inDataSourceItem.identifier
-        })
-
-        let diffs = diffBetweenArrays(arrayA: existingIdentifiers, arrayB: newIdentifiers)
-
-        self.tableView.beginUpdates()
-        var rowIndex = 0
-        var deleteRowIndex = 0
-        for diff in diffs {
-            switch diff.operation {
-            case .Delete:
-                for _ in diff.array {
-                    newRows.removeAtIndex(rowIndex)
-                    self.tableView.deleteRowsAtIndexPaths([NSIndexPath(forRow: deleteRowIndex, inSection: sectionIndex)], withRowAnimation: .Automatic)
-                    deleteRowIndex++
-                }
-            case .Insert:
-                    for rowID in diff.array {
-                        // find index of new row
-                        let rowIDIndex = inRows.indexOf({ (inDataSourceItem) -> Bool in
-                            return rowID == inDataSourceItem.identifier
-                        })
-
-                        if let actualIndex = rowIDIndex {
-                            let newRow = inRows[actualIndex]
-                            newRows.insert(newRow, atIndex: rowIndex)
-                            self.tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: rowIndex, inSection: sectionIndex)], withRowAnimation: .Automatic)
-                            rowIndex++
-                        } else {
-                            print("index not found for rowID '\(rowID)'")
-                        }
-                    }
-
-            case .Equal:
-                rowIndex += diff.array.count
-                deleteRowIndex += diff.array.count
-            }
-        }
-        self.rowsBySectionID[inSectionID] = newRows
-        self.tableView.endUpdates()
-
-        assert(newRows == inRows, "must be equal")
+        self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
     }
 
     public func dequeueReusableCellWithIdentifier(identifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
-        guard let indexPath = indexPathForSectionID(inSectionID, rowItem: inItem) else {
+        guard let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) else {
             return nil
         }
 
@@ -224,19 +122,19 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     }
 
     public func reloadSectionID(inSectionID: String) {
-        if let sectionID = sectionIndexForSectionID(inSectionID) {
+        if let sectionID = self.engine.sectionIndexForSectionID(inSectionID) {
             self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
         }
     }
 
     public func reloadSectionID(inSectionID: String, item inItem: T) {
-        if let indexPath = indexPathForSectionID(inSectionID, rowItem: inItem) {
+        if let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) {
             self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
     }
 
     // MARK: - private
-
+/*
     private func indexPathForSectionID(inSectionID: String, rowItem inRowItem: T) -> NSIndexPath? {
         guard let sectionIndex = sectionIndexForSectionID(inSectionID) else {
             return nil
@@ -295,30 +193,27 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
         return location
     }
-
+*/
     // MARK: - UITableViewDataSource
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        let sections = self.sectionsInternal
+        let sections = self.engine.sections()
         return sections.count
     }
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSection) else {
+        guard let sectionID = self.engine.sections().optionalElementAtIndex(inSection) else {
             self.engine.failWithMessage("no section at index '\(inSection)'")
             return 0
         }
 
-        guard let rows = self.rowsBySectionID[sectionID] else {
-            // no rows for that sectionID. We don't warn as the sectionID might just be created.
-            return 0
-        }
+        let rows = self.engine.rowsForSection(sectionID)
         return rows.count
     }
 
 
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        guard let location = self.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.locationForIndexPath(indexPath) else {
             preconditionFailure("rows not found")
         }
 
@@ -332,7 +227,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
             return false
         }
 
-        guard let location = self.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.locationForIndexPath(indexPath) else {
             return false
         }
 
@@ -341,41 +236,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
 
     public func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
-        guard let (fromSectionID, fromItem) = self.sectionIDAndItemForIndexPath(sourceIndexPath) else {
-            print("source not found!")
-            return
-        }
-
-        var rows = self.rowsBySectionID[fromSectionID]
-        rows?.removeAtIndex(sourceIndexPath.row)
-        self.rowsBySectionID[fromSectionID] = rows
-
-        guard let (toSectionID, toRows) = self.sectionIDAndRowsForSectionIndex(destinationIndexPath.section) else {
-            print("destination section not found!")
-            return
-        }
-
-        print("from \(fromSectionID)-\(fromItem.identifier) --- to \(toSectionID)-@\(destinationIndexPath.row)")
-
-        rows = toRows
-        if destinationIndexPath.row >= toRows.count {
-            rows?.append(fromItem)
-        } else {
-            rows?.insert(fromItem, atIndex: destinationIndexPath.row)
-        }
-        self.rowsBySectionID[toSectionID] = rows
-
-        let sectionIDs = (fromSectionID == toSectionID) ? [fromSectionID] : [fromSectionID, toSectionID]
-
-        var changed: Dictionary<String, Array<T>> = Dictionary()
-        for sectionID in sectionIDs {
-            changed[sectionID] = self.rowsBySectionID[sectionID]
-        }
-
-        if let actuallyChanged = self.didChangeSectionIDs {
-            // if the client bothered to implement the callback, we call it
-            actuallyChanged(inSectionIDs: changed)
-        }
+        self.engine.moveRowAtIndexPath(sourceIndexPath, toIndexPath: destinationIndexPath)
     }
 
     public func tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: NSIndexPath, toProposedIndexPath proposedDestinationIndexPath: NSIndexPath) -> NSIndexPath {
@@ -383,12 +244,12 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
             return proposedDestinationIndexPath
         }
 
-        guard let fromLocation = self.locationForIndexPath(sourceIndexPath) else {
+        guard let fromLocation = self.engine.locationForIndexPath(sourceIndexPath) else {
             print("source not found!")
             return proposedDestinationIndexPath
         }
 
-        guard let toLocation = self.locationWithOptionalItemForIndexPath(proposedDestinationIndexPath) else {
+        guard let toLocation = self.engine.locationWithOptionalItemForIndexPath(proposedDestinationIndexPath) else {
             print("destination section not found!")
             return proposedDestinationIndexPath
         }
@@ -397,16 +258,17 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         let actualDestination = callback(fromLocation: fromLocation, proposedLocation: toLocation)
 
         // check whether actual destination is OK
-        if let item = actualDestination.item, let indexPath = indexPathForSectionID(actualDestination.sectionID, rowItem: item) {
+        if let item = actualDestination.item, let indexPath = self.engine.indexPathForSectionID(actualDestination.sectionID, rowItem: item) {
             return indexPath
         }
 
-        guard let sectionIndex = self.sectionIndexForSectionID(actualDestination.sectionID) else {
+        guard let sectionIndex = self.engine.sectionIndexForSectionID(actualDestination.sectionID) else {
             print("actual destination section not found!")
             return proposedDestinationIndexPath
         }
 
-        if let rows = self.rowsBySectionID[actualDestination.sectionID] {
+        let rows = self.engine.rowsForSection(actualDestination.sectionID)
+        if  rows.count != 0 {
             return NSIndexPath(forRow: rows.count-1, inSection: sectionIndex)
         } else {
             print("actual destination section not found!")
@@ -418,7 +280,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
         switch editingStyle {
         case .Delete:
-            guard let location = self.locationForIndexPath(indexPath) else {
+            guard let location = self.engine.locationForIndexPath(indexPath) else {
                 return
             }
 
@@ -426,21 +288,21 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
                 callback(atLocation: location)
             }
 
-            if var rows = self.rowsBySectionID[location.sectionID] {
+            var rows = self.engine.rowsForSection(location.sectionID)
+            if rows.count != 0 {
                 rows.removeAtIndex(indexPath.row)
-                self.updateRows(rows, section: location.sectionID, animated: true)
+                self.engine.updateRows(rows, section: location.sectionID, animated: true)
             }
 
             if let callback = self.didDelete {
                 callback(item: location.item)
             }
 
-            if let callback = self.didChangeSectionIDs {
+            // HACK? Is this really the right thing to do here conceptually???
+            if let callback = self.engine.didChangeSectionIDs {
                 let sectionID = location.sectionID
-                let rows = self.rowsBySectionID[sectionID]
-                if let rows_ = rows {
-                    callback(inSectionIDs: [sectionID:rows_])
-                }
+                let rows = self.engine.rowsForSection(sectionID)
+                callback(inSectionIDs: [sectionID:rows])
             }
 
         case .Insert:
@@ -452,7 +314,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     }
 
     public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        guard let location = self.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.locationForIndexPath(indexPath) else {
             return false
         }
 
@@ -464,7 +326,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     }
 
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(section) else {
+        guard let sectionID = self.engine.sections().optionalElementAtIndex(section) else {
             self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
@@ -478,7 +340,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     }
 
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(section) else {
+        guard let sectionID = self.engine.sections().optionalElementAtIndex(section) else {
             self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
@@ -502,7 +364,7 @@ extension DataSource {
             return
         }
 
-        guard let location = self.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.locationForIndexPath(indexPath) else {
             return
         }
 

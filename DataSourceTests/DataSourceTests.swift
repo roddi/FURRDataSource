@@ -139,7 +139,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -152,7 +152,7 @@ class DataSourceTests: XCTestCase {
             })
 
             XCTAssert(mappedIDs == rowIDs)
-        }
+        })
 
     }
 
@@ -492,7 +492,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             expectation.fulfill()
             XCTAssert(inSectionIDs.count == 2, "should be only two sections")
 
@@ -517,7 +517,7 @@ class DataSourceTests: XCTestCase {
             })
 
             XCTAssert(mappedIDsB == ["0","1","3","2"])
-        }
+        })
 
         self.whenMovingRow(3, sourceSection: 0, toRow: 2, toSection: 1)
 
@@ -585,7 +585,7 @@ class DataSourceTests: XCTestCase {
             didDeleteExpectation.fulfill()
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             sectionChangedExpectation.fulfill()
             XCTAssert(inSectionIDs.count == 1, "should be only one section")
 
@@ -600,7 +600,7 @@ class DataSourceTests: XCTestCase {
 
             XCTAssert(mappedIDs == ["0","2","3"])
 
-        }
+        })
 
         guard let tableView = self.tableView else {
             XCTFail("no table view")

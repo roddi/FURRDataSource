@@ -26,6 +26,8 @@ internal class DataSourceEngine <T where T: DataItem> {
     var deleteRowsAtIndexPaths: (([NSIndexPath]) -> Void)?
     var insertRowsAtIndexPaths: (([NSIndexPath]) -> Void)?
 
+    var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
+
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
 
@@ -195,9 +197,51 @@ internal class DataSourceEngine <T where T: DataItem> {
         assert(newRows == inRows, "must be equal")
     }
 
+    // MARK: - initiated by user
+
+    func moveRowAtIndexPath( sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
+        guard let (fromSectionID, fromItem) = self.sectionIDAndItemForIndexPath(sourceIndexPath) else {
+            print("source not found!")
+            return
+        }
+
+        guard let didChangeSectionIDsFunc = self.didChangeSectionIDs else {
+            self.failWithMessage("At least one of the required callback funcs of DataSourceEngine is nil. Severity: lethal, sorry, nevertheless have a good evening!")
+            return
+        }
+
+        var rows = self.rowsForSection(fromSectionID)
+        rows.removeAtIndex(sourceIndexPath.row)
+        self.rowsBySectionID[fromSectionID] = rows
+
+        guard let (toSectionID, toRows) = self.sectionIDAndRowsForSectionIndex(destinationIndexPath.section) else {
+            print("destination section not found!")
+            return
+        }
+
+        print("from \(fromSectionID)-\(fromItem.identifier) --- to \(toSectionID)-@\(destinationIndexPath.row)")
+
+        rows = toRows
+        if destinationIndexPath.row >= toRows.count {
+            rows.append(fromItem)
+        } else {
+            rows.insert(fromItem, atIndex: destinationIndexPath.row)
+        }
+        self.rowsBySectionID[toSectionID] = rows
+
+        let sectionIDs = (fromSectionID == toSectionID) ? [fromSectionID] : [fromSectionID, toSectionID]
+
+        var changed: Dictionary<String, Array<T>> = Dictionary()
+        for sectionID in sectionIDs {
+            changed[sectionID] = self.rowsBySectionID[sectionID]
+        }
+
+        didChangeSectionIDsFunc(inSectionIDs: changed)
+    }
+
     // MARK: - private
 
-    private func indexPathForSectionID(inSectionID: String, rowItem inRowItem: T) -> NSIndexPath? {
+    func indexPathForSectionID(inSectionID: String, rowItem inRowItem: T) -> NSIndexPath? {
         guard let sectionIndex = sectionIndexForSectionID(inSectionID) else {
             return nil
         }
@@ -213,7 +257,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return NSIndexPath(forRow: rowIndex, inSection: sectionIndex)
     }
 
-    private func sectionIndexForSectionID(inSectionID: String) -> Int? {
+    func sectionIndexForSectionID(inSectionID: String) -> Int? {
         guard self.sectionsInternal.contains(inSectionID) else {
             return nil
         }
@@ -222,7 +266,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
 
-    private func locationForIndexPath(inIndexPath: NSIndexPath) -> Location<T>? {
+    func locationForIndexPath(inIndexPath: NSIndexPath) -> Location<T>? {
         guard let (sectionID, item) = self.sectionIDAndItemForIndexPath(inIndexPath) else {
             return nil
         }
@@ -231,7 +275,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return location
     }
 
-    private func locationWithOptionalItemForIndexPath(inIndexPath: NSIndexPath) -> LocationWithOptionalItem<T>? {
+    func locationWithOptionalItemForIndexPath(inIndexPath: NSIndexPath) -> LocationWithOptionalItem<T>? {
         guard let (sectionID, rows) = self.sectionIDAndRowsForSectionIndex(inIndexPath.section) else {
             print("sectionID/row not found!")
             return nil
