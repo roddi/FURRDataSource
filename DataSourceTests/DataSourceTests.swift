@@ -12,6 +12,10 @@ import XCTest
 class MockTVItem: DataItem {
     let identifier: String
 
+    class func mockTVItemsForIdentifiers(identifiers: [String]) -> [MockTVItem] {
+        return identifiers.map { return MockTVItem(identifier:$0) }
+    }
+
     init (identifier: String) {
         self.identifier = identifier
     }
@@ -52,12 +56,6 @@ class DataSourceTests: XCTestCase {
     var tableView: MockTableView? = nil
     var dataSource: DataSource<MockTVItem>? = nil
 
-    // MARK: - helper
-
-    func mockTVItemsForIdentifiers(identifiers: [String]) -> [MockTVItem] {
-        return identifiers.map { return MockTVItem(identifier:$0) }
-    }
-
     // MARK: - given
 
     func givenDelegateAndDataSource() {
@@ -69,7 +67,7 @@ class DataSourceTests: XCTestCase {
         self.dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation: Location<MockTVItem>) -> UITableViewCell in
             cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: tableView)
         }
-        self.dataSource?.reportingLevel = .PreCondition
+        self.dataSource?.setReportingLevel(.PreCondition)
 
         tableView.insertRowsCallback = { print("insert rows \($0)") }
         tableView.deleteRowsCallback = { print("delete rows \($0)") }
@@ -141,7 +139,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("no data source")
             return
         }
-        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -154,7 +152,7 @@ class DataSourceTests: XCTestCase {
             })
 
             XCTAssert(mappedIDs == rowIDs)
-        }
+        })
 
     }
 
@@ -179,7 +177,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        dataSource.updateRows(self.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
+        dataSource.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
     }
 
     func whenSelectingRow(row: Int, section: Int) {
@@ -282,7 +280,8 @@ class DataSourceTests: XCTestCase {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
+        let indexPath = NSIndexPath(forRow: row, inSection: section)
+        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: indexPath) == canMove)
     }
 
     func thenSectionHeaderTitle(forSectionIndex sectionIndex: Int, isString headerString: String, footerIsString footerString: String) {
@@ -312,7 +311,6 @@ class DataSourceTests: XCTestCase {
     }
 
 
-
     // MARK: - test
 
     func testDataSourceSections() {
@@ -337,7 +335,7 @@ class DataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(0)
 
         var didFail = false
-        self.dataSource?.fail = { (msg) -> Void in didFail = true }
+        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
 
         self.dataSource?.updateSections(["a","a","a"], animated: true)
         XCTAssert(didFail)
@@ -347,9 +345,9 @@ class DataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         var didWarn = false
-        self.dataSource?.warn = { (message: String?) -> Void in
+        self.dataSource?.setWarnFunc({ (message: String?) -> Void in
             didWarn = true
-        }
+        })
 
         // trying to update non-existing section
         self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
@@ -363,7 +361,7 @@ class DataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([])
-        XCTAssert(self.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
+        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
 
         self.givenDiffsAreCleared()
 
@@ -373,7 +371,7 @@ class DataSourceTests: XCTestCase {
         self.thenDeletionRowsSectionsAre([[1, 0]])
 
         var didFail = false
-        self.dataSource?.fail = { (msg) -> Void in didFail = true }
+        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
         self.whenUpdatingRowsWithIdentifiers(["0","0","0"], sectionID: "a")
         XCTAssert(didFail)
     }
@@ -494,7 +492,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             expectation.fulfill()
             XCTAssert(inSectionIDs.count == 2, "should be only two sections")
 
@@ -519,7 +517,7 @@ class DataSourceTests: XCTestCase {
             })
 
             XCTAssert(mappedIDsB == ["0","1","3","2"])
-        }
+        })
 
         self.whenMovingRow(3, sourceSection: 0, toRow: 2, toSection: 1)
 
@@ -587,7 +585,7 @@ class DataSourceTests: XCTestCase {
             didDeleteExpectation.fulfill()
         }
 
-        dataSource.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             sectionChangedExpectation.fulfill()
             XCTAssert(inSectionIDs.count == 1, "should be only one section")
 
@@ -602,7 +600,7 @@ class DataSourceTests: XCTestCase {
 
             XCTAssert(mappedIDs == ["0","2","3"])
 
-        }
+        })
 
         guard let tableView = self.tableView else {
             XCTFail("no table view")

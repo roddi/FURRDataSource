@@ -57,8 +57,8 @@ class MasterViewController: UITableViewController {
             self.dataSource?.willDelete = { (atLocation: Location<Rusher>) -> Void in
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
-            self.dataSource?.didChangeSectionIDs = { (inSectionIDs: Dictionary<String, Array<Rusher>>) -> Void in
-            }
+            self.dataSource?.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<Rusher>>) -> Void in
+            })
 
             self.dataSource?.sectionHeaderTitle = { return "header: \($0)" }
             self.dataSource?.sectionFooterTitle = { return "footer: \($0)" }
