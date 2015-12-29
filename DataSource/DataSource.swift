@@ -10,13 +10,6 @@
 import UIKit
 import FURRExtensions
 
-enum DataSourceReportingLevel {
-    case PreCondition /// always crashes
-    case Assert /// crashes debug versions otherwise silent, this is the default
-    case Print /// prints in debug versions otherwise silent.
-    case Silent /// always silently ignores everything
-}
-
 public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
 
     private let tableView: UITableView

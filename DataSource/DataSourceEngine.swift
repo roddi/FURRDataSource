@@ -9,6 +9,12 @@
 import Foundation
 import FURRDiff
 
+enum DataSourceReportingLevel {
+    case PreCondition /// always crashes
+    case Assert /// crashes debug versions otherwise silent, this is the default
+    case Print /// prints in debug versions otherwise silent.
+    case Silent /// always silently ignores everything
+}
 
 internal class DataSourceEngine <T where T: DataItem> {
     private var sectionsInternal: Array<String> = []
