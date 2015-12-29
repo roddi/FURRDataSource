@@ -9,32 +9,12 @@
 
 import UIKit
 import FURRExtensions
-import FURRDiff
 
 enum DataSourceReportingLevel {
     case PreCondition /// always crashes
     case Assert /// crashes debug versions otherwise silent, this is the default
     case Print /// prints in debug versions otherwise silent.
     case Silent /// always silently ignores everything
-}
-
-public protocol DataItem: Equatable {
-    var identifier: String { get }
-}
-
-public struct Location<T> {
-    public let sectionID: String
-    public let item:T
-}
-
-public struct LocationWithOptionalItem<T> {
-    public let sectionID: String
-    public let item: T?
-
-    public init (sectionID  inSectionID: String, item inItem: T?) {
-        self.sectionID = inSectionID
-        self.item = inItem
-    }
 }
 
 public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
@@ -69,7 +49,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         self.engine.didChangeSectionIDs = didChangeFunc
     }
 
-    public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation:(inLocation:Location<T>) -> UITableViewCell) {
+    public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: (inLocation: Location<T>) -> UITableViewCell) {
         self.engine = DataSourceEngine<T>()
         self.tableView = inTableView
         self.cell = inCellForLocation
