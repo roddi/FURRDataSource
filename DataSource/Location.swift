@@ -10,7 +10,7 @@ import Foundation
 
 public struct Location<T> {
     public let sectionID: String
-    public let item:T
+    public let item: T
 }
 
 public struct LocationWithOptionalItem<T> {

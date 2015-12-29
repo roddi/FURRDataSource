@@ -56,6 +56,16 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: by index
 
+    func numberOfRowsForSectionIndex(index: Int) -> Int {
+        guard let sectionID = self.sections().optionalElementAtIndex(index) else {
+            self.failWithMessage("no section at index '\(index)'")
+            return 0
+        }
+
+        let rows = self.rowsForSection(sectionID)
+        return rows.count
+    }
+
     func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
         let sectionIndex: Int = inIndexPath.section
         guard let (sectionID, rowArray) = self.sectionIDAndRowsForSectionIndex(sectionIndex) else {

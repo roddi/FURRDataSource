@@ -114,13 +114,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
     }
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        guard let sectionID = self.engine.sections().optionalElementAtIndex(inSection) else {
-            self.engine.failWithMessage("no section at index '\(inSection)'")
-            return 0
-        }
-
-        let rows = self.engine.rowsForSection(sectionID)
-        return rows.count
+        return self.engine.numberOfRowsForSectionIndex(inSection)
     }
 
 
