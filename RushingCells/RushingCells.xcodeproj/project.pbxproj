@@ -22,6 +22,8 @@
 		DD4F40001BCE472200E5F7FA /* FURRExtensions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DD6285591BEBC3DF00E5F7FA /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6285581BEBC3DF00E5F7FA /* DataSource.swift */; };
 		DD6EAB351C3151DF00E5F7FA /* DataSourceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB341C3151DF00E5F7FA /* DataSourceEngine.swift */; };
+		DD6EAB481C32EBB400E5F7FA /* DataItemProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB461C32EBB400E5F7FA /* DataItemProtocol.swift */; };
+		DD6EAB491C32EBB400E5F7FA /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB471C32EBB400E5F7FA /* Location.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,6 +78,8 @@
 		DD37A1981BCD563600E5F7FA /* FURRExtensions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRExtensions.framework; path = ../Carthage/Build/iOS/FURRExtensions.framework; sourceTree = "<group>"; };
 		DD6285581BEBC3DF00E5F7FA /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSource.swift; path = ../DataSource/DataSource.swift; sourceTree = "<group>"; };
 		DD6EAB341C3151DF00E5F7FA /* DataSourceEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataSourceEngine.swift; path = ../DataSource/DataSourceEngine.swift; sourceTree = "<group>"; };
+		DD6EAB461C32EBB400E5F7FA /* DataItemProtocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DataItemProtocol.swift; path = ../DataSource/DataItemProtocol.swift; sourceTree = "<group>"; };
+		DD6EAB471C32EBB400E5F7FA /* Location.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Location.swift; path = ../DataSource/Location.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -164,6 +168,8 @@
 		DD6285571BEBC3CA00E5F7FA /* FURRDataSource */ = {
 			isa = PBXGroup;
 			children = (
+				DD6EAB461C32EBB400E5F7FA /* DataItemProtocol.swift */,
+				DD6EAB471C32EBB400E5F7FA /* Location.swift */,
 				DD6EAB341C3151DF00E5F7FA /* DataSourceEngine.swift */,
 				DD6285581BEBC3DF00E5F7FA /* DataSource.swift */,
 			);
@@ -369,8 +375,10 @@
 			files = (
 				5698BAB71B8DE499008805E2 /* Rusher.swift in Sources */,
 				5698B9DA1B8DCFE4008805E2 /* DetailViewController.swift in Sources */,
+				DD6EAB491C32EBB400E5F7FA /* Location.swift in Sources */,
 				DD6EAB351C3151DF00E5F7FA /* DataSourceEngine.swift in Sources */,
 				5698B9D81B8DCFE4008805E2 /* MasterViewController.swift in Sources */,
+				DD6EAB481C32EBB400E5F7FA /* DataItemProtocol.swift in Sources */,
 				DD6285591BEBC3DF00E5F7FA /* DataSource.swift in Sources */,
 				5698B9D61B8DCFE4008805E2 /* AppDelegate.swift in Sources */,
 			);

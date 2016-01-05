@@ -2,10 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:RushingCells/RushingCells.xcodeproj">
+      location = "container:FURRDataSource.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:FURRDataSource.xcodeproj">
+      location = "group:RushingCells/RushingCells.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:CollectionView-Simple/CollectionView.xcodeproj">

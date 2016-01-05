@@ -13,6 +13,11 @@ The primary view controller for this app.
 NSString *kDetailedViewControllerID = @"DetailView";    // view controller storyboard id
 NSString *kCellID = @"cellID";                          // UICollectionViewCell storyboard id
 
+@interface ViewController ()
+
+
+@end
+
 @implementation ViewController
 
 - (NSInteger)collectionView:(UICollectionView *)view numberOfItemsInSection:(NSInteger)section;
