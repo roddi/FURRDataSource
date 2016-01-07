@@ -28,8 +28,8 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         self.engine.endUpdates = {}
         self.engine.deleteSections = { indexSet in self.collectionView.deleteSections(indexSet) }
         self.engine.insertSections = { indexSet in self.collectionView.insertSections(indexSet) }
-        self.engine.insertRowsAtIndexPaths = { indexPaths in }
-        self.engine.deleteRowsAtIndexPaths = { indexPaths in }
+        self.engine.insertRowsAtIndexPaths = { indexPaths in self.collectionView.insertItemsAtIndexPaths(indexPaths) }
+        self.engine.deleteRowsAtIndexPaths = { indexPaths in self.collectionView.deleteItemsAtIndexPaths(indexPaths) }
 }
 
     // MARK: - querying
@@ -74,7 +74,9 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
-        self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
+            }, completion: nil)
     }
     
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

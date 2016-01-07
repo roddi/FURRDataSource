@@ -24,7 +24,7 @@ class ViewController: UICollectionViewController {
     }
 
     override func viewDidLoad() {
-        self.dataSource = CollectionDataSource(collectionView: self.collectionView!, cellForLocationCallback: { location in return UICollectionViewCell()})
+        self.dataSource = CollectionDataSource(collectionView: self.collectionView!, cellForLocationCallback: self.cellGeneratorFunc())
         self.collectionView?.dataSource = self.dataSource
 
         var images: [Image] = Array()
@@ -41,14 +41,9 @@ class ViewController: UICollectionViewController {
         self.dataSource?.updateRows(images, section: "section", animated: true)
     }
 
-    func cellGeneration() -> ((inLocation:Location<Image>) -> UICollectionViewCell) {
-        guard let dataSource = self.dataSource
-        else {
-            return { location in return UICollectionViewCell()}
-        }
-
+    func cellGeneratorFunc() -> ((inLocation:Location<Image>) -> UICollectionViewCell) {
         return { location in
-            if let cell = dataSource.dequeueReusableCellWithIdentifier(kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
+            if let cell = self.dataSource?.dequeueReusableCellWithIdentifier(kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
                 cell_.label.text = location.item.title
                 cell_.image.image = location.item.image
                 return cell_
