@@ -41,14 +41,13 @@ class ViewController: UICollectionViewController {
         self.dataSource?.updateRows(images, section: "section", animated: true)
     }
 
-    func cellGeneratorFunc() -> ((inLocation:Location<Image>) -> UICollectionViewCell) {
+    func cellGeneratorFunc() -> ((inLocation: Location<Image>) -> UICollectionViewCell) {
         return { location in
             if let cell = self.dataSource?.dequeueReusableCellWithIdentifier(kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
                 cell_.label.text = location.item.title
                 cell_.image.image = location.item.image
                 return cell_
-            }
-            else {
+            } else {
                 return UICollectionViewCell()
             }
         }
@@ -57,8 +56,7 @@ class ViewController: UICollectionViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             if let selectedLocation = self.dataSource?.selectedLocations().first,
-                let detailViewController = segue.destinationViewController as? DetailViewController
-            {
+                let detailViewController = segue.destinationViewController as? DetailViewController {
                 detailViewController.image = selectedLocation.item.image
             }
         }

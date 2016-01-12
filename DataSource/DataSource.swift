@@ -73,7 +73,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         return self.engine.sectionIDAndItemForIndexPath(inIndexPath)
     }
 
-    
+
     // MARK: - updating
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
         self.engine.updateSections(inSections, animated: inAnimated)

@@ -52,7 +52,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
         return self.collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath)
     }
-    
+
     func selectedLocations() -> [Location<T>] {
         let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems()
         guard let selectedIndexPaths_ = selectedIndexPaths else {
@@ -78,7 +78,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
             }, completion: nil)
     }
-    
+
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.engine.numberOfRowsForSectionIndex(section)
     }
