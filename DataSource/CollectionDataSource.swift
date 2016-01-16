@@ -15,8 +15,22 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     private let collectionView: UICollectionView
     private let engine: DataSourceEngine<T>
 
+    // MARK: - logging / failing
+
+    func setFailFunc(failFunc: (String) -> Void) {
+        self.engine.fail = failFunc
+    }
+    func setWarnFunc(warnFunc: (String) -> Void) {
+        self.engine.warn = warnFunc
+    }
+    func setReportingLevel(level: DataSourceReportingLevel) {
+        self.engine.reportingLevel = level
+    }
+
+    // MARK: - trampoline methods
     public var cell: (forLocation: Location<T>) -> UICollectionViewCell
 
+    // MARK: -
     public init(collectionView: UICollectionView, cellForLocationCallback cellForLocation:(inLocation:Location<T>) -> UICollectionViewCell) {
         self.engine = DataSourceEngine<T>()
         self.collectionView = collectionView
@@ -34,7 +48,8 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     // MARK: - querying
     public func sections() -> [String] {
-        return self.engine.sections()
+        let sections = self.engine.sections()
+        return sections
     }
 
     public func rowsForSection(section: String) -> [T] {
@@ -45,12 +60,12 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return self.engine.sectionIDAndItemForIndexPath(inIndexPath)
     }
 
-    public func dequeueReusableCellWithIdentifier(identifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
+    public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
         guard let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) else {
             return nil
         }
 
-        return self.collectionView.dequeueReusableCellWithReuseIdentifier(identifier, forIndexPath: indexPath)
+        return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
     }
 
     func selectedLocations() -> [Location<T>] {
@@ -67,8 +82,9 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     // MARK: - updating
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+        let sections = inSections
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.updateSections(inSections, animated: inAnimated)
+            self.engine.updateSections(sections, animated: inAnimated)
             }, completion: nil)
 
     }
@@ -79,6 +95,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             }, completion: nil)
     }
 
+    // MARK: - delegate / data source
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.engine.numberOfRowsForSectionIndex(section)
     }

@@ -12,6 +12,9 @@
 		5698BA4C1B8DD0CB008805E2 /* DataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA4B1B8DD0CB008805E2 /* DataSourceTests.swift */; };
 		5698BA571B8DD163008805E2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; };
 		5698BA811B8DD292008805E2 /* DataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* DataSource.swift */; };
+		DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */; };
+		DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */; };
+		DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB361C31718000E5F7FA /* CollectionDataSource.swift */; };
 		DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */; };
 		DD6449291BCD297100E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449271BCD297100E5F7FA /* FURRDiff.framework */; };
 		DD64492A1BCD297100E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449281BCD297100E5F7FA /* FURRExtensions.framework */; };
@@ -47,6 +50,8 @@
 		5698BA4B1B8DD0CB008805E2 /* DataSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataSourceTests.swift; sourceTree = "<group>"; };
 		5698BA4D1B8DD0CB008805E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5698BA561B8DD163008805E2 /* DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataSource.swift; sourceTree = "<group>"; };
+		DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockCollectionView.swift; sourceTree = "<group>"; };
+		DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionDataSourceTests.swift; sourceTree = "<group>"; };
 		DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockTableView.swift; sourceTree = "<group>"; };
 		DD6449271BCD297100E5F7FA /* FURRDiff.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRDiff.framework; path = Carthage/Build/iOS/FURRDiff.framework; sourceTree = "<group>"; };
 		DD6449281BCD297100E5F7FA /* FURRExtensions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRExtensions.framework; path = Carthage/Build/iOS/FURRExtensions.framework; sourceTree = "<group>"; };
@@ -117,13 +122,23 @@
 		5698BA4A1B8DD0CB008805E2 /* DataSourceTests */ = {
 			isa = PBXGroup;
 			children = (
+				DD423DA61C478C1600E5F7FA /* Mocks */,
+				DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */,
+				DDBAF1BA1C2EA2A400E5F7FA /* DataSourceEngineTests.swift */,
 				5698BA4B1B8DD0CB008805E2 /* DataSourceTests.swift */,
 				5698BA4D1B8DD0CB008805E2 /* Info.plist */,
-				DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */,
-				DDBAF1BA1C2EA2A400E5F7FA /* DataSourceEngineTests.swift */,
 				DD6EAB311C30131700E5F7FA /* TestHelpers.swift */,
 			);
 			path = DataSourceTests;
+			sourceTree = "<group>";
+		};
+		DD423DA61C478C1600E5F7FA /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */,
+				DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */,
+			);
+			name = Mocks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -301,7 +316,10 @@
 				5698BA811B8DD292008805E2 /* DataSource.swift in Sources */,
 				DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */,
 				DD6EAB3D1C32DDD500E5F7FA /* Location.swift in Sources */,
+				DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */,
 				DDBAF1BC1C2EA89900E5F7FA /* DataSourceEngine.swift in Sources */,
+				DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */,
+				DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */,
 				DDBAF1BB1C2EA2A400E5F7FA /* DataSourceEngineTests.swift in Sources */,
 				DD6EAB3C1C32DDCB00E5F7FA /* DataItemProtocol.swift in Sources */,
 				5698BA4C1B8DD0CB008805E2 /* DataSourceTests.swift in Sources */,

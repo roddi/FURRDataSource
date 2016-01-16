@@ -42,8 +42,8 @@ internal class DataSourceEngine <T where T: DataItem> {
     // MARK: by id
 
     func sections() -> [String] {
-        let section = self.sectionsInternal
-        return section
+        let sections = self.sectionsInternal
+        return sections
     }
 
     func rowsForSection(section: String) -> [T] {
@@ -99,6 +99,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         if inSections.containsDuplicatesFast() {
             self.failWithMessage("duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
+            return
         }
 
         guard

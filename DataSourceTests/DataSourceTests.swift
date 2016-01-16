@@ -55,6 +55,7 @@ class DataSourceTests: XCTestCase {
 
     var tableView: MockTableView? = nil
     var dataSource: DataSource<MockTVItem>? = nil
+    var didCallDidSelectHandler = false
 
     // MARK: - given
 
@@ -108,7 +109,6 @@ class DataSourceTests: XCTestCase {
         }
     }
 
-    var didCallDidSelectHandler = false
 
     func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
@@ -238,7 +238,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        let realIndexPaths = indexPaths.map(indexListMapper)
+        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(tableView.insertionRowIndexPaths == realIndexPaths)
     }
@@ -249,7 +249,7 @@ class DataSourceTests: XCTestCase {
             return
         }
 
-        let realIndexPaths = indexPaths.map(indexListMapper)
+        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(tableView.deletionRowIndexPaths == realIndexPaths)
     }
@@ -301,43 +301,33 @@ class DataSourceTests: XCTestCase {
         XCTAssertEqual(footerString, footerTitle)
     }
 
-    // MARK: - helper
-
-    let indexListMapper = { (indexList: [Int]) -> NSIndexPath in
-        if indexList.count != 2 {
-            return NSIndexPath(forItem: Int.max, inSection: Int.max)
-        }
-        return NSIndexPath(forItem: indexList[0], inSection: indexList[1])
-    }
-
-
     // MARK: - test
 
     func testDataSourceSections() {
         self.givenDelegateAndDataSource()
 
         var sections = ["a","b","c"]
-        self.dataSource?.updateSections(sections, animated: true)
+        self.whenUpdatingSectionIDs(sections)
         self.thenNumberOfSectionsIs(3)
         XCTAssert(sections == (self.dataSource?.sections())!)
 
-        // test whether it's actually const
+        // test whether the data source hands out copies
         sections = ["a","b","c","d"]
         XCTAssert(sections != (self.dataSource?.sections())!)
 
-        self.dataSource?.updateSections(["a","d","c"], animated: true)
+        self.whenUpdatingSectionIDs(["a","d","c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.dataSource?.updateSections(["a","d","c","e"], animated: true)
+        self.whenUpdatingSectionIDs(["a","d","c","e"])
         self.thenNumberOfSectionsIs(4)
 
-        self.dataSource?.updateSections([], animated: true)
+        self.whenUpdatingSectionIDs([])
         self.thenNumberOfSectionsIs(0)
 
         var didFail = false
         self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
 
-        self.dataSource?.updateSections(["a","a","a"], animated: true)
+        self.whenUpdatingSectionIDs(["a","a","a"])
         XCTAssert(didFail)
     }
 
