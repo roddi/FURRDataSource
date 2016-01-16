@@ -10,7 +10,7 @@
 import UIKit
 import FURRExtensions
 
-public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
+public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
 
     private let tableView: UITableView
     private let engine: DataSourceEngine<T>
@@ -265,7 +265,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
     // MARK: - UITableViewDelegate
 
-extension DataSource {
+extension TableDataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         guard let callback = self.didSelect else {
             return

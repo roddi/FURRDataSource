@@ -54,7 +54,7 @@ class DataSourceTests: XCTestCase {
     }
 
     var tableView: MockTableView? = nil
-    var dataSource: DataSource<MockTVItem>? = nil
+    var dataSource: TableDataSource<MockTVItem>? = nil
     var didCallDidSelectHandler = false
 
     // MARK: - given
@@ -65,7 +65,7 @@ class DataSourceTests: XCTestCase {
             XCTFail("could not instantiate table view")
             return
         }
-        self.dataSource = DataSource<MockTVItem>(tableView: tableView) { (inLocation: Location<MockTVItem>) -> UITableViewCell in
+        self.dataSource = TableDataSource<MockTVItem>(tableView: tableView) { (inLocation: Location<MockTVItem>) -> UITableViewCell in
             cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: tableView)
         }
         self.dataSource?.setReportingLevel(.PreCondition)
