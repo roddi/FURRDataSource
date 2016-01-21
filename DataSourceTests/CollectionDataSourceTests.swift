@@ -75,6 +75,49 @@ class CollectionDataSourceTests: XCTestCase {
         collectionView.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
+    func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        didCallDidSelectHandler = false
+        dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
+            XCTAssert(inLocation.sectionID == "a")
+            XCTAssert(inLocation.item.identifier == "1")
+            self.didCallDidSelectHandler = true
+        }
+    }
+
+    func givenCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
+            return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
+        }
+    }
+
+    func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+            XCTAssert(inSectionIDs.count == sectionCount)
+
+            guard let rows = inSectionIDs[sectionID] else {
+                XCTFail("no rows?")
+                return
+            }
+
+            let mappedIDs = rows.map({ (item) -> String in
+                return item.identifier
+            })
+
+            XCTAssert(mappedIDs == rowIDs)
+        })
+    }
     // MARK: - when
 
     func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
@@ -94,6 +137,30 @@ class CollectionDataSourceTests: XCTestCase {
         dataSource.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
     }
 
+    func whenSelectingRow(row: Int, section: Int) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        guard let collectionView = self.collectionView else {
+            XCTFail("no table view")
+            return
+        }
+        let indexPath = NSIndexPath(forRow: row, inSection: section)
+        dataSource.collectionView(collectionView, didSelectItemAtIndexPath: indexPath)
+    }
+
+    func whenMovingRow(sourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        guard let collectionView = self.collectionView else {
+            XCTFail("no table view")
+            return
+        }
+        dataSource.collectionView(collectionView, moveItemAtIndexPath: NSIndexPath(forRow: sourceRow, inSection: sourceSection), toIndexPath: NSIndexPath(forRow: destinationRow, inSection: destinationSection))
+    }
     // MARK: - then
 
     func thenNumberOfSectionsIs(numberOfSections: Int) {
@@ -143,6 +210,22 @@ class CollectionDataSourceTests: XCTestCase {
         XCTAssert(collectionView.deletionRowIndexPaths == realIndexPaths)
     }
 
+    func thenCanSelectHandlerWasCalled() {
+        XCTAssert(self.didCallDidSelectHandler)
+    }
+
+    func thenCanMoveItemAtRow(row: Int, section: Int, canMove: Bool) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        guard let collectionView = self.collectionView else {
+            XCTFail("no table view")
+            return
+        }
+        XCTAssert(dataSource.collectionView(collectionView, canMoveItemAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
+
+    }
 
     // MARK: - test
     func testDataSourceSections() {
@@ -248,6 +331,48 @@ class CollectionDataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(0)
 
         // note: asking for the number of rows in section 0 would result in a fail as we don't have a sectionID.
+    }
+
+    func testDidSelect() {
+        self.givenDelegateAndDataSource()
+        self.givenWillAllowSelectInSectionID("a", rowID: "1")
+
+        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.thenNumberOfSectionsIs(3)
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+
+        self.whenSelectingRow(1, section: 0)
+        self.thenCanSelectHandlerWasCalled()
+    }
+
+    func testCanMove() {
+        self.givenDelegateAndDataSource()
+        self.givenCanMoveItemAtSectionID("a", rowID: "2")
+
+        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.thenNumberOfSectionsIs(3)
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+
+        self.thenCanMoveItemAtRow(2, section: 0, canMove: true)
+        self.thenCanMoveItemAtRow(1, section: 0, canMove: false)
+    }
+
+    func testMoveBeyondLastItem() {
+        self.givenDelegateAndDataSource()
+        self.givenCanMoveItemAtSectionID("a", rowID: "1")
+        self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
+
+        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.thenNumberOfSectionsIs(3)
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+
+        self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
     }
 
 }

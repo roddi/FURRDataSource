@@ -141,7 +141,6 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return canActuallyMove(toLocation: location)
     }
 
-
     public func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
         self.engine.moveRowAtIndexPath(sourceIndexPath, toIndexPath: destinationIndexPath)
     }

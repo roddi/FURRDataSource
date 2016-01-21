@@ -41,7 +41,7 @@ func cellForSectionID(inSectionID: String, item inItem: MockTVItem, tableView in
 }
 
 
-class DataSourceTests: XCTestCase {
+class TableDataSourceTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
@@ -464,7 +464,6 @@ class DataSourceTests: XCTestCase {
 
         self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
     }
-
 
     func testMoveAcrossSections() {
         self.givenDelegateAndDataSource()

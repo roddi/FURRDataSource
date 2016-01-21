@@ -29,6 +29,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     // MARK: - trampoline methods
     public var cell: (forLocation: Location<T>) -> UICollectionViewCell
+    public var didSelect: ((inLocation: Location<T>) -> Void)?
+    public var canMove: ((toLocation: Location<T>) -> Bool)?
+    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeFunc
+    }
 
     // MARK: -
     public init(collectionView: UICollectionView, cellForLocationCallback cellForLocation:(inLocation:Location<T>) -> UICollectionViewCell) {
@@ -82,9 +87,8 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     // MARK: - updating
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
-        let sections = inSections
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.updateSections(sections, animated: inAnimated)
+            self.engine.updateSections(inSections, animated: inAnimated)
             }, completion: nil)
 
     }
@@ -110,5 +114,35 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         }
 
         return self.cell(forLocation: location)
+    }
+
+    public func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        guard let callback = self.didSelect else {
+            return
+        }
+
+        guard let location = self.engine.locationForIndexPath(indexPath) else {
+            return
+        }
+
+        callback(inLocation: location)
+    }
+
+    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+
+        guard let canActuallyMove = self.canMove else {
+            // callback not implemented, so... no, you can't!
+            return false
+        }
+
+        guard let location = self.engine.locationForIndexPath(indexPath) else {
+            return false
+        }
+
+        return canActuallyMove(toLocation: location)
+    }
+
+    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
+        self.engine.moveRowAtIndexPath(sourceIndexPath, toIndexPath: destinationIndexPath)
     }
 }
