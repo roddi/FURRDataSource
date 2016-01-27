@@ -36,7 +36,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     // MARK: -
-    public init(collectionView: UICollectionView, cellForLocationCallback cellForLocation:(inLocation:Location<T>) -> UICollectionViewCell) {
+    public init(collectionView: UICollectionView, cellForLocationCallback cellForLocation: (inLocation: Location<T>) -> UICollectionViewCell) {
         self.engine = DataSourceEngine<T>()
         self.collectionView = collectionView
         self.cell = cellForLocation
