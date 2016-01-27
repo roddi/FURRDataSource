@@ -10,12 +10,12 @@
 import UIKit
 import FURRExtensions
 
-public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
+public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
 
     private let tableView: UITableView
     private let engine: DataSourceEngine<T>
 
-    // logging / failing
+    // MARK: - logging / failing
     func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
@@ -26,7 +26,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         self.engine.reportingLevel = level
     }
 
-    // trampoline methods
+    // MARK: - trampoline methods
     public var cell: (forLocation: Location<T>) -> UITableViewCell
     public var didSelect: ((inLocation: Location<T>) -> Void)?
     public var canMove: ((toLocation: Location<T>) -> Bool)?
@@ -42,6 +42,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         self.engine.didChangeSectionIDs = didChangeFunc
     }
 
+    // MARK: -
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: (inLocation: Location<T>) -> UITableViewCell) {
         self.engine = DataSourceEngine<T>()
         self.tableView = inTableView
@@ -73,6 +74,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         return self.engine.sectionIDAndItemForIndexPath(inIndexPath)
     }
 
+
     // MARK: - updating
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
         self.engine.updateSections(inSections, animated: inAnimated)
@@ -82,12 +84,12 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
         self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
     }
 
-    public func dequeueReusableCellWithIdentifier(identifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
+    public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
         guard let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) else {
             return nil
         }
 
-        return self.tableView.dequeueReusableCellWithIdentifier(identifier, forIndexPath: indexPath)
+        return self.tableView.dequeueReusableCellWithIdentifier(reuseIdentifier, forIndexPath: indexPath)
     }
 
     public func reloadAll() {
@@ -138,7 +140,6 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
         return canActuallyMove(toLocation: location)
     }
-
 
     public func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
         self.engine.moveRowAtIndexPath(sourceIndexPath, toIndexPath: destinationIndexPath)
@@ -263,7 +264,7 @@ public class DataSource <T where T: DataItem> : NSObject, UITableViewDelegate, U
 
     // MARK: - UITableViewDelegate
 
-extension DataSource {
+extension TableDataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         guard let callback = self.didSelect else {
             return

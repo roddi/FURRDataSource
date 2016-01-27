@@ -22,7 +22,7 @@ class MasterViewController: UITableViewController {
 
     var detailViewController: DetailViewController? = nil
     @IBOutlet weak var masterTableView: UITableView?
-    var dataSource: DataSource<Rusher>? = nil
+    var dataSource: TableDataSource<Rusher>? = nil
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,9 +39,9 @@ class MasterViewController: UITableViewController {
         }
 
         if let tableView_ = self.masterTableView {
-            self.dataSource = DataSource(tableView: tableView_, cellForLocationCallback: { (inLocation) -> UITableViewCell in
+            self.dataSource = TableDataSource(tableView: tableView_, cellForLocationCallback: { (inLocation) -> UITableViewCell in
                 let cell: UITableViewCell
-                let dequeuedCell = self.dataSource?.dequeueReusableCellWithIdentifier("Cell", sectionID: inLocation.sectionID, item: inLocation.item)
+                let dequeuedCell = self.dataSource?.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: inLocation.sectionID, item: inLocation.item)
                 if let cell_ = dequeuedCell {
                     cell = cell_
                 } else {
