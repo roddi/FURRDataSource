@@ -6,23 +6,17 @@
 //  Copyright © 2016 Ruotger Deecke. All rights reserved.
 //
 
+// test files can be longer, right?
+// swiftlint:disable file_length
+
+
 import XCTest
 
-class CollectionDataSourceTests: XCTestCase {
+class CollectionDataSourceTests: BaseDataSourceTests {
 
     var collectionView: MockCollectionView? = nil
     var dataSource: CollectionDataSource<MockTVItem>? = nil
     var didCallDidSelectHandler = false
-
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
 
     // MARK: - helper
 
@@ -33,8 +27,6 @@ class CollectionDataSourceTests: XCTestCase {
         }
         let cell = dataSource.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: sectionID, item: inItem)
 
-//        cell.textLabel?.text = inSectionID
-//        cell.detailTextLabel?.text = rowID
         if let cell_ = cell {
             return cell_
         } else {
@@ -42,9 +34,26 @@ class CollectionDataSourceTests: XCTestCase {
         }
     }
 
+    override func sections() -> [String] {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return [] // <-- will fail anyway
+        }
+
+        return dataSource.sections()
+    }
+
+    override func setFailFunc(failFunc: (String) -> Void) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+
+        dataSource.setFailFunc(failFunc)
+    }
     // MARK: - given
 
-    func givenDelegateAndDataSource() {
+    override func givenDelegateAndDataSource() {
         let collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = MockCollectionView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), collectionViewLayout: collectionViewLayout)
         self.collectionView?.registerClass(MockCollectionViewCell.classForKeyedUnarchiver(), forCellWithReuseIdentifier: "Cell")
@@ -120,7 +129,7 @@ class CollectionDataSourceTests: XCTestCase {
     }
     // MARK: - when
 
-    func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
+    override func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -163,7 +172,7 @@ class CollectionDataSourceTests: XCTestCase {
     }
     // MARK: - then
 
-    func thenNumberOfSectionsIs(numberOfSections: Int) {
+    override func thenNumberOfSectionsIs(numberOfSections: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -227,33 +236,10 @@ class CollectionDataSourceTests: XCTestCase {
 
     }
 
-    // MARK: - test
+    // MARK: - override test
     func testDataSourceSections() {
-        self.givenDelegateAndDataSource()
-
-        var sections = ["a","b","c"]
-        self.whenUpdatingSectionIDs(sections)
-        self.thenNumberOfSectionsIs(3)
-        XCTAssert(["a","b","c"] == (self.dataSource?.sections())!)
-
-        // test whether the data source hands out copies
-        sections = ["a","b","c","d"]
-        XCTAssert(sections != (self.dataSource?.sections())!)
-
-        self.whenUpdatingSectionIDs(["a","d","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingSectionIDs(["a","d","c","e"])
-        self.thenNumberOfSectionsIs(4)
-
-        self.whenUpdatingSectionIDs([])
-        self.thenNumberOfSectionsIs(0)
-
-        var didFail = false
-        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
-
-        self.whenUpdatingSectionIDs(["a","a","a"])
-        XCTAssert(didFail)
+        self.baseTestDataSourceSections()
+        return
     }
 
     func testDataSourceRows() {
@@ -361,6 +347,21 @@ class CollectionDataSourceTests: XCTestCase {
         self.thenCanMoveItemAtRow(1, section: 0, canMove: false)
     }
 
+    func testMove() {
+        self.givenDelegateAndDataSource()
+        self.givenCanMoveItemAtSectionID("a", rowID: "2")
+        self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
+
+
+        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.thenNumberOfSectionsIs(3)
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+
+        self.whenMovingRow(2, sourceSection: 0, toRow: 1, toSection: 0)
+    }
+
     func testMoveBeyondLastItem() {
         self.givenDelegateAndDataSource()
         self.givenCanMoveItemAtSectionID("a", rowID: "1")
@@ -373,6 +374,54 @@ class CollectionDataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
 
         self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
+    }
+
+    func testMoveAcrossSections() {
+        self.givenDelegateAndDataSource()
+        self.givenCanMoveItemAtSectionID("a", rowID: "3")
+
+        self.whenUpdatingSectionIDs(["a","b","c"])
+
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "b")
+
+        let expectation = expectationWithDescription("sections changed callback")
+
+        guard let dataSource = self.dataSource else {
+            XCTFail()
+            return
+        }
+
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+            expectation.fulfill()
+            XCTAssert(inSectionIDs.count == 2, "should be only two sections")
+
+            guard let rowsA = inSectionIDs["a"] else {
+                XCTFail("no rows for a?")
+                return
+            }
+
+            let mappedIDsA = rowsA.map({ (item) -> String in
+                return item.identifier
+            })
+
+            XCTAssert(mappedIDsA == ["0","1","2"])
+
+            guard let rowsB = inSectionIDs["b"] else {
+                XCTFail("no rows for b?")
+                return
+            }
+
+            let mappedIDsB = rowsB.map({ (item) -> String in
+                return item.identifier
+            })
+
+            XCTAssert(mappedIDsB == ["0","1","3","2"])
+        })
+
+        self.whenMovingRow(3, sourceSection: 0, toRow: 2, toSection: 1)
+
+        self.waitForExpectationsWithTimeout(10, handler: nil)
     }
 
 }

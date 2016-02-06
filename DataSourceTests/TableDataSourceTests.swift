@@ -9,57 +9,36 @@
 
 import XCTest
 
-class MockTVItem: DataItem {
-    let identifier: String
 
-    class func mockTVItemsForIdentifiers(identifiers: [String]) -> [MockTVItem] {
-        return identifiers.map { return MockTVItem(identifier:$0) }
-    }
-
-    init (identifier: String) {
-        self.identifier = identifier
-    }
-}
-
-
-func == (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
-    return (lhs.identifier == rhs.identifier)
-}
-
-
-func < (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
-    return (lhs.identifier < rhs.identifier)
-}
-
-
-func cellForSectionID(inSectionID: String, item inItem: MockTVItem, tableView inTableView: UITableView) -> UITableViewCell {
-    let rowID = inItem.identifier
-    let cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: inSectionID+rowID)
-    cell.textLabel?.text = inSectionID
-    cell.detailTextLabel?.text = rowID
-    return cell
-}
-
-
-class TableDataSourceTests: XCTestCase {
-
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
+class TableDataSourceTests: BaseDataSourceTests {
 
     var tableView: MockTableView? = nil
     var dataSource: TableDataSource<MockTVItem>? = nil
     var didCallDidSelectHandler = false
 
+    // MARK: - helper
+
+    override func sections() -> [String] {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return [] // <-- will fail anyway
+        }
+
+        return dataSource.sections()
+    }
+
+    override func setFailFunc(failFunc: (String) -> Void) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+
+        dataSource.setFailFunc(failFunc)
+    }
+
     // MARK: - given
 
-    func givenDelegateAndDataSource() {
+    override func givenDelegateAndDataSource() {
         self.tableView = MockTableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: .Plain)
         guard let tableView = self.tableView else {
             XCTFail("could not instantiate table view")
@@ -163,7 +142,7 @@ class TableDataSourceTests: XCTestCase {
 
     // MARK: - when
 
-    func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
+    override func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -208,7 +187,7 @@ class TableDataSourceTests: XCTestCase {
 
     // MARK: - then
 
-    func thenNumberOfSectionsIs(numberOfSections: Int) {
+    override func thenNumberOfSectionsIs(numberOfSections: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -304,31 +283,7 @@ class TableDataSourceTests: XCTestCase {
     // MARK: - test
 
     func testDataSourceSections() {
-        self.givenDelegateAndDataSource()
-
-        var sections = ["a","b","c"]
-        self.whenUpdatingSectionIDs(sections)
-        self.thenNumberOfSectionsIs(3)
-        XCTAssert(sections == (self.dataSource?.sections())!)
-
-        // test whether the data source hands out copies
-        sections = ["a","b","c","d"]
-        XCTAssert(sections != (self.dataSource?.sections())!)
-
-        self.whenUpdatingSectionIDs(["a","d","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingSectionIDs(["a","d","c","e"])
-        self.thenNumberOfSectionsIs(4)
-
-        self.whenUpdatingSectionIDs([])
-        self.thenNumberOfSectionsIs(0)
-
-        var didFail = false
-        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
-
-        self.whenUpdatingSectionIDs(["a","a","a"])
-        XCTAssert(didFail)
+        self.baseTestDataSourceSections()
     }
 
     func testDataSourceRows() {

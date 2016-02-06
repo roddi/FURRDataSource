@@ -126,7 +126,7 @@ internal class DataSourceEngine <T where T: DataItem> {
                 for string in diff.array {
                     self.sectionsInternal.insert(string, atIndex: index)
                     insertSectionsFunc(NSIndexSet(index: index))
-                    index++
+                    index += 1
                 }
             case .Equal:
                 index += diff.array.count
@@ -184,7 +184,7 @@ internal class DataSourceEngine <T where T: DataItem> {
                 for _ in diff.array {
                     newRows.removeAtIndex(rowIndex)
                     deleteRowsAtIndexPathsFunc([NSIndexPath(forRow: deleteRowIndex, inSection: sectionIndex)])
-                    deleteRowIndex++
+                    deleteRowIndex += 1
                 }
             case .Insert:
                 for rowID in diff.array {
@@ -197,7 +197,7 @@ internal class DataSourceEngine <T where T: DataItem> {
                         let newRow = inRows[actualIndex]
                         newRows.insert(newRow, atIndex: rowIndex)
                         insertRowsAtIndexPathsFunc([NSIndexPath(forRow: rowIndex, inSection: sectionIndex)])
-                        rowIndex++
+                        rowIndex += 1
                     } else {
                         print("index not found for rowID '\(rowID)'")
                     }
