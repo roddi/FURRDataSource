@@ -43,6 +43,15 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         return dataSource.sections()
     }
 
+    override func rowsForSection(section: String) -> [MockTVItem] {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return [] // <-- will fail anyway
+        }
+
+        return dataSource.rowsForSection(section)
+    }
+
     override func setFailFunc(failFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
@@ -51,6 +60,16 @@ class CollectionDataSourceTests: BaseDataSourceTests {
 
         dataSource.setFailFunc(failFunc)
     }
+
+    override func setWarnFunc(warnFunc: (String) -> Void) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+
+        dataSource.setWarnFunc(warnFunc)
+    }
+
     // MARK: - given
 
     override func givenDelegateAndDataSource() {
@@ -73,7 +92,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         didCallDidSelectHandler = false
     }
 
-    func givenDiffsAreCleared() {
+    override func givenDiffsAreCleared() {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
@@ -84,7 +103,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         collectionView.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
-    func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
+    override func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -137,7 +156,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.updateSections(inSectionIDs, animated: true)
     }
 
-    func whenUpdatingRowsWithIdentifiers(identifiers: [String], sectionID: String) {
+    override func whenUpdatingRowsWithIdentifiers(identifiers: [String], sectionID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -146,7 +165,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
     }
 
-    func whenSelectingRow(row: Int, section: Int) {
+    override func whenSelectingRow(row: Int, section: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -185,7 +204,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     }
 
     // should be called thenNumberOfItemsIs(...). Any volunteers for a pull request?
-    func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
+    override func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -197,7 +216,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.collectionView(collectionView, numberOfItemsInSection: sectionIndex) == numberOfRows)
     }
 
-    func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
+    override func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
@@ -208,7 +227,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(collectionView.insertionRowIndexPaths == realIndexPaths)
     }
 
-    func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
+    override func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
@@ -219,7 +238,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(collectionView.deletionRowIndexPaths == realIndexPaths)
     }
 
-    func thenCanSelectHandlerWasCalled() {
+    override func thenCanSelectHandlerWasCalled() {
         XCTAssert(self.didCallDidSelectHandler)
     }
 
@@ -243,94 +262,19 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     }
 
     func testDataSourceRows() {
-        self.givenDelegateAndDataSource()
-
-        var didWarn = false
-        self.dataSource?.setWarnFunc({ (message: String?) -> Void in
-            didWarn = true
-        })
-
-        // trying to update non-existing section
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-        XCTAssert(didWarn)
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
-        self.thenDeletionRowsSectionsAre([])
-        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0","1","2"]) == (self.dataSource?.rowsForSection("a"))!)
-
-        self.givenDiffsAreCleared()
-
-        self.whenUpdatingRowsWithIdentifiers(["0","2","3"], sectionID: "a")
-        self.thenNumberOfSectionsIs(3)
-        self.thenInsertionRowsSectionsAre([[2, 0]])
-        self.thenDeletionRowsSectionsAre([[1, 0]])
-
-        var didFail = false
-        self.dataSource?.setFailFunc({ (msg) -> Void in didFail = true })
-        self.whenUpdatingRowsWithIdentifiers(["0","0","0"], sectionID: "a")
-        XCTAssert(didFail)
+        self.baseTestDataSourceRows()
     }
 
     func testDataSourceRowsDelete() {
-        self.givenDelegateAndDataSource()
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-        self.givenDiffsAreCleared()
-
-        self.whenUpdatingRowsWithIdentifiers(["0","5","4","2"], sectionID: "a")
-        self.thenNumberOfRowsIs(4, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
-        self.thenDeletionRowsSectionsAre([[1, 0]])
-
-        self.givenDiffsAreCleared()
-
-        print("")
-
-        self.whenUpdatingRowsWithIdentifiers(["0","2"], sectionID: "a")
-        self.thenNumberOfRowsIs(2, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
-
-        self.givenDiffsAreCleared()
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3","4","5"], sectionID: "a")
-        self.givenDiffsAreCleared()
-
-        self.whenUpdatingRowsWithIdentifiers(["0","2","4"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])
+        self.baseTestDataSourceRowsDelete()
     }
 
     func testDataSourceWhenCompletelyEmpty() {
-        self.givenDelegateAndDataSource()
-
-        self.thenNumberOfSectionsIs(0)
-
-        // note: asking for the number of rows in section 0 would result in a fail as we don't have a sectionID.
+        self.baseTestDataSourceWhenCompletelyEmpty()
     }
 
     func testDidSelect() {
-        self.givenDelegateAndDataSource()
-        self.givenWillAllowSelectInSectionID("a", rowID: "1")
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-
-        self.whenSelectingRow(1, section: 0)
-        self.thenCanSelectHandlerWasCalled()
+        self.baseTestDidSelect()
     }
 
     func testCanMove() {
