@@ -46,12 +46,21 @@ class TableDataSourceTests: BaseDataSourceTests {
     }
 
     override func setWarnFunc(warnFunc: (String) -> Void) {
-            guard let dataSource = self.dataSource else {
+        guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
         dataSource.setWarnFunc(warnFunc)
+    }
+
+    override func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+
+        dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
     }
 
     // MARK: - given
@@ -74,7 +83,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         didCallDidSelectHandler = false
     }
 
-    func givenCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+    override func givenCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -130,7 +139,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         tableView.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
-    func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
+    override func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -190,7 +199,7 @@ class TableDataSourceTests: BaseDataSourceTests {
 
     }
 
-    func whenMovingRow(sourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
+    override func whenMovingRow(sourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -254,7 +263,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         XCTAssert(self.didCallDidSelectHandler)
     }
 
-    func thenCanMoveItemAtRow(row: Int, section: Int, canMove: Bool) {
+    override func thenCanMoveItemAtRow(row: Int, section: Int, canMove: Bool) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -320,94 +329,19 @@ class TableDataSourceTests: BaseDataSourceTests {
     }
 
     func testCanMove() {
-        self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "2")
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-
-        self.thenCanMoveItemAtRow(2, section: 0, canMove: true)
-        self.thenCanMoveItemAtRow(1, section: 0, canMove: false)
+        self.baseTestCanMove()
     }
 
     func testMove() {
-        self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "2")
-        self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
-
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-
-        self.whenMovingRow(2, sourceSection: 0, toRow: 1, toSection: 0)
+        self.baseTestMove()
     }
 
     func testMoveBeyondLastItem() {
-        self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "1")
-        self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-        self.thenNumberOfSectionsIs(3)
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-
-        self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
+        self.baseTestMoveBeyondLastItem()
     }
 
     func testMoveAcrossSections() {
-        self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "3")
-
-        self.whenUpdatingSectionIDs(["a","b","c"])
-
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "b")
-
-        let expectation = expectationWithDescription("sections changed callback")
-
-        guard let dataSource = self.dataSource else {
-            XCTFail()
-            return
-        }
-
-        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
-            expectation.fulfill()
-            XCTAssert(inSectionIDs.count == 2, "should be only two sections")
-
-            guard let rowsA = inSectionIDs["a"] else {
-                XCTFail("no rows for a?")
-                return
-            }
-
-            let mappedIDsA = rowsA.map({ (item) -> String in
-                return item.identifier
-            })
-
-            XCTAssert(mappedIDsA == ["0","1","2"])
-
-            guard let rowsB = inSectionIDs["b"] else {
-                XCTFail("no rows for b?")
-                return
-            }
-
-            let mappedIDsB = rowsB.map({ (item) -> String in
-                return item.identifier
-            })
-
-            XCTAssert(mappedIDsB == ["0","1","3","2"])
-        })
-
-        self.whenMovingRow(3, sourceSection: 0, toRow: 2, toSection: 1)
-
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        self.baseTestMoveAcrossSections()
     }
 
     func testMoveWithCorrectedTarget() {
