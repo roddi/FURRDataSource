@@ -266,7 +266,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
 
     // MARK: - override test
 
-    // This test crashes from time to time but only for the collection view. I have not been able to isolate the 
+    // This test crashes from time to time but only for the collection view.
     func testDataSourceSections() {
         self.baseTestDataSourceSections()
     }
