@@ -43,7 +43,7 @@ class ViewController: UICollectionViewController {
 
     func cellGeneratorFunc() -> ((inLocation: Location<Image>) -> UICollectionViewCell) {
         return { location in
-            if let cell = self.dataSource?.dequeueReusableCellWithIdentifier(kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
+            if let cell = self.dataSource?.dequeueReusableCellWithReuseIdentifier(kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
                 cell_.label.text = location.item.title
                 cell_.image.image = location.item.image
                 return cell_

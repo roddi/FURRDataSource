@@ -212,7 +212,7 @@ class MasterViewController: UITableViewController {
             breatheCount -= 1
         }
 
-        count++
+        count += 1
         let sectionIndex = (count % 37) * 3
         let sectionIndex2 = (count % 5) * 2
 
