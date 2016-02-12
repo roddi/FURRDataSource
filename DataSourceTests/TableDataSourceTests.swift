@@ -1,3 +1,5 @@
+// swiftlint:disable line_length
+// swiftlint:disable type_body_length
 //
 //  DBDBDataSourceTests.swift
 //  DBDB

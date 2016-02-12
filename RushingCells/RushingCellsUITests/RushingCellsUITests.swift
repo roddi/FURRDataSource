@@ -1,3 +1,4 @@
+// swiftlint:disable line_length
 //
 //  RushingCellsUITests.swift
 //  RushingCellsUITests
