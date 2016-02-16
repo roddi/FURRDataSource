@@ -30,7 +30,7 @@
 import Foundation
 import FURRDiff
 
-enum DataSourceReportingLevel {
+public enum DataSourceReportingLevel {
     case PreCondition /// always crashes
     case Assert /// crashes debug versions otherwise silent, this is the default
     case Print /// prints in debug versions otherwise silent.

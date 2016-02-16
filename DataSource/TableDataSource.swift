@@ -35,13 +35,13 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
-    func setFailFunc(failFunc: (String) -> Void) {
+    public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
-    func setWarnFunc(warnFunc: (String) -> Void) {
+    public func setWarnFunc(warnFunc: (String) -> Void) {
         self.engine.warn = warnFunc
     }
-    func setReportingLevel(level: DataSourceReportingLevel) {
+    public func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
 
@@ -277,13 +277,8 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return callback(sectionID: sectionID)
     }
 
-
-}
-
-
     // MARK: - UITableViewDelegate
 
-extension TableDataSource {
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         guard let callback = self.didSelect else {
             return

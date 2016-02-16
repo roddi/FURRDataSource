@@ -37,13 +37,13 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     // MARK: - logging / failing
 
-    func setFailFunc(failFunc: (String) -> Void) {
+    public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
-    func setWarnFunc(warnFunc: (String) -> Void) {
+    public func setWarnFunc(warnFunc: (String) -> Void) {
         self.engine.warn = warnFunc
     }
-    func setReportingLevel(level: DataSourceReportingLevel) {
+    public func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
 
