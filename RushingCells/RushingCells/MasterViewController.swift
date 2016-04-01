@@ -168,7 +168,7 @@ class MasterViewController: UITableViewController {
             self.insertNewObject(self)
         }
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  500*1000*1000), dispatch_get_main_queue()) { () -> Void in
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500*1000*1000), dispatch_get_main_queue()) { () -> Void in
             self.testRush1b()
         }
     }
@@ -181,7 +181,7 @@ class MasterViewController: UITableViewController {
             self.dataSource?.updateRows(rows, section: firstSectionID, animated: true)
         }
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  500*1000*1000), dispatch_get_main_queue()) { () -> Void in
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500*1000*1000), dispatch_get_main_queue()) { () -> Void in
             self.rush()
         }
     }
@@ -245,7 +245,7 @@ class MasterViewController: UITableViewController {
         handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, breathe: breathe)
 
         if count < 1000 {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW,  150*1000*1000), dispatch_get_main_queue()) { () -> Void in
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 150*1000*1000), dispatch_get_main_queue()) { () -> Void in
                 self.rush()
             }
         }

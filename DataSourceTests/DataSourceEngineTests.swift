@@ -57,19 +57,19 @@ class DataSourceEngineTests: XCTestCase {
 
     func testDataSourceSections() {
 
-        var sections = ["a","b","c"]
+        var sections = ["a", "b", "c"]
         self.engine.updateSections(sections, animated: true)
         self.thenNumberOfSectionsIs(3)
         XCTAssert(sections == (self.engine.sections()))
 
         // test whether it's actually const
-        sections = ["a","b","c","d"]
+        sections = ["a", "b", "c", "d"]
         XCTAssert(sections != (engine.sections()))
 
-        self.engine.updateSections(["a","d","c"], animated: true)
+        self.engine.updateSections(["a", "d", "c"], animated: true)
         self.thenNumberOfSectionsIs(3)
 
-        self.engine.updateSections(["a","d","c","e"], animated: true)
+        self.engine.updateSections(["a", "d", "c", "e"], animated: true)
         self.thenNumberOfSectionsIs(4)
 
         self.engine.updateSections([], animated: true)
@@ -78,7 +78,7 @@ class DataSourceEngineTests: XCTestCase {
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
 
-        self.engine.updateSections(["a","a","a"], animated: true)
+        self.engine.updateSections(["a", "a", "a"], animated: true)
         XCTAssert(didFail)
     }
 
@@ -89,40 +89,40 @@ class DataSourceEngineTests: XCTestCase {
         }
 
         // trying to update non-existing section
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         XCTAssert(didWarn)
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
 
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([])
-        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0","1","2"]) == (self.engine.rowsForSection("a")))
+        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0", "1", "2"]) == (self.engine.rowsForSection("a")))
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","2","3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "2", "3"], sectionID: "a")
         self.thenNumberOfSectionsIs(3)
         self.thenInsertionRowsSectionsAre([[2, 0]])
         self.thenDeletionRowsSectionsAre([[1, 0]])
 
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
-        self.whenUpdatingRowsWithIdentifiers(["0","0","0"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
     }
 
     func testDataSourceRowsDelete() {
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","5","4","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "5", "4", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(4, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([[1, 0]])
@@ -131,17 +131,17 @@ class DataSourceEngineTests: XCTestCase {
 
         print("")
 
-        self.whenUpdatingRowsWithIdentifiers(["0","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([])
         self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3","4","5"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3", "4", "5"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","2","4"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "2", "4"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([])
         self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])

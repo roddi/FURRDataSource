@@ -158,19 +158,19 @@ class BaseDataSourceTests: XCTestCase {
     func baseTestDataSourceSections() {
         self.givenDelegateAndDataSource()
 
-        var sections = ["a","b","c"]
+        var sections = ["a", "b", "c"]
         self.whenUpdatingSectionIDs(sections)
         self.thenNumberOfSectionsIs(3)
-        XCTAssert(["a","b","c"] == self.sections())
+        XCTAssert(["a", "b", "c"] == self.sections())
 
         // test whether the data source hands out copies
-        sections = ["a","b","c","d"]
+        sections = ["a", "b", "c", "d"]
         XCTAssert(sections != self.sections())
 
-        self.whenUpdatingSectionIDs(["a","d","c"])
+        self.whenUpdatingSectionIDs(["a", "d", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingSectionIDs(["a","d","c","e"])
+        self.whenUpdatingSectionIDs(["a", "d", "c", "e"])
         self.thenNumberOfSectionsIs(4)
 
         self.whenUpdatingSectionIDs([])
@@ -179,7 +179,7 @@ class BaseDataSourceTests: XCTestCase {
         var didFail = false
         self.setFailFunc({ (msg) -> Void in didFail = true })
 
-        self.whenUpdatingSectionIDs(["a","a","a"])
+        self.whenUpdatingSectionIDs(["a", "a", "a"])
         XCTAssert(didFail)
     }
 
@@ -192,42 +192,42 @@ class BaseDataSourceTests: XCTestCase {
         })
 
         // trying to update non-existing section
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         XCTAssert(didWarn)
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
 
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([])
-        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0","1","2"]) == (self.rowsForSection("a")))
+        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0", "1", "2"]) == (self.rowsForSection("a")))
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","2","3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "2", "3"], sectionID: "a")
         self.thenNumberOfSectionsIs(3)
         self.thenInsertionRowsSectionsAre([[2, 0]])
         self.thenDeletionRowsSectionsAre([[1, 0]])
 
         var didFail = false
         self.setFailFunc({ (msg) -> Void in didFail = true })
-        self.whenUpdatingRowsWithIdentifiers(["0","0","0"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
     }
 
     func baseTestDataSourceRowsDelete() {
         self.givenDelegateAndDataSource()
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","5","4","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "5", "4", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(4, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre([[1, 0]])
@@ -236,17 +236,17 @@ class BaseDataSourceTests: XCTestCase {
 
         print("")
 
-        self.whenUpdatingRowsWithIdentifiers(["0","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([])
         self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3","4","5"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3", "4", "5"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0","2","4"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "2", "4"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre([])
         self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])
@@ -264,10 +264,10 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
         self.givenWillAllowSelectInSectionID("a", rowID: "1")
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
 
         self.whenSelectingRow(1, section: 0)
@@ -278,10 +278,10 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
         self.givenCanMoveItemAtSectionID("a", rowID: "2")
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
 
         self.thenCanMoveItemAtRow(2, section: 0, canMove: true)
@@ -291,13 +291,13 @@ class BaseDataSourceTests: XCTestCase {
     func baseTestMove() {
         self.givenDelegateAndDataSource()
         self.givenCanMoveItemAtSectionID("a", rowID: "2")
-        self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
+        self.givenExpectRowIDsAfterMove(["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
 
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
 
         self.whenMovingRow(2, sourceSection: 0, toRow: 1, toSection: 0)
@@ -306,12 +306,12 @@ class BaseDataSourceTests: XCTestCase {
     func baseTestMoveBeyondLastItem() {
         self.givenDelegateAndDataSource()
         self.givenCanMoveItemAtSectionID("a", rowID: "1")
-        self.givenExpectRowIDsAfterMove(["0","2","1"], forSectionID: "a", withSectionCount: 1)
+        self.givenExpectRowIDsAfterMove(["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
 
         self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
@@ -321,10 +321,10 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
         self.givenCanMoveItemAtSectionID("a", rowID: "3")
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "b")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "b")
 
         let expectation = expectationWithDescription("sections changed callback")
 
@@ -342,7 +342,7 @@ class BaseDataSourceTests: XCTestCase {
                 return item.identifier
             })
 
-            XCTAssert(mappedIDsA == ["0","1","2"])
+            XCTAssert(mappedIDsA == ["0", "1", "2"])
 
             guard let rowsB = inSectionIDs["b"] else {
                 XCTFail("no rows for b?")
@@ -353,7 +353,7 @@ class BaseDataSourceTests: XCTestCase {
                 return item.identifier
             })
 
-            XCTAssert(mappedIDsB == ["0","1","3","2"])
+            XCTAssert(mappedIDsB == ["0", "1", "3", "2"])
         })
 
         self.whenMovingRow(3, sourceSection: 0, toRow: 2, toSection: 1)

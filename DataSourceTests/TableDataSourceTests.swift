@@ -351,10 +351,10 @@ class TableDataSourceTests: BaseDataSourceTests {
         self.givenCanMoveItemAtSectionID("a", rowID: "3")
         self.givenRetargetsToRowIDSectionID("1", sectionID: "a")
 
-        self.whenUpdatingSectionIDs(["a","b","c"])
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
 
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2"], sectionID: "b")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "b")
 
         guard let dataSource = self.dataSource else {
             XCTFail()
@@ -375,7 +375,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         self.givenCanEditItemAtSectionID("a", rowID: "1")
 
         self.whenUpdatingSectionIDs(["a"])
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3"], sectionID: "a")
 
         self.thenCanEditItemAtRow(1, section: 0, canMove: true)
         self.thenCanEditItemAtRow(0, section: 0, canMove: false)
@@ -386,7 +386,7 @@ class TableDataSourceTests: BaseDataSourceTests {
     func testDeleteItem() {
         self.givenDelegateAndDataSource()
         self.whenUpdatingSectionIDs(["a"])
-        self.whenUpdatingRowsWithIdentifiers(["0","1","2","3"], sectionID: "a")
+        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3"], sectionID: "a")
 
         let willDeleteExpectation = expectationWithDescription("will delete callback")
         let didDeleteExpectation = expectationWithDescription("did delete callback")
@@ -420,7 +420,7 @@ class TableDataSourceTests: BaseDataSourceTests {
                 return item.identifier
             })
 
-            XCTAssert(mappedIDs == ["0","2","3"])
+            XCTAssert(mappedIDs == ["0", "2", "3"])
 
         })
 
