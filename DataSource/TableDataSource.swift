@@ -183,7 +183,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         let actualDestination = callback(fromLocation: fromLocation, proposedLocation: toLocation)
 
         // check whether actual destination is OK
-        if let item = actualDestination.item, let indexPath = self.engine.indexPathForSectionID(actualDestination.sectionID, rowItem: item) {
+        if let item = actualDestination.item, indexPath = self.engine.indexPathForSectionID(actualDestination.sectionID, rowItem: item) {
             return indexPath
         }
 

@@ -125,9 +125,9 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         guard
             let beginUpdatesFunc = self.beginUpdates,
-            let endUpdatesFunc = self.endUpdates,
-            let deleteSectionsFunc = self.deleteSections,
-            let insertSectionsFunc = self.insertSections else {
+            endUpdatesFunc = self.endUpdates,
+            deleteSectionsFunc = self.deleteSections,
+            insertSectionsFunc = self.insertSections else {
                 self.failWithMessage("At least one of the required callback funcs of DataSourceEngine is nil. Severity: lethal, sorry, nevertheless have a good evening!")
                 return
         }
@@ -171,9 +171,9 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         guard
             let beginUpdatesFunc = self.beginUpdates,
-            let endUpdatesFunc = self.endUpdates,
-            let deleteRowsAtIndexPathsFunc = self.deleteRowsAtIndexPaths,
-            let insertRowsAtIndexPathsFunc = self.insertRowsAtIndexPaths else {
+            endUpdatesFunc = self.endUpdates,
+            deleteRowsAtIndexPathsFunc = self.deleteRowsAtIndexPaths,
+            insertRowsAtIndexPathsFunc = self.insertRowsAtIndexPaths else {
                 self.failWithMessage("At least one of the required callback funcs of DataSourceEngine is nil. Severity: lethal, sorry, nevertheless have a good evening!")
                 return
         }

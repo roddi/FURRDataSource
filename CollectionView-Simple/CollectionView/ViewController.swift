@@ -53,7 +53,7 @@ class ViewController: UICollectionViewController {
         for i in [0..<32].flatten() {
             let numberString = "\(i)"
             if let uiimage = UIImage(named: numberString+"_full"),
-                let thumb = UIImage(named: numberString) {
+                thumb = UIImage(named: numberString) {
                     let image = Image(identifier: numberString, title: "Image "+numberString, image: uiimage, thumb: thumb)
                     images.append(image)
             }
@@ -65,7 +65,7 @@ class ViewController: UICollectionViewController {
 
     func cellGeneratorFunc() -> ((inLocation: Location<Image>) -> UICollectionViewCell) {
         return { location in
-            if let cell = self.dataSource?.dequeueReusableCellWithReuseIdentifier(kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
+            if let cell = self.dataSource?.dequeueReusableCellWithReuseIdentifier(kCellID, sectionID: location.sectionID, item: location.item), cell_ = cell as? Cell {
                 cell_.label.text = location.item.title
                 cell_.image.image = location.item.image
                 return cell_
@@ -78,7 +78,7 @@ class ViewController: UICollectionViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showDetail" {
             if let selectedLocation = self.dataSource?.selectedLocations().first,
-                let detailViewController = segue.destinationViewController as? DetailViewController {
+                detailViewController = segue.destinationViewController as? DetailViewController {
                 detailViewController.image = selectedLocation.item.image
             }
         }
