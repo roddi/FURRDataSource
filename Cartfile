@@ -1,2 +1,2 @@
-github "roddi/FURRExtensions"
-github "roddi/FURRDiff"
+github "roddi/FURRExtensions" "master"
+github "roddi/FURRDiff" "master"

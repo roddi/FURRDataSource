@@ -34,6 +34,7 @@ public enum DataSourceReportingLevel {
     case PreCondition /// always crashes
     case Assert /// crashes debug versions otherwise silent, this is the default
     case Print /// prints in debug versions otherwise silent.
+    case Verbose /// prints a lot of stuff.
     case Silent /// always silently ignores everything
 }
 
@@ -78,7 +79,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     // MARK: by index
 
     func numberOfRowsForSectionIndex(index: Int) -> Int {
-        guard let sectionID = self.sections().optionalElementAtIndex(index) else {
+        guard let sectionID = self.sections().optionalElement(index) else {
             self.failWithMessage("no section at index '\(index)'")
             return 0
         }
@@ -93,7 +94,7 @@ internal class DataSourceEngine <T where T: DataItem> {
             return nil
         }
 
-        guard let item = rowArray.optionalElementAtIndex(inIndexPath.row) else {
+        guard let item = rowArray.optionalElement(inIndexPath.row) else {
             print("item not found at index \(inIndexPath.row) for sectionID \(sectionID)")
             return nil
         }
@@ -102,7 +103,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
     func sectionIDAndRowsForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
-        guard let sectionID = self.sectionsInternal.optionalElementAtIndex(inSectionIndex) else {
+        guard let sectionID = self.sectionsInternal.optionalElement(inSectionIndex) else {
             print("section not found at index \(inSectionIndex)")
             return nil
         }
@@ -319,7 +320,7 @@ internal class DataSourceEngine <T where T: DataItem> {
             return nil
         }
 
-        let item = rows.optionalElementAtIndex(inIndexPath.row)
+        let item = rows.optionalElement(inIndexPath.row)
         let location = LocationWithOptionalItem(sectionID: sectionID, item: item)
 
         return location
@@ -335,7 +336,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         case .Assert:
             assertionFailure("WARNING: \(message)")
-        case .Print:
+        case .Print, .Verbose:
             print("WARNING: \(message)")
         case .Silent:
             // nothing to do here
@@ -363,6 +364,12 @@ internal class DataSourceEngine <T where T: DataItem> {
         }
 
         self.reportWarningAccordingToLevel(message)
+    }
+
+    func logWhenVerbose(@autoclosure message: () -> String) {
+        if self.reportingLevel == .Verbose {
+            print(message)
+        }
     }
 
 }

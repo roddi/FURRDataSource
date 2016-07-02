@@ -68,6 +68,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         self.cell = inCellForLocation
 
         super.init()
+        self.engine.logWhenVerbose("TableDataSource.init(,cellForLocation:)")
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.engine.beginUpdates = {self.tableView.beginUpdates()}
@@ -131,15 +132,19 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         let sections = self.engine.sections()
+        self.engine.logWhenVerbose("TableDataSource.numberOfSectionsInTableView() -> \(sections.count)")
         return sections.count
     }
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        return self.engine.numberOfRowsForSectionIndex(inSection)
+        let numberOfRows = self.engine.numberOfRowsForSectionIndex(inSection)
+        self.engine.logWhenVerbose("tableView(,numberOfRowsInSection: \(inSection)) -> \(numberOfRows)")
+        return numberOfRows
     }
 
 
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        self.engine.logWhenVerbose("tableView(,cellForRowAtIndexPath: \(indexPath))")
         guard let location = self.engine.locationForIndexPath(indexPath) else {
             preconditionFailure("rows not found")
         }
@@ -251,7 +256,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let sectionID = self.engine.sections().optionalElementAtIndex(section) else {
+        guard let sectionID = self.engine.sections().optionalElement(section) else {
             self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
@@ -265,7 +270,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        guard let sectionID = self.engine.sections().optionalElementAtIndex(section) else {
+        guard let sectionID = self.engine.sections().optionalElement(section) else {
             self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
