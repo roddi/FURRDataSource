@@ -79,7 +79,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     // MARK: by index
 
     func numberOfRowsForSectionIndex(index: Int) -> Int {
-        guard let sectionID = self.sections().optionalElement(index) else {
+        guard let sectionID = self.sections().optionalElement(index: index) else {
             self.failWithMessage("no section at index '\(index)'")
             return 0
         }
@@ -94,7 +94,7 @@ internal class DataSourceEngine <T where T: DataItem> {
             return nil
         }
 
-        guard let item = rowArray.optionalElement(inIndexPath.row) else {
+        guard let item = rowArray.optionalElement(index: inIndexPath.row) else {
             print("item not found at index \(inIndexPath.row) for sectionID \(sectionID)")
             return nil
         }
@@ -103,7 +103,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
     func sectionIDAndRowsForSectionIndex(inSectionIndex: Int) -> (String, Array<T>)? {
-        guard let sectionID = self.sectionsInternal.optionalElement(inSectionIndex) else {
+        guard let sectionID = self.sectionsInternal.optionalElement(index: inSectionIndex) else {
             print("section not found at index \(inSectionIndex)")
             return nil
         }
@@ -320,7 +320,7 @@ internal class DataSourceEngine <T where T: DataItem> {
             return nil
         }
 
-        let item = rows.optionalElement(inIndexPath.row)
+        let item = rows.optionalElement(index: inIndexPath.row)
         let location = LocationWithOptionalItem(sectionID: sectionID, item: item)
 
         return location

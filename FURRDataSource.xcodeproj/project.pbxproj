@@ -53,6 +53,7 @@
 		DD04FBEB1C59FB8200E5F7FA /* BaseDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDataSourceTests.swift; sourceTree = "<group>"; };
 		DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockCollectionView.swift; sourceTree = "<group>"; };
 		DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionDataSourceTests.swift; sourceTree = "<group>"; };
+		DD4A260A1D298E6400E5F7FA /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
 		DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockTableView.swift; sourceTree = "<group>"; };
 		DD6449271BCD297100E5F7FA /* FURRDiff.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRDiff.framework; path = Carthage/Build/iOS/FURRDiff.framework; sourceTree = "<group>"; };
 		DD6449281BCD297100E5F7FA /* FURRExtensions.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FURRExtensions.framework; path = Carthage/Build/iOS/FURRExtensions.framework; sourceTree = "<group>"; };
@@ -89,6 +90,7 @@
 		5698BA321B8DD0CB008805E2 = {
 			isa = PBXGroup;
 			children = (
+				DD4A260A1D298E6400E5F7FA /* Cartfile */,
 				DD6449271BCD297100E5F7FA /* FURRDiff.framework */,
 				DD6449281BCD297100E5F7FA /* FURRExtensions.framework */,
 				5698BA3E1B8DD0CB008805E2 /* DataSource */,

@@ -256,7 +256,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let sectionID = self.engine.sections().optionalElement(section) else {
+        guard let sectionID = self.engine.sections().optionalElement(index: section) else {
             self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
@@ -270,7 +270,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        guard let sectionID = self.engine.sections().optionalElement(section) else {
+        guard let sectionID = self.engine.sections().optionalElement(index: section) else {
             self.engine.warnWithMessage("section not found at index \(section)")
             return nil
         }
