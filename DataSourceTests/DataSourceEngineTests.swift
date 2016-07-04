@@ -33,10 +33,17 @@ class DataSourceEngineTests: XCTestCase {
 
     var engine = DataSourceEngine<MockTVItem>()
 
+    #if swift(>=3.0)
+    var insertionRowIndexPaths: [IndexPath] = []
+    var deletionRowIndexPaths: [IndexPath] = []
+    var insertionSectionIndexSet: IndexSet = IndexSet()
+    var deletionSectionIndexSet: IndexSet = IndexSet()
+    #else
     var insertionRowIndexPaths: [NSIndexPath] = []
     var deletionRowIndexPaths: [NSIndexPath] = []
     var insertionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
     var deletionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
+    #endif
 
     override func setUp() {
         super.setUp()
@@ -46,8 +53,20 @@ class DataSourceEngineTests: XCTestCase {
         self.engine.endUpdates = {}
         self.engine.deleteSections = { indexSet in self.deletionSectionIndexSet = indexSet }
         self.engine.insertSections = { indexSet in self.insertionSectionIndexSet = indexSet }
-        self.engine.insertRowsAtIndexPaths = { indexPathArray in self.insertionRowIndexPaths.appendContentsOf(indexPathArray) }
-        self.engine.deleteRowsAtIndexPaths = { indexPathArray in self.deletionRowIndexPaths.appendContentsOf(indexPathArray) }
+        self.engine.insertRowsAtIndexPaths = { indexPathArray in
+            #if swift(>=3.0)
+                self.insertionRowIndexPaths.append(contentsOf: indexPathArray)
+            #else
+                self.insertionRowIndexPaths.appendContentsOf(indexPathArray)
+            #endif
+        }
+        self.engine.deleteRowsAtIndexPaths = { indexPathArray in
+            #if swift(>=3.0)
+                self.deletionRowIndexPaths.append(contentsOf: indexPathArray)
+            #else
+                self.deletionRowIndexPaths.appendContentsOf(indexPathArray)
+            #endif
+        }
     }
 
     override func tearDown() {
@@ -58,7 +77,7 @@ class DataSourceEngineTests: XCTestCase {
     func testDataSourceSections() {
 
         var sections = ["a", "b", "c"]
-        self.engine.updateSections(sections, animated: true)
+        self.engine.update(sections: sections, animated: true)
         self.thenNumberOfSectionsIs(3)
         XCTAssert(sections == (self.engine.sections()))
 
@@ -66,19 +85,19 @@ class DataSourceEngineTests: XCTestCase {
         sections = ["a", "b", "c", "d"]
         XCTAssert(sections != (engine.sections()))
 
-        self.engine.updateSections(["a", "d", "c"], animated: true)
+        self.engine.update(sections: ["a", "d", "c"], animated: true)
         self.thenNumberOfSectionsIs(3)
 
-        self.engine.updateSections(["a", "d", "c", "e"], animated: true)
+        self.engine.update(sections: ["a", "d", "c", "e"], animated: true)
         self.thenNumberOfSectionsIs(4)
 
-        self.engine.updateSections([], animated: true)
+        self.engine.update(sections: [], animated: true)
         self.thenNumberOfSectionsIs(0)
 
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
 
-        self.engine.updateSections(["a", "a", "a"], animated: true)
+        self.engine.update(sections: ["a", "a", "a"], animated: true)
         XCTAssert(didFail)
     }
 
@@ -89,62 +108,62 @@ class DataSourceEngineTests: XCTestCase {
         }
 
         // trying to update non-existing section
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "1", "2"], sectionID: "a")
         XCTAssert(didWarn)
 
-        self.whenUpdatingSectionIDs(["a", "b", "c"])
+        self.whenUpdatingSections(withIDs: ["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "1", "2"], sectionID: "a")
 
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
-        self.thenDeletionRowsSectionsAre([])
-        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0", "1", "2"]) == (self.engine.rowsForSection("a")))
+        self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.engine.rows(forSection: "a")))
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "2", "3"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "2", "3"], sectionID: "a")
         self.thenNumberOfSectionsIs(3)
-        self.thenInsertionRowsSectionsAre([[2, 0]])
-        self.thenDeletionRowsSectionsAre([[1, 0]])
+        self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
-        self.whenUpdatingRowsWithIdentifiers(["0", "0", "0"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
     }
 
     func testDataSourceRowsDelete() {
-        self.whenUpdatingSectionIDs(["a", "b", "c"])
+        self.whenUpdatingSections(withIDs: ["a", "b", "c"])
         self.thenNumberOfSectionsIs(3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "1", "2"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "5", "4", "2"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "5", "4", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(4, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
-        self.thenDeletionRowsSectionsAre([[1, 0]])
+        self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         self.givenDiffsAreCleared()
 
         print("")
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "2"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(2, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3", "4", "5"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "1", "2", "3", "4", "5"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "2", "4"], sectionID: "a")
+        self.whenUpdatingRows(identifiers: ["0", "2", "4"], sectionID: "a")
         self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
     }
 
     func testDataSourceWhenCompletelyEmpty() {
@@ -159,44 +178,49 @@ class DataSourceEngineTests: XCTestCase {
     func givenDiffsAreCleared() {
         self.deletionRowIndexPaths = []
         self.insertionRowIndexPaths = []
-        self.insertionSectionIndexSet = NSMutableIndexSet()
-        self.deletionSectionIndexSet = NSMutableIndexSet()
+        #if swift(>=3.0)
+            self.insertionSectionIndexSet = IndexSet()
+            self.deletionSectionIndexSet = IndexSet()
+        #else
+            self.insertionSectionIndexSet = NSMutableIndexSet()
+            self.deletionSectionIndexSet = NSMutableIndexSet()
+        #endif
     }
 
     // MARK: - when
 
-    func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
-        self.engine.updateSections(inSectionIDs, animated: true)
+    func whenUpdatingSections(withIDs inSectionIDs: Array<String>) {
+        self.engine.update(sections: inSectionIDs, animated: true)
     }
 
-    func whenUpdatingRowsWithIdentifiers(identifiers: [String], sectionID: String) {
-        self.engine.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
+    func whenUpdatingRows(identifiers rowIdentifiers: [String], sectionID: String) {
+        self.engine.update(rows: MockTVItem.mockTVItems(identifiers: rowIdentifiers), section: sectionID, animated: true)
     }
 
     // MARK: - then
 
-    func thenNumberOfSectionsIs(numberOfSections: Int) {
+    func thenNumberOfSectionsIs(_ numberOfSections: Int) {
         XCTAssert(engine.sections().count == numberOfSections, "...")
     }
 
-    func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
-        if let sectionIDAndRows = engine.sectionIDAndRowsForSectionIndex(sectionIndex) {
+    func thenNumberOfRowsIs(_ numberOfRows: Int, sectionIndex: Int) {
+        if let sectionIDAndRows = engine.sectionIDAndRows(forSectionIndex: sectionIndex) {
             XCTAssert(sectionIDAndRows.1.count == numberOfRows)
         } else {
             XCTFail()
         }
     }
 
-    func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
-        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
+    func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(self.insertionRowIndexPaths == realIndexPaths)
     }
-
+    
     func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
         let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
-
+        
         XCTAssert(self.deletionRowIndexPaths == realIndexPaths)
     }
-
+    
 }

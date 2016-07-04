@@ -125,9 +125,9 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
     // MARK: - updating
-    func update(sections sections: Array<String>, animated inAnimated: Bool) {
+    func update(sections sectionsToUpdate: Array<String>, animated inAnimated: Bool) {
 
-        if sections.containsDuplicatesFast() {
+        if sectionsToUpdate.containsDuplicatesFast() {
             self.fail(message: "duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
             return
         }
@@ -141,7 +141,7 @@ internal class DataSourceEngine <T where T: DataItem> {
                 return
         }
 
-        let diffs = diffBetweenArrays(arrayA: self.sectionsInternal, arrayB: sections)
+        let diffs = diffBetweenArrays(arrayA: self.sectionsInternal, arrayB: sectionsToUpdate)
 
         var index = 0
         beginUpdatesFunc()
@@ -174,16 +174,16 @@ internal class DataSourceEngine <T where T: DataItem> {
         }
         endUpdatesFunc()
 
-        assert(self.sectionsInternal == sections, "should be equal now")
+        assert(self.sectionsInternal == sectionsToUpdate, "should be equal now")
     }
 
-    func update(rows rows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+    func update(rows rowsToUpdate: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         guard let sectionIndex = self.sectionIndex(forSectionID: inSectionID) else {
             self.warn(message: "sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
             return
         }
 
-        if rows.containsDuplicates() {
+        if rowsToUpdate.containsDuplicates() {
             self.fail(message: "Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
             return
         }
@@ -206,7 +206,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         var newRows: Array<T> = existingRows
 
-        let newIdentifiers = rows.map({ (inDataSourceItem) -> String in
+        let newIdentifiers = rowsToUpdate.map({ (inDataSourceItem) -> String in
             return inDataSourceItem.identifier
         })
         let existingIdentifiers = existingRows.map({ (inDataSourceItem) -> String in
@@ -240,12 +240,12 @@ internal class DataSourceEngine <T where T: DataItem> {
                     }
 
                     #if swift(>=3.0)
-                        let rowIDIndex = rows.index(where: findBlock)
+                        let rowIDIndex = rowsToUpdate.index(where: findBlock)
                     #else
-                        let rowIDIndex = rows.indexOf(findBlock)
+                        let rowIDIndex = rowsToUpdate.indexOf(findBlock)
                     #endif
                     if let actualIndex = rowIDIndex {
-                        let newRow = rows[actualIndex]
+                        let newRow = rowsToUpdate[actualIndex]
                         #if swift(>=3.0)
                             newRows.insert(newRow, at: rowIndex)
                             let indexPath = [IndexPath(row: rowIndex, section: sectionIndex)]
@@ -268,7 +268,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         self.rowsBySectionID[inSectionID] = newRows
         endUpdatesFunc()
 
-        assert(newRows == rows, "must be equal")
+        assert(newRows == rowsToUpdate, "must be equal")
     }
 
     // MARK: - initiated by user

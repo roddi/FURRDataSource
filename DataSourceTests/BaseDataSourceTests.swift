@@ -32,8 +32,8 @@ import XCTest
 class MockTVItem: DataItem {
     let identifier: String
 
-    class func mockTVItemsForIdentifiers(identifiers: [String]) -> [MockTVItem] {
-        return identifiers.map { return MockTVItem(identifier:$0) }
+    class func mockTVItems(identifiers inIdentifiers: [String]) -> [MockTVItem] {
+        return inIdentifiers.map { return MockTVItem(identifier:$0) }
     }
 
     init (identifier: String) {
