@@ -87,25 +87,25 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func rowsForSection(section: String) -> [T] {
-        return self.engine.rowsForSection(section)
+        return self.engine.rows(forSection: section)
     }
 
     public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
-        return self.engine.sectionIDAndItemForIndexPath(inIndexPath)
+        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
 
     // MARK: - updating
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
-        self.engine.updateSections(inSections, animated: inAnimated)
+        self.engine.update(sections: inSections, animated: inAnimated)
     }
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
-        self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
+        self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
     }
 
     public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
-        guard let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) else {
+        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
         }
 
@@ -117,13 +117,13 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func reloadSectionID(inSectionID: String) {
-        if let sectionID = self.engine.sectionIndexForSectionID(inSectionID) {
+        if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
             self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
         }
     }
 
     public func reloadSectionID(inSectionID: String, item inItem: T) {
-        if let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) {
+        if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
             self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }
     }
@@ -137,7 +137,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        let numberOfRows = self.engine.numberOfRowsForSectionIndex(inSection)
+        let numberOfRows = self.engine.numberOfRows(forSectionIndex: inSection)
         self.engine.logWhenVerbose("tableView(,numberOfRowsInSection: \(inSection)) -> \(numberOfRows)")
         return numberOfRows
     }
@@ -145,7 +145,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         self.engine.logWhenVerbose("tableView(,cellForRowAtIndexPath: \(indexPath))")
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }
 
@@ -158,7 +158,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return false
         }
 
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             return false
         }
 
@@ -166,7 +166,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
-        self.engine.moveRowAtIndexPath(sourceIndexPath, toIndexPath: destinationIndexPath)
+        self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
     }
 
     public func tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: NSIndexPath, toProposedIndexPath proposedDestinationIndexPath: NSIndexPath) -> NSIndexPath {
@@ -174,12 +174,12 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return proposedDestinationIndexPath
         }
 
-        guard let fromLocation = self.engine.locationForIndexPath(sourceIndexPath) else {
+        guard let fromLocation = self.engine.location(forIndexPath: sourceIndexPath) else {
             print("source not found!")
             return proposedDestinationIndexPath
         }
 
-        guard let toLocation = self.engine.locationWithOptionalItemForIndexPath(proposedDestinationIndexPath) else {
+        guard let toLocation = self.engine.locationWithOptionalItem(forIndexPath: proposedDestinationIndexPath) else {
             print("destination section not found!")
             return proposedDestinationIndexPath
         }
@@ -188,16 +188,16 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         let actualDestination = callback(fromLocation: fromLocation, proposedLocation: toLocation)
 
         // check whether actual destination is OK
-        if let item = actualDestination.item, indexPath = self.engine.indexPathForSectionID(actualDestination.sectionID, rowItem: item) {
+        if let item = actualDestination.item, indexPath = self.engine.indexPath(forSectionID: actualDestination.sectionID, rowItem: item) {
             return indexPath
         }
 
-        guard let sectionIndex = self.engine.sectionIndexForSectionID(actualDestination.sectionID) else {
+        guard let sectionIndex = self.engine.sectionIndex(forSectionID: actualDestination.sectionID) else {
             print("actual destination section not found!")
             return proposedDestinationIndexPath
         }
 
-        let rows = self.engine.rowsForSection(actualDestination.sectionID)
+        let rows = self.engine.rows(forSection: actualDestination.sectionID)
         if  rows.count != 0 {
             return NSIndexPath(forRow: rows.count-1, inSection: sectionIndex)
         } else {
@@ -210,7 +210,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
         switch editingStyle {
         case .Delete:
-            guard let location = self.engine.locationForIndexPath(indexPath) else {
+            guard let location = self.engine.location(forIndexPath: indexPath) else {
                 return
             }
 
@@ -218,10 +218,10 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
                 callback(atLocation: location)
             }
 
-            var rows = self.engine.rowsForSection(location.sectionID)
+            var rows = self.engine.rows(forSection: location.sectionID)
             if rows.count != 0 {
                 rows.removeAtIndex(indexPath.row)
-                self.engine.updateRows(rows, section: location.sectionID, animated: true)
+                self.engine.update(rows: rows, section: location.sectionID, animated: true)
             }
 
             if let callback = self.didDelete {
@@ -231,7 +231,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             // HACK? Is this really the right thing to do here conceptually???
             if let callback = self.engine.didChangeSectionIDs {
                 let sectionID = location.sectionID
-                let rows = self.engine.rowsForSection(sectionID)
+                let rows = self.engine.rows(forSection: sectionID)
                 callback(inSectionIDs: [sectionID:rows])
             }
 
@@ -244,7 +244,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             return false
         }
 
@@ -257,7 +257,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let sectionID = self.engine.sections().optionalElement(index: section) else {
-            self.engine.warnWithMessage("section not found at index \(section)")
+            self.engine.warn(message: "section not found at index \(section)")
             return nil
         }
 
@@ -271,7 +271,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         guard let sectionID = self.engine.sections().optionalElement(index: section) else {
-            self.engine.warnWithMessage("section not found at index \(section)")
+            self.engine.warn(message: "section not found at index \(section)")
             return nil
         }
 
@@ -289,7 +289,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return
         }
 
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             return
         }
 

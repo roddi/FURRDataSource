@@ -78,7 +78,7 @@ class DataSourceEngineTests: XCTestCase {
 
         var sections = ["a", "b", "c"]
         self.engine.update(sections: sections, animated: true)
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
         XCTAssert(sections == (self.engine.sections()))
 
         // test whether it's actually const
@@ -86,13 +86,13 @@ class DataSourceEngineTests: XCTestCase {
         XCTAssert(sections != (engine.sections()))
 
         self.engine.update(sections: ["a", "d", "c"], animated: true)
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.engine.update(sections: ["a", "d", "c", "e"], animated: true)
-        self.thenNumberOfSectionsIs(4)
+        self.thenNumberOfSectionsIs(numberOfSections: 4)
 
         self.engine.update(sections: [], animated: true)
-        self.thenNumberOfSectionsIs(0)
+        self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
@@ -112,11 +112,11 @@ class DataSourceEngineTests: XCTestCase {
         XCTAssert(didWarn)
 
         self.whenUpdatingSections(withIDs: ["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRows(identifiers: ["0", "1", "2"], sectionID: "a")
 
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [])
         XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.engine.rows(forSection: "a")))
@@ -124,7 +124,7 @@ class DataSourceEngineTests: XCTestCase {
         self.givenDiffsAreCleared()
 
         self.whenUpdatingRows(identifiers: ["0", "2", "3"], sectionID: "a")
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
         self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
@@ -136,13 +136,13 @@ class DataSourceEngineTests: XCTestCase {
 
     func testDataSourceRowsDelete() {
         self.whenUpdatingSections(withIDs: ["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRows(identifiers: ["0", "1", "2"], sectionID: "a")
         self.givenDiffsAreCleared()
 
         self.whenUpdatingRows(identifiers: ["0", "5", "4", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(4, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 4, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
@@ -151,7 +151,7 @@ class DataSourceEngineTests: XCTestCase {
         print("")
 
         self.whenUpdatingRows(identifiers: ["0", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(2, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
 
@@ -161,14 +161,14 @@ class DataSourceEngineTests: XCTestCase {
         self.givenDiffsAreCleared()
 
         self.whenUpdatingRows(identifiers: ["0", "2", "4"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
     }
 
     func testDataSourceWhenCompletelyEmpty() {
 
-        self.thenNumberOfSectionsIs(0)
+        self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         // note: asking for the number of rows in section 0 would result in a fail as we don't have a sectionID.
     }
@@ -199,13 +199,13 @@ class DataSourceEngineTests: XCTestCase {
 
     // MARK: - then
 
-    func thenNumberOfSectionsIs(_ numberOfSections: Int) {
-        XCTAssert(engine.sections().count == numberOfSections, "...")
+    func thenNumberOfSectionsIs(numberOfSections inNumberOfSections: Int) {
+        XCTAssert(engine.sections().count == inNumberOfSections, "...")
     }
 
-    func thenNumberOfRowsIs(_ numberOfRows: Int, sectionIndex: Int) {
+    func thenNumberOfRowsIs(numberOfRows inNumberOfRows: Int, sectionIndex: Int) {
         if let sectionIDAndRows = engine.sectionIDAndRows(forSectionIndex: sectionIndex) {
-            XCTAssert(sectionIDAndRows.1.count == numberOfRows)
+            XCTAssert(sectionIDAndRows.1.count == inNumberOfRows)
         } else {
             XCTFail()
         }
@@ -216,11 +216,11 @@ class DataSourceEngineTests: XCTestCase {
 
         XCTAssert(self.insertionRowIndexPaths == realIndexPaths)
     }
-    
-    func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
-        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
-        
+
+    func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
+
         XCTAssert(self.deletionRowIndexPaths == realIndexPaths)
     }
-    
+
 }

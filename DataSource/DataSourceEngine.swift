@@ -383,42 +383,42 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - handling errors
 
-    func reportWarningAccordingToLevel(message: String) {
+    func reportWarningAccordingToLevel(message inMessage: String) {
         switch self.reportingLevel {
         // a warning will still trigger an assertion.
         case .PreCondition:
-            preconditionFailure("ERROR: \(message)")
+            preconditionFailure("ERROR: \(inMessage)")
 
         case .Assert:
-            assertionFailure("WARNING: \(message)")
+            assertionFailure("WARNING: \(inMessage)")
         case .Print, .Verbose:
-            print("WARNING: \(message)")
+            print("WARNING: \(inMessage)")
         case .Silent:
             // nothing to do here
             break
         }
     }
 
-    func fail(message: String) {
+    func fail(message inMessage: String) {
         // when there's a fail block, we fail into that block otherwise
         // we fail according to the reporting level
         if let failBlock = self.fail {
-            failBlock(message)
+            failBlock(inMessage)
             return
         }
 
-        preconditionFailure("FATAL ERROR: \(message)")
+        preconditionFailure("FATAL ERROR: \(inMessage)")
     }
 
-    func warn(message: String) {
+    func warn(message inMessage: String) {
         // when there's a fail block, we fail into that block otherwise
         // we fail according to the reporting level
         if let warnBlock = self.warn {
-            warnBlock(message)
+            warnBlock(inMessage)
             return
         }
 
-        self.reportWarningAccordingToLevel(message: message)
+        self.reportWarningAccordingToLevel(message: inMessage)
     }
 
     #if swift(>=3.0)

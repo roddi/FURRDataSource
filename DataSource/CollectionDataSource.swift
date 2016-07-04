@@ -78,15 +78,15 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     public func rowsForSection(section: String) -> [T] {
-        return self.engine.rowsForSection(section)
+        return self.engine.rows(forSection: section)
     }
 
     public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
-        return self.engine.sectionIDAndItemForIndexPath(inIndexPath)
+        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
     public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
-        guard let indexPath = self.engine.indexPathForSectionID(inSectionID, rowItem: inItem) else {
+        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
         }
 
@@ -99,7 +99,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             return []
         }
         let selectedLocations: [Location<T>] = selectedIndexPaths_.flatMap({ (indexPath) -> Location<T>? in
-            return self.engine.locationForIndexPath(indexPath)
+            return self.engine.location(forIndexPath: indexPath)
         })
 
         return selectedLocations
@@ -108,20 +108,20 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     // MARK: - updating
     public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.updateSections(inSections, animated: inAnimated)
+            self.engine.update(sections: inSections, animated: inAnimated)
             }, completion: nil)
 
     }
 
     public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.updateRows(inRows, section: inSectionID, animated: inAnimated)
+            self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
             }, completion: nil)
     }
 
     // MARK: - delegate / data source
     public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return self.engine.numberOfRowsForSectionIndex(section)
+        return self.engine.numberOfRows(forSectionIndex: section)
     }
 
     public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
@@ -129,7 +129,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }
 
@@ -141,7 +141,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             return
         }
 
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             return
         }
 
@@ -155,7 +155,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             return false
         }
 
-        guard let location = self.engine.locationForIndexPath(indexPath) else {
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
             return false
         }
 
@@ -163,6 +163,6 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
-        self.engine.moveRowAtIndexPath(sourceIndexPath, toIndexPath: destinationIndexPath)
+        self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
     }
 }

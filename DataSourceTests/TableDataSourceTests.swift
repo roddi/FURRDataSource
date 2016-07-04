@@ -184,7 +184,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
+        dataSource.updateRows(MockTVItem.mockTVItems(identifiers: identifiers), section: sectionID, animated: true)
     }
 
     override func whenSelectingRow(row: Int, section: Int) {

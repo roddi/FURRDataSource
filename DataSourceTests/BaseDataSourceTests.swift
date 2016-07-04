@@ -129,19 +129,19 @@ class BaseDataSourceTests: XCTestCase {
 
     // MARK: - then
 
-    func thenNumberOfSectionsIs(numberOfSections: Int) {
+    func thenNumberOfSectionsIs(numberOfSections inNumberOfSections: Int) {
         XCTFail("needs to be overridden")
     }
 
-    func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
+    func thenNumberOfRowsIs(numberOfRows inNumberOfRows: Int, sectionIndex: Int) {
         XCTFail("needs to be overridden")
     }
 
-    func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
+    func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         XCTFail("needs to be overridden")
     }
 
-    func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
+    func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         XCTFail("needs to be overridden")
     }
 
@@ -149,7 +149,7 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func thenCanMoveItemAtRow(row: Int, section: Int, canMove: Bool) {
+    func thenCanMoveItem(atRow row: Int, section: Int, canMove: Bool) {
         XCTFail("needs to be overridden")
     }
 
@@ -160,7 +160,7 @@ class BaseDataSourceTests: XCTestCase {
 
         var sections = ["a", "b", "c"]
         self.whenUpdatingSectionIDs(sections)
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
         XCTAssert(["a", "b", "c"] == self.sections())
 
         // test whether the data source hands out copies
@@ -168,13 +168,13 @@ class BaseDataSourceTests: XCTestCase {
         XCTAssert(sections != self.sections())
 
         self.whenUpdatingSectionIDs(["a", "d", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingSectionIDs(["a", "d", "c", "e"])
-        self.thenNumberOfSectionsIs(4)
+        self.thenNumberOfSectionsIs(numberOfSections: 4)
 
         self.whenUpdatingSectionIDs([])
-        self.thenNumberOfSectionsIs(0)
+        self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         var didFail = false
         self.setFailFunc({ (msg) -> Void in didFail = true })
@@ -196,21 +196,21 @@ class BaseDataSourceTests: XCTestCase {
         XCTAssert(didWarn)
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
 
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[0, 0], [1, 0], [2, 0]])
-        self.thenDeletionRowsSectionsAre([])
-        XCTAssert(MockTVItem.mockTVItemsForIdentifiers(["0", "1", "2"]) == (self.rowsForSection("a")))
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.rowsForSection("a")))
 
         self.givenDiffsAreCleared()
 
         self.whenUpdatingRowsWithIdentifiers(["0", "2", "3"], sectionID: "a")
-        self.thenNumberOfSectionsIs(3)
-        self.thenInsertionRowsSectionsAre([[2, 0]])
-        self.thenDeletionRowsSectionsAre([[1, 0]])
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
+        self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         var didFail = false
         self.setFailFunc({ (msg) -> Void in didFail = true })
@@ -222,24 +222,24 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
         self.givenDiffsAreCleared()
 
         self.whenUpdatingRowsWithIdentifiers(["0", "5", "4", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(4, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([[1, 0], [2, 0]])
-        self.thenDeletionRowsSectionsAre([[1, 0]])
+        self.thenNumberOfRowsIs(numberOfRows: 4, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         self.givenDiffsAreCleared()
 
         print("")
 
         self.whenUpdatingRowsWithIdentifiers(["0", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(2, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1, 0], [2, 0]])
+        self.thenNumberOfRowsIs(numberOfRows: 2, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
 
         self.givenDiffsAreCleared()
 
@@ -247,15 +247,15 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDiffsAreCleared()
 
         self.whenUpdatingRowsWithIdentifiers(["0", "2", "4"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
-        self.thenInsertionRowsSectionsAre([])
-        self.thenDeletionRowsSectionsAre([[1, 0], [3, 0], [5, 0]])
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
     }
 
     func baseTestDataSourceWhenCompletelyEmpty() {
         self.givenDelegateAndDataSource()
 
-        self.thenNumberOfSectionsIs(0)
+        self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         // note: asking for the number of rows in section 0 would result in a fail as we don't have a sectionID.
     }
@@ -265,10 +265,10 @@ class BaseDataSourceTests: XCTestCase {
         self.givenWillAllowSelectInSectionID("a", rowID: "1")
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
         self.whenSelectingRow(1, section: 0)
         self.thenCanSelectHandlerWasCalled()
@@ -279,13 +279,13 @@ class BaseDataSourceTests: XCTestCase {
         self.givenCanMoveItemAtSectionID("a", rowID: "2")
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
-        self.thenCanMoveItemAtRow(2, section: 0, canMove: true)
-        self.thenCanMoveItemAtRow(1, section: 0, canMove: false)
+        self.thenCanMoveItem(atRow: 2, section: 0, canMove: true)
+        self.thenCanMoveItem(atRow: 1, section: 0, canMove: false)
     }
 
     func baseTestMove() {
@@ -295,10 +295,10 @@ class BaseDataSourceTests: XCTestCase {
 
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
         self.whenMovingRow(2, sourceSection: 0, toRow: 1, toSection: 0)
     }
@@ -309,10 +309,10 @@ class BaseDataSourceTests: XCTestCase {
         self.givenExpectRowIDsAfterMove(["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
-        self.thenNumberOfSectionsIs(3)
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
 
         self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
-        self.thenNumberOfRowsIs(3, sectionIndex: 0)
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
         self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
     }

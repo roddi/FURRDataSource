@@ -192,7 +192,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.updateRows(MockTVItem.mockTVItemsForIdentifiers(identifiers), section: sectionID, animated: true)
+        dataSource.updateRows(MockTVItem.mockTVItems(identifiers: identifiers), section: sectionID, animated: true)
     }
 
     override func whenSelectingRow(row: Int, section: Int) {
@@ -221,7 +221,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     }
     // MARK: - then
 
-    override func thenNumberOfSectionsIs(numberOfSections: Int) {
+    override func thenNumberOfSectionsIs(numberOfSections numberOfSections: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -234,7 +234,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     }
 
     // should be called thenNumberOfItemsIs(...). Any volunteers for a pull request?
-    override func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
+    override func thenNumberOfRowsIs(numberOfRows numberOfRows: Int, sectionIndex: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -246,7 +246,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.collectionView(collectionView, numberOfItemsInSection: sectionIndex) == numberOfRows)
     }
 
-    override func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
+    override func thenInsertionRowsSectionsAre(indexPaths indexPaths: [[Int]]) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
@@ -257,13 +257,13 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(collectionView.insertionRowIndexPaths == realIndexPaths)
     }
 
-    override func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
+    override func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
         }
 
-        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(collectionView.deletionRowIndexPaths == realIndexPaths)
     }
@@ -272,7 +272,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(self.didCallDidSelectHandler)
     }
 
-    override func thenCanMoveItemAtRow(row: Int, section: Int, canMove: Bool) {
+    override func thenCanMoveItem(atRow row: Int, section: Int, canMove: Bool) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
