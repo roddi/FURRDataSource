@@ -6,10 +6,44 @@
 //  Copyright © 2016 Ruotger Deecke. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+enum CompatTableViewCellEditingStyle {
+    case delete
+    case insert
+    case none
+}
+
 
 #if swift(>=3.0)
     public typealias IndexPathway = IndexPath
+
+    extension CompatTableViewCellEditingStyle {
+        init(editingStyle: UITableViewCellEditingStyle) {
+            switch editingStyle {
+            case .delete:
+                self = .delete
+            case .insert:
+                self = .insert
+            case .none:
+                self = .none
+            }
+        }
+    }
+
 #else
     public typealias IndexPathway = NSIndexPath
+
+    extension CompatTableViewCellEditingStyle {
+    init(editingStyle: UITableViewCellEditingStyle) {
+    switch editingStyle {
+    case .delete:
+    self = .delete
+    case .insert:
+    self = .insert
+    case .none:
+    self = .none
+    }
+    }
+    }
 #endif
