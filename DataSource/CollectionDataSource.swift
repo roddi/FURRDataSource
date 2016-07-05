@@ -67,9 +67,21 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         self.engine.endUpdates = {}
         self.engine.deleteSections = { indexSet in self.collectionView.deleteSections(indexSet) }
         self.engine.insertSections = { indexSet in self.collectionView.insertSections(indexSet) }
-        self.engine.insertRowsAtIndexPaths = { indexPaths in self.collectionView.insertItemsAtIndexPaths(indexPaths) }
-        self.engine.deleteRowsAtIndexPaths = { indexPaths in self.collectionView.deleteItemsAtIndexPaths(indexPaths) }
-}
+        self.engine.insertRowsAtIndexPaths = { indexPaths in
+            #if swift(>=3.0)
+                self.collectionView.insertItems(at: indexPaths)
+            #else
+                self.collectionView.insertItemsAtIndexPaths(indexPaths)
+            #endif
+        }
+        self.engine.deleteRowsAtIndexPaths = { indexPaths in
+            #if swift(>=3.0)
+                self.collectionView.deleteItems(at: indexPaths)
+            #else
+                self.collectionView.deleteItemsAtIndexPaths(indexPaths)
+            #endif
+        }
+    }
 
     // MARK: - querying
     public func sections() -> [String] {
@@ -81,7 +93,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return self.engine.rows(forSection: section)
     }
 
-    public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
+    public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
@@ -90,7 +102,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             return nil
         }
 
+        #if swift(>=3.0)
+        return self.collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+            #else
         return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
+            #endif
     }
 
     func selectedLocations() -> [Location<T>] {
@@ -120,15 +136,31 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     // MARK: - delegate / data source
-    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.engine.numberOfRows(forSectionIndex: section)
     }
 
+
+    #if swift(>=3.0)
+    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+                return self.engine.sections().count
+    }
+    #else
     public func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return self.engine.sections().count
     }
+    #endif
 
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    #if swift(>=3.0)
+    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        return private_collectionView(collectionView, cellForItemAt: indexPath)
+    }
+    #else
+    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: IndexPathway) -> UICollectionViewCell {
+        return private_collectionView(collectionView, cellForItemAt: indexPath)
+    }
+    #endif
+    private func private_collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }
@@ -136,7 +168,17 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return self.cell(forLocation: location)
     }
 
+
+    #if swift(>=3.0)
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        private_collectionView(collectionView, didSelectItemAt: indexPath)
+    }
+    #else
     public func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        private_collectionView(collectionView, didSelectItemAt: indexPath)
+    }
+    #endif
+    private func private_collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let callback = self.didSelect else {
             return
         }
@@ -148,7 +190,17 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         callback(inLocation: location)
     }
 
-    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+    #if swift(>=3.0)
+    public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPathway) -> Bool {
+        return private_collectionView(collectionView: collectionView, canMoveItemAtIndexPath: indexPath)
+    }
+    #else
+    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: IndexPathway) -> Bool {
+        return private_collectionView(collectionView: collectionView, canMoveItemAtIndexPath: indexPath)
+    }
+    #endif
+
+    private func private_collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: IndexPathway) -> Bool {
 
         guard let canActuallyMove = self.canMove else {
             // callback not implemented, so... no, you can't!
@@ -162,7 +214,18 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return canActuallyMove(toLocation: location)
     }
 
-    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
+    #if swift(>=3.0)
+    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPathway, to destinationIndexPath: IndexPathway) {
+        return private_collectionView(collectionView: collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
+    }
+    #else
+    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: IndexPathway, toIndexPath destinationIndexPath: IndexPathway) {
+    return private_collectionView(collectionView: collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
+    }
+    #endif
+
+
+    private func private_collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: IndexPathway, toIndexPath destinationIndexPath: IndexPathway) {
         self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
     }
 }

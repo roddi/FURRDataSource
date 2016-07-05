@@ -323,7 +323,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - private
 
-    func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> NSIndexPath? {
+    func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> IndexPathway? {
         guard let sectionIndex = sectionIndex(forSectionID: inSectionID) else {
             return nil
         }
