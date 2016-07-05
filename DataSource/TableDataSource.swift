@@ -175,7 +175,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-    return private_numberOfSectionsInTableView(tableView: tableView)
+        return private_numberOfSectionsInTableView(tableView)
     }
     #endif
     private func private_numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -190,7 +190,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        return private_tableView(tableView: tableView, numberOfRowsInSection: section)
+        return private_tableView(tableView, numberOfRowsInSection: inSection)
     }
     #endif
     private func private_tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
@@ -205,7 +205,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        return private_tableView(tableView: tableView, cellForRowAtIndexPath: indexPath)
+        return private_tableView(tableView, cellForRowAtIndexPath: indexPath)
     }
     #endif
     private func private_tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -223,10 +223,10 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-    return private_tableView(tableView: tableView, canMoveRowAtIndexPath: indexPath)
+        return private_tableView(tableView, canMoveRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    private func private_tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: IndexPathway) -> Bool {
         guard let canActuallyMove = self.canMove else {
             // callback not implemented, so... no, you can't!
             return false
@@ -255,7 +255,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: NSIndexPath, toProposedIndexPath proposedDestinationIndexPath: NSIndexPath) -> NSIndexPath {
-    return private_tableView(tableView: tableView, targetIndexPathForMoveFromRowAtIndexPath: sourceIndexPath, toProposedIndexPath: targetMovedItem)
+        return private_tableView(tableView, targetIndexPathForMoveFromRowAtIndexPath: sourceIndexPath, toProposedIndexPath: proposedDestinationIndexPath)
     }
     #endif
     private func private_tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: IndexPathway, toProposedIndexPath proposedDestinationIndexPath: IndexPathway) -> IndexPathway {
@@ -306,7 +306,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        private_tableView(tableView: tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
+        private_tableView(tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
     }
     #endif
     private func private_tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -359,7 +359,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return private_tableView(tableView: tableView, canEditRowAtIndexPath: indexPath)
+        return private_tableView(tableView, canEditRowAtIndexPath: indexPath)
     }
     #endif
     private func private_tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
@@ -380,7 +380,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-    return private_tableView(tableView: tableView, titleForHeaderInSection: section)
+        return private_tableView(tableView, titleForHeaderInSection: section)
     }
     #endif
     private func private_tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -403,6 +403,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return private_tableView(tableView, titleForFooterInSection: section)
     }
     #endif
     private func private_tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -426,7 +427,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #else
     public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        private_tableView(tableView: tableView, didSelectRowAtIndexPath: indexPath)
+        private_tableView(tableView, didSelectRowAtIndexPath: indexPath)
     }
     #endif
     private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

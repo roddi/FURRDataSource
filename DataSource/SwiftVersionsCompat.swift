@@ -35,15 +35,15 @@ enum CompatTableViewCellEditingStyle {
     public typealias IndexPathway = NSIndexPath
 
     extension CompatTableViewCellEditingStyle {
-    init(editingStyle: UITableViewCellEditingStyle) {
-    switch editingStyle {
-    case .delete:
-    self = .delete
-    case .insert:
-    self = .insert
-    case .none:
-    self = .none
-    }
-    }
+        init(editingStyle: UITableViewCellEditingStyle) {
+            switch editingStyle {
+            case .Delete:
+                self = .delete
+            case .Insert:
+                self = .insert
+            case .None:
+                self = .none
+            }
+        }
     }
 #endif
