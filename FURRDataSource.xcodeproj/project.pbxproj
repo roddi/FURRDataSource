@@ -17,6 +17,7 @@
 		DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */; };
 		DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB361C31718000E5F7FA /* CollectionDataSource.swift */; };
 		DD4A260D1D2C216E00E5F7FA /* SwiftVersionsCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */; };
+		DD4A260E1D2C2A2E00E5F7FA /* SwiftVersionsCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */; };
 		DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */; };
 		DD6449291BCD297100E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449271BCD297100E5F7FA /* FURRDiff.framework */; };
 		DD64492A1BCD297100E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449281BCD297100E5F7FA /* FURRExtensions.framework */; };
@@ -330,6 +331,7 @@
 				DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */,
 				DDBAF1BB1C2EA2A400E5F7FA /* DataSourceEngineTests.swift in Sources */,
 				DD6EAB3C1C32DDCB00E5F7FA /* DataItemProtocol.swift in Sources */,
+				DD4A260E1D2C2A2E00E5F7FA /* SwiftVersionsCompat.swift in Sources */,
 				5698BA4C1B8DD0CB008805E2 /* TableDataSourceTests.swift in Sources */,
 				DD6EAB331C3013F300E5F7FA /* TestHelpers.swift in Sources */,
 			);

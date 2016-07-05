@@ -215,7 +215,7 @@ class TableDataSourceTests: BaseDataSourceTests {
 
     // MARK: - then
 
-    override func thenNumberOfSectionsIs(numberOfSections: Int) {
+    override func thenNumberOfSectionsIs(numberOfSections inNumberOfSections: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -224,10 +224,10 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.numberOfSectionsInTableView(tableView) == numberOfSections, "...")
+        XCTAssert(dataSource.numberOfSectionsInTableView(tableView) == inNumberOfSections, "...")
     }
 
-    override func thenNumberOfRowsIs(numberOfRows: Int, sectionIndex: Int) {
+    override func thenNumberOfRowsIs(numberOfRows inNumberOfRows: Int, sectionIndex: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -236,27 +236,27 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: sectionIndex) == numberOfRows)
+        XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: sectionIndex) == inNumberOfRows)
     }
 
-    override func thenInsertionRowsSectionsAre(indexPaths: [[Int]]) {
+    override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         guard let tableView = self.tableView else {
             XCTFail("no table view")
             return
         }
 
-        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(tableView.insertionRowIndexPaths == realIndexPaths)
     }
 
-    override func thenDeletionRowsSectionsAre(indexPaths: [[Int]]) {
+    override func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         guard let tableView = self.tableView else {
             XCTFail("no table view")
             return
         }
 
-        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(tableView.deletionRowIndexPaths == realIndexPaths)
     }
@@ -265,7 +265,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         XCTAssert(self.didCallDidSelectHandler)
     }
 
-    override func thenCanMoveItemAtRow(row: Int, section: Int, canMove: Bool) {
+    override func thenCanMoveItem(atRow row: Int, section: Int, canMove: Bool) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return

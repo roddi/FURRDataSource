@@ -428,10 +428,10 @@ internal class DataSourceEngine <T where T: DataItem> {
         }
     }
     #else
-    func logWhenVerbose(@autoclosure message: () -> String) {
-    if self.reportingLevel == .Verbose {
-    print(message)
-    }
+    func logWhenVerbose(@autoclosure message inMessage: () -> String) {
+        if self.reportingLevel == .Verbose {
+            print(inMessage)
+        }
     }
     #endif
 }

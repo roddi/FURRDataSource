@@ -68,7 +68,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         self.cell = inCellForLocation
 
         super.init()
-        self.engine.logWhenVerbose("TableDataSource.init(,cellForLocation:)")
+        self.engine.logWhenVerbose(message: "TableDataSource.init(,cellForLocation:)")
         self.tableView.dataSource = self
         self.tableView.delegate = self
         self.engine.beginUpdates = {self.tableView.beginUpdates()}
@@ -132,19 +132,19 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         let sections = self.engine.sections()
-        self.engine.logWhenVerbose("TableDataSource.numberOfSectionsInTableView() -> \(sections.count)")
+        self.engine.logWhenVerbose(message: "TableDataSource.numberOfSectionsInTableView() -> \(sections.count)")
         return sections.count
     }
 
     public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
         let numberOfRows = self.engine.numberOfRows(forSectionIndex: inSection)
-        self.engine.logWhenVerbose("tableView(,numberOfRowsInSection: \(inSection)) -> \(numberOfRows)")
+        self.engine.logWhenVerbose(message: "tableView(,numberOfRowsInSection: \(inSection)) -> \(numberOfRows)")
         return numberOfRows
     }
 
 
     public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        self.engine.logWhenVerbose("tableView(,cellForRowAtIndexPath: \(indexPath))")
+        self.engine.logWhenVerbose(message:"tableView(,cellForRowAtIndexPath: \(indexPath))")
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }

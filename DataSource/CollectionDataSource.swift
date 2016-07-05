@@ -160,7 +160,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return private_collectionView(collectionView, cellForItemAt: indexPath)
     }
     #endif
-    private func private_collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    private func private_collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPathway) -> UICollectionViewCell {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }
@@ -178,7 +178,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         private_collectionView(collectionView, didSelectItemAt: indexPath)
     }
     #endif
-    private func private_collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    private func private_collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPathway) {
         guard let callback = self.didSelect else {
             return
         }
@@ -196,7 +196,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
     #else
     public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: IndexPathway) -> Bool {
-        return private_collectionView(collectionView: collectionView, canMoveItemAtIndexPath: indexPath)
+        return private_collectionView(collectionView, canMoveItemAtIndexPath: indexPath)
     }
     #endif
 
@@ -220,7 +220,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
     #else
     public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: IndexPathway, toIndexPath destinationIndexPath: IndexPathway) {
-    return private_collectionView(collectionView: collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
+    return private_collectionView(collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
     }
     #endif
 

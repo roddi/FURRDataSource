@@ -7,3 +7,9 @@
 //
 
 import Foundation
+
+#if swift(>=3.0)
+    public typealias IndexPathway = IndexPath
+#else
+    public typealias IndexPathway = NSIndexPath
+#endif
