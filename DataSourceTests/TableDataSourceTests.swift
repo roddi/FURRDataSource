@@ -29,7 +29,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         return dataSource.sections()
     }
 
-    override func rowsForSection(section: String) -> [MockTVItem] {
+    override func rows(forSection: String) -> [MockTVItem] {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return [] // <-- will fail anyway
@@ -38,7 +38,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         return dataSource.rowsForSection(section)
     }
 
-    override func setFailFunc(failFunc failFunc: (String) -> Void) {
+    override func setFunc(fail inFailFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -47,7 +47,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         dataSource.setFailFunc(failFunc)
     }
 
-    override func setWarnFunc(warnFunc warnFunc: (String) -> Void) {
+    override func setFunc(warn inWarnFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -56,13 +56,13 @@ class TableDataSourceTests: BaseDataSourceTests {
         dataSource.setWarnFunc(warnFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
+        dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
     }
 
     // MARK: - given
@@ -141,7 +141,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         tableView.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
-    override func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
+    override func givenExpectRowIDsAfterMove(rowIDs inRowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return

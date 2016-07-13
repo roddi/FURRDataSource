@@ -46,7 +46,11 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return UICollectionViewCell() // <-- will fail anyway
         }
-        let cell = dataSource.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: sectionID, item: inItem)
+        #if swift(>=3.0)
+            let cell = dataSource.dequeueReusableCellWithReuseIdentifier(reuseIdentifier: "Cell", sectionID: sectionID, item: inItem)
+        #else
+            let cell = dataSource.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: sectionID, item: inItem)
+        #endif
 
         if let cell_ = cell {
             return cell_
@@ -64,7 +68,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         return dataSource.sections()
     }
 
-    override func rowsForSection(section: String) -> [MockTVItem] {
+    override func rows(forSection: String) -> [MockTVItem] {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return [] // <-- will fail anyway
@@ -73,7 +77,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         return dataSource.rowsForSection(section)
     }
 
-    override func setFailFunc(failFunc failFunc: (String) -> Void) {
+    override func setFunc(fail inFailFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -82,7 +86,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.setFailFunc(failFunc)
     }
 
-    override func setWarnFunc(warnFunc warnFunc: (String) -> Void) {
+    override func setFunc(warn warnFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -91,13 +95,13 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.setWarnFunc(warnFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
+        dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
     }
 
     // MARK: - given
@@ -133,7 +137,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         collectionView.deletionSectionIndexSet = NSMutableIndexSet()
     }
 
-    override func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
+    override func givenWillAllowSelect(sectionID inSectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -146,7 +150,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         }
     }
 
-    override func givenCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+    override func givenCanMoveItem(atSectionID inSectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -186,16 +190,16 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.updateSections(sectionIDs, animated: true)
     }
 
-    override func whenUpdatingRowsWithIdentifiers(identifiers: [String], sectionID: String) {
+    override func whenUpdating(rowsWithIdentifiers inRows: [String], sectionID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        dataSource.updateRows(MockTVItem.mockTVItems(identifiers: identifiers), section: sectionID, animated: true)
+        dataSource.updateRows(MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
     }
 
-    override func whenSelectingRow(row: Int, section: Int) {
+    override func whenSelecting(row inRow: Int, section: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -208,7 +212,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.collectionView(collectionView, didSelectItemAtIndexPath: indexPath)
     }
 
-    override func whenMovingRow(sourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
+    override func whenMoving(sourceRow inSourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return

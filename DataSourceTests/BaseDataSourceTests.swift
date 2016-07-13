@@ -70,16 +70,16 @@ class BaseDataSourceTests: XCTestCase {
         return []
     }
 
-    func rowsForSection(section: String) -> [MockTVItem] {
+    func rows(forSection: String) -> [MockTVItem] {
         XCTFail("needs to be overridden")
         return []
     }
 
-    func setFailFunc(failFunc inFailFunc: (String) -> Void) {
+    func setFunc(fail inFailFunc: (String) -> Void) {
         XCTFail("needs to be overridden")
     }
 
-    func setWarnFunc(warnFunc inWarnFunc: (String) -> Void) {
+    func setFunc(warn inWarnFunc: (String) -> Void) {
         XCTFail("needs to be overridden")
     }
 
@@ -97,11 +97,11 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func givenWillAllowSelectInSectionID(sectionID: String, rowID inRowID: String) {
+    func givenWillAllowSelect(sectionID inSectionID: String, rowID inRowID: String) {
         XCTFail("needs to be overridden")
     }
 
-    func givenCanMoveItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+    func givenCanMoveItem(atSectionID inSectionID: String, rowID inRowID: String) {
         XCTFail("needs to be overridden")
     }
 
@@ -124,15 +124,15 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func whenUpdatingRowsWithIdentifiers(identifiers: [String], sectionID: String) {
+    func whenUpdating(rowsWithIdentifiers inRows: [String], sectionID: String) {
         XCTFail("needs to be overridden")
     }
 
-    func whenSelectingRow(row: Int, section: Int) {
+    func whenSelecting(row inRow: Int, section: Int) {
         XCTFail("needs to be overridden")
     }
 
-    func whenMovingRow(sourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
+    func whenMoving(sourceRow inSourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
         XCTFail("needs to be overridden")
     }
 
@@ -186,7 +186,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         var didFail = false
-        self.setFailFunc(failFunc: { (msg) -> Void in didFail = true })
+        self.setFunc(fail: { (msg) -> Void in didFail = true })
 
         self.whenUpdatingSectionIDs(["a", "a", "a"])
         XCTAssert(didFail)
@@ -196,34 +196,34 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         var didWarn = false
-        self.setWarnFunc(warnFunc: { (message: String?) -> Void in
+        self.setFunc(warn: { (message: String?) -> Void in
             didWarn = true
         })
 
         // trying to update non-existing section
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
         XCTAssert(didWarn)
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
 
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [])
-        XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.rowsForSection("a")))
+        XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.rows(forSection: "a")))
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "2", "3"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "2", "3"], sectionID: "a")
         self.thenNumberOfSectionsIs(numberOfSections: 3)
         self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         var didFail = false
-        self.setFailFunc(failFunc: { (msg) -> Void in didFail = true })
-        self.whenUpdatingRowsWithIdentifiers(["0", "0", "0"], sectionID: "a")
+        self.setFunc(fail: { (msg) -> Void in didFail = true })
+        self.whenUpdating(rowsWithIdentifiers: ["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
     }
 
@@ -233,10 +233,10 @@ class BaseDataSourceTests: XCTestCase {
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "5", "4", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "5", "4", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 4, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
@@ -245,17 +245,17 @@ class BaseDataSourceTests: XCTestCase {
 
         print("")
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
 
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3", "4", "5"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2", "3", "4", "5"], sectionID: "a")
         self.givenDiffsAreCleared()
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "2", "4"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "2", "4"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
@@ -271,26 +271,26 @@ class BaseDataSourceTests: XCTestCase {
 
     func baseTestDidSelect() {
         self.givenDelegateAndDataSource()
-        self.givenWillAllowSelectInSectionID("a", rowID: "1")
+        self.givenWillAllowSelect(sectionID: "a", rowID: "1")
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
-        self.whenSelectingRow(1, section: 0)
+        self.whenSelecting(row: 1, section: 0)
         self.thenCanSelectHandlerWasCalled()
     }
 
     func baseTestCanMove() {
         self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "2")
+        self.givenCanMoveItem(atSectionID: "a", rowID: "2")
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
         self.thenCanMoveItem(atRow: 2, section: 0, canMove: true)
@@ -299,43 +299,47 @@ class BaseDataSourceTests: XCTestCase {
 
     func baseTestMove() {
         self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "2")
-        self.givenExpectRowIDsAfterMove(["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
+        self.givenCanMoveItem(atSectionID: "a", rowID: "2")
+        self.givenExpectRowIDsAfterMove(rowIDs: ["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
 
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
-        self.whenMovingRow(2, sourceSection: 0, toRow: 1, toSection: 0)
+        self.whenMoving(sourceRow: 2, sourceSection: 0, toRow: 1, toSection: 0)
     }
 
     func baseTestMoveBeyondLastItem() {
         self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "1")
-        self.givenExpectRowIDsAfterMove(["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
+        self.givenCanMoveItem(atSectionID: "a", rowID: "1")
+        self.givenExpectRowIDsAfterMove(rowIDs: ["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "a")
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
 
-        self.whenMovingRow(1, sourceSection: 0, toRow: 3, toSection: 0)
+        self.whenMoving(sourceRow: 1, sourceSection: 0, toRow: 3, toSection: 0)
     }
 
     func baseTestMoveAcrossSections() {
         self.givenDelegateAndDataSource()
-        self.givenCanMoveItemAtSectionID("a", rowID: "3")
+        self.givenCanMoveItem(atSectionID: "a", rowID: "3")
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
 
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2", "3"], sectionID: "a")
-        self.whenUpdatingRowsWithIdentifiers(["0", "1", "2"], sectionID: "b")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2", "3"], sectionID: "a")
+        self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "b")
 
-        let expectation = expectationWithDescription("sections changed callback")
+        #if swift(>=3.0)
+            let expectation = self.expectation(withDescription: "sections changed callback")
+        #else
+            let expectation = expectationWithDescription("sections changed callback")
+        #endif
 
         self.setDidChangeSectionIDsFunc(didChangeFunc: { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             expectation.fulfill()
@@ -364,9 +368,13 @@ class BaseDataSourceTests: XCTestCase {
             XCTAssert(mappedIDsB == ["0", "1", "3", "2"])
         })
 
-        self.whenMovingRow(3, sourceSection: 0, toRow: 2, toSection: 1)
+        self.whenMoving(sourceRow: 3, sourceSection: 0, toRow: 2, toSection: 1)
 
-        self.waitForExpectationsWithTimeout(10, handler: nil)
+        #if swift(>=3.0)
+            self.waitForExpectations(withTimeout: 10, handler: nil)
+        #else
+            self.waitForExpectationsWithTimeout(10, handler: nil)
+        #endif
     }
 
 }
