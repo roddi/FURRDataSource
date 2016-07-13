@@ -68,17 +68,17 @@ enum CompatTableViewCellStyle {
     }
 
     extension CompatTableViewCellStyle {
-    func uiStyle() -> UITableViewCellStyle {
-    switch self {
-    case .default:
-    return UITableViewCellStyle.default
-    case .value1:
-    return UITableViewCellStyle.value1
-    case .value2:
-    return UITableViewCellStyle.value2
-    case .subtitle:
-    return UITableViewCellStyle.subtitle
-    }
-    }
+        func uiStyle() -> UITableViewCellStyle {
+            switch self {
+            case `default`:
+                return UITableViewCellStyle.Default
+            case value1:
+                return UITableViewCellStyle.Value1
+            case value2:
+                return UITableViewCellStyle.Value2
+            case subtitle:
+                return UITableViewCellStyle.Subtitle
+            }
+        }
     }
 #endif

@@ -14,6 +14,7 @@
 		5698BA811B8DD292008805E2 /* TableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* TableDataSource.swift */; };
 		DD04FBEC1C59FB8200E5F7FA /* BaseDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD04FBEB1C59FB8200E5F7FA /* BaseDataSourceTests.swift */; };
 		DD3242911D36A29C00E5F7FA /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3242901D36A29C00E5F7FA /* Reporting.swift */; };
+		DD3242921D36C4FB00E5F7FA /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3242901D36A29C00E5F7FA /* Reporting.swift */; };
 		DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */; };
 		DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */; };
 		DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB361C31718000E5F7FA /* CollectionDataSource.swift */; };
@@ -337,6 +338,7 @@
 				DD6EAB3C1C32DDCB00E5F7FA /* DataItemProtocol.swift in Sources */,
 				DD4A260E1D2C2A2E00E5F7FA /* SwiftVersionsCompat.swift in Sources */,
 				5698BA4C1B8DD0CB008805E2 /* TableDataSourceTests.swift in Sources */,
+				DD3242921D36C4FB00E5F7FA /* Reporting.swift in Sources */,
 				DD6EAB331C3013F300E5F7FA /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

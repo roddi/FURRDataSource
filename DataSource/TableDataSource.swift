@@ -1,4 +1,6 @@
 // swiftlint:disable line_length
+// swiftlint:disable file_length
+// swiftlint:disable type_body_length
 //
 //  TableDataSource.swift
 //  DBDB

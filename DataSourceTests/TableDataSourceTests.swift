@@ -38,7 +38,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         return dataSource.rowsForSection(section)
     }
 
-    override func setFailFunc(failFunc: (String) -> Void) {
+    override func setFailFunc(failFunc failFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -47,7 +47,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         dataSource.setFailFunc(failFunc)
     }
 
-    override func setWarnFunc(warnFunc: (String) -> Void) {
+    override func setWarnFunc(warnFunc warnFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -56,7 +56,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         dataSource.setWarnFunc(warnFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setDidChangeSectionIDsFunc(didChangeFunc didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -170,7 +170,7 @@ class TableDataSourceTests: BaseDataSourceTests {
 
     // MARK: - when
 
-    override func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
+    override func whenUpdating(sectionIDs inSectionIDs: Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return

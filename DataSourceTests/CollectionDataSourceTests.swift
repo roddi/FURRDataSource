@@ -73,31 +73,31 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         return dataSource.rowsForSection(section)
     }
 
-    override func setFailFunc(failFunc: (String) -> Void) {
+    override func setFailFunc(failFunc failFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        dataSource.setFailFunc(failFunc: failFunc)
+        dataSource.setFailFunc(failFunc)
     }
 
-    override func setWarnFunc(warnFunc: (String) -> Void) {
+    override func setWarnFunc(warnFunc warnFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        dataSource.setWarnFunc(warnFunc: warnFunc)
+        dataSource.setWarnFunc(warnFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setDidChangeSectionIDsFunc(didChangeFunc didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeFunc)
+        dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
     }
 
     // MARK: - given
@@ -161,7 +161,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.setDidChangeSectionIDsFunc(didChangeFunc: { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -183,7 +183,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.updateSections(inSectionIDs, animated: true)
+        dataSource.updateSections(sectionIDs, animated: true)
     }
 
     override func whenUpdatingRowsWithIdentifiers(identifiers: [String], sectionID: String) {
@@ -243,7 +243,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no collection view")
             return
         }
-        XCTAssert(dataSource.collectionView(collectionView, numberOfItemsInSection: sectionIndex) == numberOfRows)
+        XCTAssert(dataSource.collectionView(collectionView, numberOfItemsInSection: sectionIndex) == inNumberOfRows)
     }
 
     override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
@@ -252,7 +252,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        let realIndexPaths = indexPaths.map(testHelper_indexListMapper())
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
         XCTAssert(collectionView.insertionRowIndexPaths == realIndexPaths)
     }

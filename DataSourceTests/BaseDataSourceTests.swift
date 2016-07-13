@@ -111,17 +111,16 @@ class BaseDataSourceTests: XCTestCase {
 
     // MARK: - when
     #if swift(>=3.0)
-    func whenUpdatingSectionIDs(_ inSectionIDs: Array<String>) {
+    final func whenUpdatingSectionIDs(_ inSectionIDs: Array<String>) {
         self.whenUpdating(sectionIDs: inSectionIDs)
     }
     #else
-    func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
-    xxx
-        XCTFail("needs to be overridden")
+    final func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
+        self.whenUpdating(sectionIDs: inSectionIDs)
     }
     #endif
 
-    func whenUpdating(sectionIDs: Array<String>) {
+    func whenUpdating(sectionIDs inSectionIDs: Array<String>) {
         XCTFail("needs to be overridden")
     }
 
@@ -338,8 +337,7 @@ class BaseDataSourceTests: XCTestCase {
 
         let expectation = expectationWithDescription("sections changed callback")
 
-
-        self.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        self.setDidChangeSectionIDsFunc(didChangeFunc: { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             expectation.fulfill()
             XCTAssert(inSectionIDs.count == 2, "should be only two sections")
 
