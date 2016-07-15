@@ -144,9 +144,15 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     // MARK: - delegate / data source
+    #if swift(>=3.0)
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    return self.engine.numberOfRows(forSectionIndex: section)
+    }
+    #else
+    public func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.engine.numberOfRows(forSectionIndex: section)
     }
+    #endif
 
 
     #if swift(>=3.0)
@@ -168,7 +174,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return private_collectionView(collectionView, cellForItemAt: indexPath)
     }
     #endif
-    private func private_collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPathway) -> UICollectionViewCell {
+    private func private_collectionView(collectionView: UICollectionView, cellForItemAt indexPath: IndexPathway) -> UICollectionViewCell {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }
@@ -186,7 +192,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         private_collectionView(collectionView, didSelectItemAt: indexPath)
     }
     #endif
-    private func private_collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPathway) {
+    private func private_collectionView(collectionView: UICollectionView, didSelectItemAt indexPath: IndexPathway) {
         guard let callback = self.didSelect else {
             return
         }

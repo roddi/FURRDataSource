@@ -74,7 +74,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return [] // <-- will fail anyway
         }
 
-        return dataSource.rowsForSection(section)
+        return dataSource.rowsForSection(forSection)
     }
 
     override func setFunc(fail inFailFunc: (String) -> Void) {
@@ -83,7 +83,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.setFailFunc(failFunc)
+        dataSource.setFailFunc(inFailFunc)
     }
 
     override func setFunc(warn warnFunc: (String) -> Void) {
@@ -160,7 +160,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         }
     }
 
-    override func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
+    override func givenExpectRowIDsAfterMove(rowIDs inRowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -177,17 +177,17 @@ class CollectionDataSourceTests: BaseDataSourceTests {
                 return item.identifier
             })
 
-            XCTAssert(mappedIDs == rowIDs)
+            XCTAssert(mappedIDs == inRowIDs)
         })
     }
     // MARK: - when
 
-    override func whenUpdating(sectionIDs: Array<String>) {
+    override func whenUpdating(sectionIDs inSectionIDs: Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-        dataSource.updateSections(sectionIDs, animated: true)
+        dataSource.updateSections(inSectionIDs, animated: true)
     }
 
     override func whenUpdating(rowsWithIdentifiers inRows: [String], sectionID: String) {
@@ -208,7 +208,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        let indexPath = NSIndexPath(forRow: row, inSection: section)
+        let indexPath = NSIndexPath(forRow: inRow, inSection: section)
         dataSource.collectionView(collectionView, didSelectItemAtIndexPath: indexPath)
     }
 
@@ -221,7 +221,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        dataSource.collectionView(collectionView, moveItemAtIndexPath: NSIndexPath(forRow: sourceRow, inSection: sourceSection), toIndexPath: NSIndexPath(forRow: destinationRow, inSection: destinationSection))
+        dataSource.collectionView(collectionView, moveItemAtIndexPath: NSIndexPath(forRow: inSourceRow, inSection: sourceSection), toIndexPath: NSIndexPath(forRow: destinationRow, inSection: destinationSection))
     }
     // MARK: - then
 

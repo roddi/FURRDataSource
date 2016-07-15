@@ -70,6 +70,13 @@ class BaseDataSourceTests: XCTestCase {
         return []
     }
 
+    #if !swift(>=3.0)
+    final func rows(forSection inSection: String) -> [MockTVItem] {
+        return rows(inSection)
+    }
+
+    #endif
+
     func rows(forSection: String) -> [MockTVItem] {
         XCTFail("needs to be overridden")
         return []
@@ -105,7 +112,7 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func givenExpectRowIDsAfterMove(rowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
+    func givenExpectRowIDsAfterMove(rowIDs inRowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
         XCTFail("needs to be overridden")
     }
 
