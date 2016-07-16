@@ -43,8 +43,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-
-        dataSource.setFailFunc(inFailFunc)
+        #if swift(>=3.0)
+            dataSource.setFunc(fail: inFailFunc)
+            #else
+            dataSource.setFailFunc(inFailFunc)
+            #endif
     }
 
     override func setFunc(warn inWarnFunc: (String) -> Void) {
@@ -53,7 +56,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.setWarnFunc(inWarnFunc)
+        #if swift(>=3.0)
+            dataSource.setFunc(warn: inWarnFunc)
+        #else
+            dataSource.setWarnFunc(inWarnFunc)
+        #endif
     }
 
     override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
@@ -62,21 +69,33 @@ class TableDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
+        #if swift(>=3.0)
+            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: inDidChangeFunc)
+        #else
+            dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
+        #endif
     }
 
     // MARK: - given
 
     override func givenDelegateAndDataSource() {
-        self.tableView = MockTableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: .Plain)
+        self.tableView = MockTableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: CompatUITableViewStyle.plain.uiStyle())
         guard let tableView = self.tableView else {
             XCTFail("could not instantiate table view")
             return
         }
         self.dataSource = TableDataSource<MockTVItem>(tableView: tableView) { (inLocation: Location<MockTVItem>) -> UITableViewCell in
-            cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: tableView)
+            #if swift(>=3.0)
+                return cellForSectionID(inSectionID: inLocation.sectionID, item: inLocation.item, tableView: tableView)
+            #else
+                return cellForSectionID(inLocation.sectionID, item: inLocation.item, tableView: tableView)
+            #endif
         }
-        self.dataSource?.setReportingLevel(.PreCondition)
+        #if swift(>=3.0)
+            self.dataSource?.setReportingLevel(level: .PreCondition)
+        #else
+            self.dataSource?.setReportingLevel(.PreCondition)
+        #endif
 
         tableView.insertRowsCallback = { print("insert rows \($0)") }
         tableView.deleteRowsCallback = { print("delete rows \($0)") }
@@ -95,19 +114,19 @@ class TableDataSourceTests: BaseDataSourceTests {
         }
     }
 
-    func givenRetargetsToRowIDSectionID(rowID: String, sectionID: String) {
+    func givenRetargetsTo(rowID inRowID: String, sectionID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
 
-        let location = LocationWithOptionalItem(sectionID: sectionID, item: MockTVItem(identifier: rowID))
+        let location = LocationWithOptionalItem(sectionID: sectionID, item: MockTVItem(identifier: inRowID))
         dataSource.targetMovedItem = { (fromLocation: Location<MockTVItem>, proposedLocation: LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
             return location
         }
     }
 
-    func givenCanEditItemAtSectionID(inSectionID: String, rowID inRowID: String) {
+    func givenCanEditItemAt(sectionID inSectionID: String, rowID inRowID: String) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -146,7 +165,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        let didChangeFunc = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -159,7 +178,12 @@ class TableDataSourceTests: BaseDataSourceTests {
             })
 
             XCTAssert(mappedIDs == inRowIDs)
-        })
+        }
+        #if swift(>=3.0)
+            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeFunc)
+        #else
+            dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
+        #endif
 
     }
 
@@ -175,7 +199,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.updateSections(inSectionIDs, animated: true)
+        #if swift(>=3.0)
+            dataSource.updateSections(inSections: inSectionIDs, animated: true)
+        #else
+            dataSource.updateSections(inSectionIDs, animated: true)
+        #endif
     }
 
     override func whenUpdating(rowsWithIdentifiers inRowIDs: [String], sectionID: String) {
@@ -184,7 +212,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.updateRows(MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
+        #if swift(>=3.0)
+            dataSource.updateRows(inRows: MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
+        #else
+            dataSource.updateRows(MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
+        #endif
     }
 
     override func whenSelecting(row inRow: Int, section: Int) {
@@ -196,8 +228,13 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        let indexPath = NSIndexPath(forRow: inRow, inSection: section)
-        dataSource.tableView(tableView, didSelectRowAtIndexPath: indexPath)
+        #if swift(>=3.0)
+            let indexPath = IndexPath(row: inRow, section: section)
+            dataSource.tableView(tableView, didSelectRowAt: indexPath)
+        #else
+            let indexPath = NSIndexPath(forRow: inRow, inSection: section)
+            dataSource.tableView(tableView, didSelectRowAtIndexPath: indexPath)
+        #endif
 
     }
 
@@ -210,7 +247,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        dataSource.tableView(tableView, moveRowAtIndexPath: NSIndexPath(forRow: inSourceRow, inSection: sourceSection), toIndexPath: NSIndexPath(forRow: destinationRow, inSection: destinationSection))
+        #if swift(>=3.0)
+            dataSource.tableView(tableView, moveRowAt: IndexPath(row: inSourceRow, section: sourceSection), to: IndexPath(row: destinationRow, section: destinationSection))
+        #else
+            dataSource.tableView(tableView, moveRowAtIndexPath: NSIndexPath(forRow: inSourceRow, inSection: sourceSection), toIndexPath: NSIndexPath(forRow: destinationRow, inSection: destinationSection))
+        #endif
     }
 
     // MARK: - then
@@ -224,7 +265,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.numberOfSectionsInTableView(tableView) == inNumberOfSections, "...")
+        #if swift(>=3.0)
+            XCTAssert(dataSource.numberOfSections(in: tableView) == inNumberOfSections, "...")
+        #else
+            XCTAssert(dataSource.numberOfSectionsInTableView(tableView) == inNumberOfSections, "...")
+        #endif
     }
 
     override func thenNumberOfRowsIs(numberOfRows inNumberOfRows: Int, sectionIndex: Int) {
@@ -274,11 +319,15 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        XCTAssert(dataSource.tableView(tableView, canMoveRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
+        #if swift(>=3.0)
+            XCTAssert(dataSource.tableView(tableView, canMoveRowAt: IndexPath(row: row, section: section)) == canMove)
+        #else
+            XCTAssert(dataSource.tableView(tableView, canMoveRowAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
+        #endif
 
     }
 
-    func thenCanEditItemAtRow(row: Int, section: Int, canMove: Bool) {
+    func thenCanEditItem(atRow inRow: Int, section: Int, canMove: Bool) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -287,8 +336,13 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        let indexPath = NSIndexPath(forRow: row, inSection: section)
-        XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: indexPath) == canMove)
+        #if swift(>=3.0)
+            let indexPath = IndexPath(row: inRow, section: section)
+            XCTAssert(dataSource.tableView(tableView, canEditRowAt: indexPath) == canMove)
+        #else
+            let indexPath = NSIndexPath(forRow: row, inSection: section)
+            XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: indexPath) == canMove)
+        #endif
     }
 
     func thenSectionHeaderTitle(forSectionIndex sectionIndex: Int, isString headerString: String, footerIsString footerString: String) {
@@ -349,7 +403,7 @@ class TableDataSourceTests: BaseDataSourceTests {
     func testMoveWithCorrectedTarget() {
         self.givenDelegateAndDataSource()
         self.givenCanMoveItem(atSectionID: "a", rowID: "3")
-        self.givenRetargetsToRowIDSectionID("1", sectionID: "a")
+        self.givenRetargetsTo(rowID: "1", sectionID: "a")
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
 
@@ -364,7 +418,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        let indexPath = dataSource.tableView(tableView, targetIndexPathForMoveFromRowAtIndexPath: NSIndexPath(forRow: 3, inSection: 0), toProposedIndexPath: NSIndexPath(forRow: 2, inSection: 0))
+        #if swift(>=3.0)
+            let indexPath = dataSource.tableView(tableView, targetIndexPathForMoveFromRowAt: IndexPath(row: 3, section: 0), toProposedIndexPath: IndexPath(row: 2, section: 0))
+        #else
+            let indexPath = dataSource.tableView(tableView, targetIndexPathForMoveFromRowAtIndexPath: NSIndexPath(forRow: 3, inSection: 0), toProposedIndexPath: NSIndexPath(forRow: 2, inSection: 0))
+        #endif
         XCTAssert(indexPath.section == 0)
         XCTAssert(indexPath.row == 1)
     }
@@ -372,15 +430,15 @@ class TableDataSourceTests: BaseDataSourceTests {
     // testing: optional func tableView(_ tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool
     func testCanEditItem() {
         self.givenDelegateAndDataSource()
-        self.givenCanEditItemAtSectionID("a", rowID: "1")
+        self.givenCanEditItemAt(sectionID: "a", rowID: "1")
 
         self.whenUpdatingSectionIDs(["a"])
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2", "3"], sectionID: "a")
 
-        self.thenCanEditItemAtRow(1, section: 0, canMove: true)
-        self.thenCanEditItemAtRow(0, section: 0, canMove: false)
-        self.thenCanEditItemAtRow(1000, section: 0, canMove: false)
-        self.thenCanEditItemAtRow(0, section: 1000, canMove: false)
+        self.thenCanEditItem(atRow: 1, section: 0, canMove: true)
+        self.thenCanEditItem(atRow: 0, section: 0, canMove: false)
+        self.thenCanEditItem(atRow: 1000, section: 0, canMove: false)
+        self.thenCanEditItem(atRow: 0, section: 1000, canMove: false)
     }
 
     func testDeleteItem() {
@@ -388,9 +446,15 @@ class TableDataSourceTests: BaseDataSourceTests {
         self.whenUpdatingSectionIDs(["a"])
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2", "3"], sectionID: "a")
 
-        let willDeleteExpectation = expectationWithDescription("will delete callback")
-        let didDeleteExpectation = expectationWithDescription("did delete callback")
-        let sectionChangedExpectation = expectationWithDescription("sections changed callback")
+        #if swift(>=3.0)
+            let willDeleteExpectation = expectation(withDescription: "will delete callback")
+            let didDeleteExpectation = expectation(withDescription: "did delete callback")
+            let sectionChangedExpectation = expectation(withDescription: "sections changed callback")
+        #else
+            let willDeleteExpectation = expectationWithDescription("will delete callback")
+            let didDeleteExpectation = expectationWithDescription("did delete callback")
+            let sectionChangedExpectation = expectationWithDescription("sections changed callback")
+        #endif
 
         guard let dataSource = self.dataSource else {
             XCTFail()
@@ -407,7 +471,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             didDeleteExpectation.fulfill()
         }
 
-        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        let didChangeFunc = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             sectionChangedExpectation.fulfill()
             XCTAssert(inSectionIDs.count == 1, "should be only one section")
 
@@ -421,15 +485,25 @@ class TableDataSourceTests: BaseDataSourceTests {
             })
 
             XCTAssert(mappedIDs == ["0", "2", "3"])
+        }
 
-        })
+        #if swift(>=3.0)
+            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeFunc)
+            #else
+            dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
+            #endif
 
         guard let tableView = self.tableView else {
             XCTFail("no table view")
             return
         }
-        dataSource.tableView(tableView, commitEditingStyle: UITableViewCellEditingStyle.Delete, forRowAtIndexPath: NSIndexPath(forRow: 1, inSection: 0))
-        waitForExpectationsWithTimeout(10, handler: nil)
+        #if swift(>=3.0)
+            dataSource.tableView(tableView, commit: UITableViewCellEditingStyle.delete, forRowAt: IndexPath(row: 1, section: 0))
+            waitForExpectations(withTimeout: 10, handler: nil)
+        #else
+            dataSource.tableView(tableView, commitEditingStyle: UITableViewCellEditingStyle.Delete, forRowAtIndexPath: NSIndexPath(forRow: 1, inSection: 0))
+            waitForExpectationsWithTimeout(10, handler: nil)
+        #endif
     }
 
     func testHeaderAndFooterTitles() {

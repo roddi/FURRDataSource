@@ -21,6 +21,11 @@ enum CompatTableViewCellStyle {
     case subtitle
 }
 
+enum CompatUITableViewStyle {
+    case plain          // regular table view
+    case grouped         // preferences style table view
+}
+
 #if swift(>=3.0)
     public typealias IndexPathway = IndexPath
 
@@ -51,34 +56,58 @@ enum CompatTableViewCellStyle {
             }
         }
     }
+
+    extension CompatUITableViewStyle {
+        func uiStyle() -> UITableViewStyle {
+            switch self {
+            case .grouped:
+                return UITableViewStyle.grouped
+            case .plain:
+                return UITableViewStyle.plain
+            }
+        }
+    }
+
 #else
     public typealias IndexPathway = NSIndexPath
 
     extension CompatTableViewCellEditingStyle {
-        init(editingStyle: UITableViewCellEditingStyle) {
-            switch editingStyle {
-            case .Delete:
-                self = .delete
-            case .Insert:
-                self = .insert
-            case .None:
-                self = .none
-            }
-        }
+    init(editingStyle: UITableViewCellEditingStyle) {
+    switch editingStyle {
+    case .Delete:
+    self = .delete
+    case .Insert:
+    self = .insert
+    case .None:
+    self = .none
+    }
+    }
     }
 
     extension CompatTableViewCellStyle {
-        func uiStyle() -> UITableViewCellStyle {
-            switch self {
-            case `default`:
-                return UITableViewCellStyle.Default
-            case value1:
-                return UITableViewCellStyle.Value1
-            case value2:
-                return UITableViewCellStyle.Value2
-            case subtitle:
-                return UITableViewCellStyle.Subtitle
-            }
-        }
+    func uiStyle() -> UITableViewCellStyle {
+    switch self {
+    case `default`:
+    return UITableViewCellStyle.Default
+    case value1:
+    return UITableViewCellStyle.Value1
+    case value2:
+    return UITableViewCellStyle.Value2
+    case subtitle:
+    return UITableViewCellStyle.Subtitle
     }
+    }
+    }
+
+    extension CompatUITableViewStyle {
+    func uiStyle() -> UITableViewStyle {
+    switch self {
+    case .grouped:
+    return UITableViewStyle.grouped
+    case .plain:
+    return UITableViewStyle.plain
+    }
+    }
+    }
+
 #endif
