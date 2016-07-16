@@ -97,9 +97,14 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return sections
     }
 
+    public func rows(forSection section: String) -> [T] {
+        return self.engine.rows(forSection: section)
+    }
+    #if !swift(>=3.0)
     public func rowsForSection(section: String) -> [T] {
         return self.engine.rows(forSection: section)
     }
+    #endif
 
     public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
@@ -167,7 +172,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     #if swift(>=3.0)
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return private_collectionView(collectionView, cellForItemAt: indexPath)
+        return private_collectionView(collectionView: collectionView, cellForItemAt: indexPath)
     }
     #else
     public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: IndexPathway) -> UICollectionViewCell {
@@ -185,7 +190,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     #if swift(>=3.0)
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        private_collectionView(collectionView, didSelectItemAt: indexPath)
+        private_collectionView(collectionView: collectionView, didSelectItemAt: indexPath)
     }
     #else
     public func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
