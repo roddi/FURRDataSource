@@ -33,11 +33,18 @@ import Foundation
 import FURRDiff
 
 public enum DataSourceReportingLevel {
-    case PreCondition /// always crashes
-    case Assert /// crashes debug versions otherwise silent, this is the default
-    case Print /// prints in debug versions otherwise silent.
-    case Verbose /// prints a lot of stuff.
-    case Silent /// always silently ignores everything
+    case preCondition /// always crashes
+    case assert /// crashes debug versions otherwise silent, this is the default
+    case print /// prints in debug versions otherwise silent.
+    case verbose /// prints a lot of stuff.
+    case silent /// always silently ignores everything
+
+    @available(*, deprecated: 0.2) case PreCondition /// always crashes
+    @available(*, deprecated: 0.2) case Assert /// crashes debug versions otherwise silent, this is the default
+    @available(*, deprecated: 0.2) case Print /// prints in debug versions otherwise silent.
+    @available(*, deprecated: 0.2) case Verbose /// prints a lot of stuff.
+    @available(*, deprecated: 0.2) case Silent /// always silently ignores everything
+
 }
 
 internal class DataSourceEngine <T where T: DataItem> {
@@ -66,7 +73,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
-    internal var reportingLevel: DataSourceReportingLevel = .Assert
+    internal var reportingLevel: DataSourceReportingLevel = .assert
 
     // MARK: - querying
 
@@ -387,14 +394,14 @@ internal class DataSourceEngine <T where T: DataItem> {
     func reportWarningAccordingToLevel(message inMessage: String) {
         switch self.reportingLevel {
         // a warning will still trigger an assertion.
-        case .PreCondition:
+        case .PreCondition, .preCondition:
             preconditionFailure("ERROR: \(inMessage)")
 
-        case .Assert:
+        case .Assert, .assert:
             assertionFailure("WARNING: \(inMessage)")
-        case .Print, .Verbose:
+        case .Print, .Verbose, .print, .verbose:
             print("WARNING: \(inMessage)")
-        case .Silent:
+        case .Silent, .silent:
             // nothing to do here
             break
         }
@@ -424,7 +431,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     #if swift(>=3.0)
     func logWhenVerbose( message: @autoclosure() -> String) {
-        if self.reportingLevel == .Verbose {
+        if self.reportingLevel == .verbose {
             print(message)
         }
     }

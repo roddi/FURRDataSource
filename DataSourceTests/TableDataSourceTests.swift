@@ -35,7 +35,11 @@ class TableDataSourceTests: BaseDataSourceTests {
             return [] // <-- will fail anyway
         }
 
-        return dataSource.rowsForSection(forSection)
+        #if swift(>=3.0)
+            return dataSource.rows(forSection: forSection)
+        #else
+            return dataSource.rowsForSection(forSection)
+        #endif
     }
 
     override func setFunc(fail inFailFunc: (String) -> Void) {
@@ -92,7 +96,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             #endif
         }
         #if swift(>=3.0)
-            self.dataSource?.setReportingLevel(level: .PreCondition)
+            self.dataSource?.setReporting(level: .preCondition)
         #else
             self.dataSource?.setReportingLevel(.PreCondition)
         #endif
@@ -200,7 +204,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             return
         }
         #if swift(>=3.0)
-            dataSource.updateSections(inSections: inSectionIDs, animated: true)
+            dataSource.update(sections: inSectionIDs, animated: true)
         #else
             dataSource.updateSections(inSectionIDs, animated: true)
         #endif
@@ -213,7 +217,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         }
 
         #if swift(>=3.0)
-            dataSource.updateRows(inRows: MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
+            dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
         #else
             dataSource.updateRows(MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
         #endif

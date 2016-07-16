@@ -36,24 +36,27 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
-    #if swift(>=3.0)
-    func setFunc(fail: ((String) -> Void )?) {
-        self.engine.fail = fail
-    }
-    func setFunc(warn: ((String) -> Void )?) {
-        self.engine.warn = warn
-    }
-    #endif
-
-    public func setFailFunc(failFunc: (String) -> Void) {
+    func setFunc(fail failFunc: ((String) -> Void )?) {
         self.engine.fail = failFunc
     }
-    public func setWarnFunc(warnFunc: (String) -> Void) {
+    func setFunc(warn warnFunc: ((String) -> Void )?) {
         self.engine.warn = warnFunc
     }
-    public func setReportingLevel(level: DataSourceReportingLevel) {
+    func setReporting(level inLevel: DataSourceReportingLevel) {
+        self.engine.reportingLevel = inLevel
+    }
+
+    #if !swift(>=3.0)
+    @available(*, deprecated: 0.2) public func setFailFunc(failFunc: (String) -> Void) {
+        self.engine.fail = failFunc
+    }
+    @available(*, deprecated: 0.2) public func setWarnFunc(warnFunc: (String) -> Void) {
+        self.engine.warn = warnFunc
+    }
+    @available(*, deprecated: 0.2) public func setReporting(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
+    #endif
 
     // MARK: - trampoline methods
     public var cell: (forLocation: Location<T>) -> UICollectionViewCell
@@ -101,25 +104,39 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return self.engine.rows(forSection: section)
     }
     #if !swift(>=3.0)
-    public func rowsForSection(section: String) -> [T] {
+    @available(*, deprecated: 0.2) public func rowsForSection(section: String) -> [T] {
         return self.engine.rows(forSection: section)
     }
     #endif
 
-    public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
+    #if !swift(>=3.0)
+    @available(*, deprecated: 0.2) public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
+        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
+    }
+    #endif
+    public func sectionIDAndItem(forIndexPath inIndexPath: IndexPathway) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
-    public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
+    #if !swift(>=3.0)
+    @available(*, deprecated: 0.2) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
+        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
+            return nil
+        }
+
+        return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
+    }
+    #endif
+    public func dequeueReusableCell(withReuseIdentifier reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
         guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
         }
 
         #if swift(>=3.0)
-        return self.collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
-            #else
-        return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
-            #endif
+            return self.collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
+        #else
+            return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
+        #endif
     }
 
     func selectedLocations() -> [Location<T>] {
@@ -135,19 +152,35 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     // MARK: - updating
-    public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+    #if !swift(>=3.0)
+    @available(*, deprecated: 0.2) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.engine.update(sections: inSections, animated: inAnimated)
+            }, completion: nil)
+
+    }
+    #endif
+    func update(sections inSections: Array<String>, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
             self.engine.update(sections: inSections, animated: inAnimated)
             }, completion: nil)
 
     }
 
-    public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+    #if !swift(>=3.0)
+    @available(*, deprecated: 0.2) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
+            }, completion: nil)
+    }
+    #endif
+    public func update(rows inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
             self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
             }, completion: nil)
     }
 
+    // MARK: -
     // MARK: - delegate / data source
     #if swift(>=3.0)
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

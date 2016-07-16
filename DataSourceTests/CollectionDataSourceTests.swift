@@ -47,7 +47,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return UICollectionViewCell() // <-- will fail anyway
         }
         #if swift(>=3.0)
-            let cell = dataSource.dequeueReusableCellWithReuseIdentifier(reuseIdentifier: "Cell", sectionID: sectionID, item: inItem)
+            let cell = dataSource.dequeueReusableCell(withReuseIdentifier: "Cell", sectionID: sectionID, item: inItem)
         #else
             let cell = dataSource.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: sectionID, item: inItem)
         #endif
@@ -142,7 +142,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             #endif
         }
         #if swift(>=3.0)
-            self.dataSource?.setReportingLevel(level: .PreCondition)
+            self.dataSource?.setReporting(level: .preCondition)
         #else
             self.dataSource?.setReportingLevel(.PreCondition)
         #endif
@@ -223,7 +223,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
         #if swift(>=3.0)
-            dataSource.updateSections(inSections: inSectionIDs, animated: true)
+            dataSource.update(sections: inSectionIDs, animated: true)
         #else
             dataSource.updateSections(inSectionIDs, animated: true)
         #endif
@@ -236,7 +236,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         }
 
         #if swift(>=3.0)
-            dataSource.updateRows(inRows: MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
+            dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
         #else
             dataSource.updateRows(MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
         #endif
