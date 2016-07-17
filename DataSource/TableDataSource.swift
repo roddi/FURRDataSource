@@ -1,6 +1,7 @@
 // swiftlint:disable line_length
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
+
 //
 //  TableDataSource.swift
 //  DBDB
@@ -41,24 +42,30 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
-    #if swift(>=3.0)
-    func setFunc(fail: ((String) -> Void )?) {
-        self.engine.fail = fail
-    }
-    func setFunc(warn: ((String) -> Void )?) {
-        self.engine.warn = warn
-    }
-    #endif
-
-    public func setFailFunc(failFunc: (String) -> Void) {
+    func setFunc(fail failFunc: ((String) -> Void )?) {
         self.engine.fail = failFunc
     }
-    public func setWarnFunc(warnFunc: (String) -> Void) {
+    func setFunc(warn warnFunc: ((String) -> Void )?) {
         self.engine.warn = warnFunc
     }
-    public func setReporting(level: DataSourceReportingLevel) {
+    func setReporting(level inLevel: DataSourceReportingLevel) {
+        self.engine.reportingLevel = inLevel
+    }
+
+    #if !swift(>=3.0)
+    @available(*, deprecated) func setFailFunc(failFunc: (String) -> Void) {
+        self.engine.fail = failFunc
+    }
+
+    @available(*, deprecated) func setWarnFunc(warnFunc: (String) -> Void) {
+        self.engine.warn = warnFunc
+    }
+
+    @available(*, deprecated) func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
+
+    #endif
 
     // MARK: - trampoline methods
     public var cell: (forLocation: Location<T>) -> UITableViewCell
@@ -126,7 +133,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func rowsForSection(section: String) -> [T] {
+    @available(*, deprecated = 0.2) public func rowsForSection(section: String) -> [T] {
         return self.engine.rows(forSection: section)
     }
     #endif
@@ -135,7 +142,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
+    @available(*, deprecated = 0.2) public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
     #endif
@@ -145,7 +152,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     // MARK: - updating
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+    @available(*, deprecated = 0.2) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
     self.engine.update(sections: inSections, animated: inAnimated)
     }
     #endif
@@ -154,7 +161,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+    @available(*, deprecated = 0.2) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
     }
     #endif
@@ -163,7 +170,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
+    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
         guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
         }
@@ -188,7 +195,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func reloadSectionID(inSectionID: String) {
+    @available(*, deprecated) public func reloadSectionID(inSectionID: String) {
         if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
                 self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
         }
@@ -205,7 +212,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func reloadSectionID(inSectionID: String, item inItem: T) {
+    @available(*, deprecated) public func reloadSectionID(inSectionID: String, item inItem: T) {
         if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
                 self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
         }

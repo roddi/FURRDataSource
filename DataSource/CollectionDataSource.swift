@@ -1,7 +1,8 @@
-// swiftlint:disable line_length
 //
 //  CollectionDataSource.swift
 //  FURRDataSource
+// swiftlint:disable line_length
+
 //
 //  Created by Ruotger Deecke on 28.12.15.
 //  Copyright © 2015-2016 Ruotger Deecke. All rights reserved.
@@ -47,13 +48,13 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func setFailFunc(failFunc: (String) -> Void) {
+    @available(*, deprecated) public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
-    @available(*, deprecated: 0.2) public func setWarnFunc(warnFunc: (String) -> Void) {
+    @available(*, deprecated) public func setWarnFunc(warnFunc: (String) -> Void) {
         self.engine.warn = warnFunc
     }
-    @available(*, deprecated: 0.2) public func setReporting(level: DataSourceReportingLevel) {
+    @available(*, deprecated) public func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
     #endif
@@ -104,13 +105,13 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return self.engine.rows(forSection: section)
     }
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func rowsForSection(section: String) -> [T] {
+    @available(*, deprecated) public func rowsForSection(section: String) -> [T] {
         return self.engine.rows(forSection: section)
     }
     #endif
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
+    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
     #endif
@@ -119,7 +120,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
+    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
         guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
         }
@@ -153,7 +154,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     // MARK: - updating
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+    @available(*, deprecated) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
             self.engine.update(sections: inSections, animated: inAnimated)
             }, completion: nil)
@@ -168,7 +169,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated: 0.2) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+    @available(*, deprecated) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
             self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
             }, completion: nil)

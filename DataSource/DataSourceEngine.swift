@@ -3,6 +3,7 @@
 // swiftlint:disable line_length
 // swiftlint:disable file_length
 // swiftlint:disable cyclomatic_complexity
+
 //
 //  DataSourceEngine.swift
 //  FURRDataSource
@@ -39,11 +40,11 @@ public enum DataSourceReportingLevel {
     case verbose /// prints a lot of stuff.
     case silent /// always silently ignores everything
 
-    @available(*, deprecated: 0.2) case PreCondition /// always crashes
-    @available(*, deprecated: 0.2) case Assert /// crashes debug versions otherwise silent, this is the default
-    @available(*, deprecated: 0.2) case Print /// prints in debug versions otherwise silent.
-    @available(*, deprecated: 0.2) case Verbose /// prints a lot of stuff.
-    @available(*, deprecated: 0.2) case Silent /// always silently ignores everything
+    @available(*, deprecated) case PreCondition /// always crashes
+    @available(*, deprecated) case Assert /// crashes debug versions otherwise silent, this is the default
+    @available(*, deprecated) case Print /// prints in debug versions otherwise silent.
+    @available(*, deprecated) case Verbose /// prints a lot of stuff.
+    @available(*, deprecated) case Silent /// always silently ignores everything
 
 }
 
@@ -437,7 +438,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
     #else
     func logWhenVerbose(@autoclosure message inMessage: () -> String) {
-        if self.reportingLevel == .Verbose {
+        if self.reportingLevel == .verbose {
             print(inMessage)
         }
     }

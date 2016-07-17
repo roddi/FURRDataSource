@@ -214,7 +214,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Ruotger Deecke";
 				TargetAttributes = {
 					5698BA3B1B8DD0CB008805E2 = {
@@ -489,6 +489,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSource;
 				PRODUCT_NAME = FURRDataSource;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -517,6 +518,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSourceTests;
 				PRODUCT_NAME = FURRDataSource;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};

@@ -1,5 +1,3 @@
-// swiftlint:disable line_length
-// swiftlint:disable type_body_length
 //
 //  DBDBDataSourceTests.swift
 //  DBDB
@@ -8,6 +6,9 @@
 //  Copyright © 2015 Deecke,Roddi. All rights reserved.
 //
 // swiftlint:disable file_length
+// swiftlint:disable line_length
+// swiftlint:disable type_body_length
+// swiftlint:disable function_body_length
 
 import XCTest
 
@@ -344,7 +345,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             let indexPath = IndexPath(row: inRow, section: section)
             XCTAssert(dataSource.tableView(tableView, canEditRowAt: indexPath) == canMove)
         #else
-            let indexPath = NSIndexPath(forRow: row, inSection: section)
+            let indexPath = NSIndexPath(forRow: inRow, inSection: section)
             XCTAssert(dataSource.tableView(tableView, canEditRowAtIndexPath: indexPath) == canMove)
         #endif
     }
