@@ -174,7 +174,7 @@ class MasterViewController: UITableViewController {
     }
 
     func testRush1b() {
-        if let firstSectionID = self.dataSource?.sections().first, rows = self.dataSource?.rowsForSection(firstSectionID) {
+        if let firstSectionID = self.dataSource?.sections().first, var rows = self.dataSource?.rowsForSection(firstSectionID) {
             rows.removeAtIndex(rows.count - 1)
             rows.insert(newRusher(), atIndex: 3)
 

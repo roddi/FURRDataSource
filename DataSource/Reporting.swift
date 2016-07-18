@@ -1,11 +1,11 @@
 // swiftlint:disable line_length
 
 //
-//  DataItemProtocol.swift
+//  Reporting.swift
 //  FURRDataSource
 //
-//  Created by Ruotger Deecke on 28.12.15.
-//  Copyright © 2015-2016 Ruotger Deecke. All rights reserved.
+//  Created by Ruotger Deecke on 13.07.16.
+//  Copyright © 2016 Ruotger Deecke. All rights reserved.
 //
 //
 // TL/DR; BSD 2-clause license
@@ -27,9 +27,17 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 import Foundation
 
-public protocol DataItem: Equatable {
-    var identifier: String { get }
+public protocol Reporting {
+
+    #if !swift(>=3.0)
+    @available(*, deprecated) func setFailFunc(failFunc: (String) -> Void)
+    @available(*, deprecated) func setWarnFunc(warnFunc: (String) -> Void)
+    @available(*, deprecated) func setReportingLevel(level: DataSourceReportingLevel)
+    #endif
+
+    func setFunc(fail inFailFunc: ((String) -> Void )?)
+    func setFunc(warn inWarnFunc: ((String) -> Void )?)
+    func setReporting(level inLevel: DataSourceReportingLevel)
 }
