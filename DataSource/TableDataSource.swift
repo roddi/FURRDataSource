@@ -38,26 +38,26 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
-    func setFunc(fail failFunc: ((String) -> Void )?) {
+    public func setFunc(fail failFunc: ((String) -> Void )?) {
         self.engine.fail = failFunc
     }
-    func setFunc(warn warnFunc: ((String) -> Void )?) {
+    public func setFunc(warn warnFunc: ((String) -> Void )?) {
         self.engine.warn = warnFunc
     }
-    func setReporting(level inLevel: DataSourceReportingLevel) {
+    public func setReporting(level inLevel: DataSourceReportingLevel) {
         self.engine.reportingLevel = inLevel
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated) func setFailFunc(failFunc: (String) -> Void) {
+    @available(*, deprecated) public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
 
-    @available(*, deprecated) func setWarnFunc(warnFunc: (String) -> Void) {
+    @available(*, deprecated) public func setWarnFunc(warnFunc: (String) -> Void) {
         self.engine.warn = warnFunc
     }
 
-    @available(*, deprecated) func setReportingLevel(level: DataSourceReportingLevel) {
+    @available(*, deprecated) public func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
     #endif

@@ -48,7 +48,7 @@ internal enum CompatUITableViewStyle {
 }
 
 #if swift(>=3.0)
-    internal typealias IndexPathway = IndexPath
+    public typealias IndexPathway = IndexPath
 
     internal extension CompatTableViewCellEditingStyle {
         init(editingStyle: UITableViewCellEditingStyle) {
@@ -90,7 +90,7 @@ internal enum CompatUITableViewStyle {
     }
 
 #else
-    internal public typealias IndexPathway = NSIndexPath
+    public typealias IndexPathway = NSIndexPath
 
     internal extension CompatTableViewCellEditingStyle {
         init(editingStyle: UITableViewCellEditingStyle) {

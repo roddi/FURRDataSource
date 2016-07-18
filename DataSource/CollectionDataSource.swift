@@ -35,13 +35,13 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
-    func setFunc(fail failFunc: ((String) -> Void )?) {
+    public func setFunc(fail failFunc: ((String) -> Void )?) {
         self.engine.fail = failFunc
     }
-    func setFunc(warn warnFunc: ((String) -> Void )?) {
+    public func setFunc(warn warnFunc: ((String) -> Void )?) {
         self.engine.warn = warnFunc
     }
-    func setReporting(level inLevel: DataSourceReportingLevel) {
+    public func setReporting(level inLevel: DataSourceReportingLevel) {
         self.engine.reportingLevel = inLevel
     }
 
