@@ -60,7 +60,6 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     @available(*, deprecated) func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
-
     #endif
 
     // MARK: - trampoline methods
@@ -404,10 +403,10 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             #else
             #endif
         case .insert:
-            print(".Insert ????")
+            print(".insert ????")
 
         case .none:
-            print(".None ????")
+            print(".none ????")
         }
     }
 

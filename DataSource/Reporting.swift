@@ -29,7 +29,7 @@
 
 import Foundation
 
-protocol Reporting {
+public protocol Reporting {
 
     #if !swift(>=3.0)
     @available(*, deprecated) func setFailFunc(failFunc: (String) -> Void)

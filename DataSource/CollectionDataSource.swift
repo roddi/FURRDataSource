@@ -29,8 +29,6 @@
 
 import UIKit
 
-let kStandardSection = "build-in standard section"
-
 public class CollectionDataSource <T where T: DataItem> : NSObject, UICollectionViewDelegate, UICollectionViewDataSource, Reporting {
 
     private let collectionView: UICollectionView

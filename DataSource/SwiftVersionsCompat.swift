@@ -29,28 +29,28 @@
 
 import UIKit
 
-enum CompatTableViewCellEditingStyle {
+internal enum CompatTableViewCellEditingStyle {
     case delete
     case insert
     case none
 }
 
-enum CompatTableViewCellStyle {
+internal enum CompatTableViewCellStyle {
     case `default`
     case value1
     case value2
     case subtitle
 }
 
-enum CompatUITableViewStyle {
+internal enum CompatUITableViewStyle {
     case plain          // regular table view
     case grouped         // preferences style table view
 }
 
 #if swift(>=3.0)
-    public typealias IndexPathway = IndexPath
+    internal typealias IndexPathway = IndexPath
 
-    extension CompatTableViewCellEditingStyle {
+    internal extension CompatTableViewCellEditingStyle {
         init(editingStyle: UITableViewCellEditingStyle) {
             switch editingStyle {
             case .delete:
@@ -63,7 +63,7 @@ enum CompatUITableViewStyle {
         }
     }
 
-    extension CompatTableViewCellStyle {
+    internal extension CompatTableViewCellStyle {
         func uiStyle() -> UITableViewCellStyle {
             switch self {
             case .default:
@@ -78,7 +78,7 @@ enum CompatUITableViewStyle {
         }
     }
 
-    extension CompatUITableViewStyle {
+    internal extension CompatUITableViewStyle {
         func uiStyle() -> UITableViewStyle {
             switch self {
             case .grouped:
@@ -90,9 +90,9 @@ enum CompatUITableViewStyle {
     }
 
 #else
-    public typealias IndexPathway = NSIndexPath
+    internal public typealias IndexPathway = NSIndexPath
 
-    extension CompatTableViewCellEditingStyle {
+    internal extension CompatTableViewCellEditingStyle {
         init(editingStyle: UITableViewCellEditingStyle) {
             switch editingStyle {
             case .Delete:
@@ -105,7 +105,7 @@ enum CompatUITableViewStyle {
         }
     }
 
-    extension CompatTableViewCellStyle {
+    internal extension CompatTableViewCellStyle {
         func uiStyle() -> UITableViewCellStyle {
             switch self {
             case `default`:
@@ -120,7 +120,7 @@ enum CompatUITableViewStyle {
         }
     }
 
-    extension CompatUITableViewStyle {
+    internal extension CompatUITableViewStyle {
         func uiStyle() -> UITableViewStyle {
             switch self {
             case .grouped:
