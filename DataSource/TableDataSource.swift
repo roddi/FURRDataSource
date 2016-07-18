@@ -32,10 +32,6 @@
 import UIKit
 import FURRExtensions
 
-#if swift(>=3.0)
-#else
-#endif
-
 public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource, Reporting {
 
     private let tableView: UITableView
