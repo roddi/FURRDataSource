@@ -79,7 +79,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.setFailFunc(failFunc)
+        dataSource.setFailFunc(failFunc: failFunc)
     }
 
     override func setWarnFunc(warnFunc: (String) -> Void) {
@@ -88,7 +88,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.setWarnFunc(warnFunc)
+        dataSource.setWarnFunc(warnFunc: warnFunc)
     }
 
     override func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
@@ -97,7 +97,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
+        dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeFunc)
     }
 
     // MARK: - given
@@ -161,7 +161,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        dataSource.setDidChangeSectionIDsFunc(didChangeFunc: { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -178,7 +178,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     }
     // MARK: - when
 
-    override func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
+    override func whenUpdating(sectionIDs: Array<String>) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -221,7 +221,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     }
     // MARK: - then
 
-    override func thenNumberOfSectionsIs(numberOfSections numberOfSections: Int) {
+    override func thenNumberOfSectionsIs(numberOfSections inNumberOfSections: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -230,11 +230,11 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no collection view")
             return
         }
-        XCTAssert(dataSource.numberOfSectionsInCollectionView(collectionView) == numberOfSections, "...")
+        XCTAssert(dataSource.numberOfSectionsInCollectionView(collectionView) == inNumberOfSections, "...")
     }
 
     // should be called thenNumberOfItemsIs(...). Any volunteers for a pull request?
-    override func thenNumberOfRowsIs(numberOfRows numberOfRows: Int, sectionIndex: Int) {
+    override func thenNumberOfRowsIs(numberOfRows inNumberOfRows: Int, sectionIndex: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -246,7 +246,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.collectionView(collectionView, numberOfItemsInSection: sectionIndex) == numberOfRows)
     }
 
-    override func thenInsertionRowsSectionsAre(indexPaths indexPaths: [[Int]]) {
+    override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return

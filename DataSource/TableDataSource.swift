@@ -33,12 +33,21 @@ import FURRExtensions
 #else
 #endif
 
-public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource {
+public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource, Reporting {
 
     private let tableView: UITableView
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
+    #if swift(>=3.0)
+    func setFunc(fail: ((String) -> Void )?) {
+        self.engine.fail = fail
+    }
+    func setFunc(warn: ((String) -> Void )?) {
+        self.engine.warn = warn
+    }
+    #endif
+
     public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
@@ -114,9 +123,19 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return self.engine.sections()
     }
 
+    public func rows(forSection: String) -> [T] {
+        return self.engine.rows(forSection: forSection)
+    }
+
+    #if swift(>=3.0)
+    public func rowsForSection(_ section: String) -> [T] {
+        return rows(forSection: section)
+    }
+    #else
     public func rowsForSection(section: String) -> [T] {
         return self.engine.rows(forSection: section)
     }
+    #endif
 
     public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)

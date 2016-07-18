@@ -14,6 +14,12 @@ enum CompatTableViewCellEditingStyle {
     case none
 }
 
+enum CompatTableViewCellStyle {
+    case `default`
+    case value1
+    case value2
+    case subtitle
+}
 
 #if swift(>=3.0)
     public typealias IndexPathway = IndexPath
@@ -31,6 +37,20 @@ enum CompatTableViewCellEditingStyle {
         }
     }
 
+    extension CompatTableViewCellStyle {
+        func uiStyle() -> UITableViewCellStyle {
+            switch self {
+            case .default:
+                return UITableViewCellStyle.default
+            case .value1:
+                return UITableViewCellStyle.value1
+            case .value2:
+                return UITableViewCellStyle.value2
+            case .subtitle:
+                return UITableViewCellStyle.subtitle
+            }
+        }
+    }
 #else
     public typealias IndexPathway = NSIndexPath
 
@@ -45,5 +65,20 @@ enum CompatTableViewCellEditingStyle {
                 self = .none
             }
         }
+    }
+
+    extension CompatTableViewCellStyle {
+    func uiStyle() -> UITableViewCellStyle {
+    switch self {
+    case .default:
+    return UITableViewCellStyle.default
+    case .value1:
+    return UITableViewCellStyle.value1
+    case .value2:
+    return UITableViewCellStyle.value2
+    case .subtitle:
+    return UITableViewCellStyle.subtitle
+    }
+    }
     }
 #endif

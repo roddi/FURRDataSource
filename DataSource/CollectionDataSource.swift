@@ -30,12 +30,20 @@ import UIKit
 
 let kStandardSection = "build-in standard section"
 
-public class CollectionDataSource <T where T: DataItem> : NSObject, UICollectionViewDelegate, UICollectionViewDataSource {
+public class CollectionDataSource <T where T: DataItem> : NSObject, UICollectionViewDelegate, UICollectionViewDataSource, Reporting {
 
     private let collectionView: UICollectionView
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
+    #if swift(>=3.0)
+    func setFunc(fail: ((String) -> Void )?) {
+        self.engine.fail = fail
+    }
+    func setFunc(warn: ((String) -> Void )?) {
+        self.engine.warn = warn
+    }
+    #endif
 
     public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc

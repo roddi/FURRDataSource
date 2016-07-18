@@ -54,7 +54,7 @@ func < (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
 
 func cellForSectionID(inSectionID: String, item inItem: MockTVItem, tableView inTableView: UITableView) -> UITableViewCell {
     let rowID = inItem.identifier
-    let cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: inSectionID+rowID)
+    let cell = UITableViewCell(style: CompatTableViewCellStyle.subtitle.uiStyle(), reuseIdentifier: inSectionID+rowID)
     cell.textLabel?.text = inSectionID
     cell.detailTextLabel?.text = rowID
     return cell
@@ -75,15 +75,15 @@ class BaseDataSourceTests: XCTestCase {
         return []
     }
 
-    func setFailFunc(_: (String) -> Void) {
+    func setFailFunc(failFunc inFailFunc: (String) -> Void) {
         XCTFail("needs to be overridden")
     }
 
-    func setWarnFunc(warnFunc: (String) -> Void) {
+    func setWarnFunc(warnFunc inWarnFunc: (String) -> Void) {
         XCTFail("needs to be overridden")
     }
 
-    func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
         XCTFail("needs to be overridden")
     }
 
@@ -110,8 +110,18 @@ class BaseDataSourceTests: XCTestCase {
     }
 
     // MARK: - when
-
+    #if swift(>=3.0)
+    func whenUpdatingSectionIDs(_ inSectionIDs: Array<String>) {
+        self.whenUpdating(sectionIDs: inSectionIDs)
+    }
+    #else
     func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
+    xxx
+        XCTFail("needs to be overridden")
+    }
+    #endif
+
+    func whenUpdating(sectionIDs: Array<String>) {
         XCTFail("needs to be overridden")
     }
 
@@ -177,7 +187,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         var didFail = false
-        self.setFailFunc({ (msg) -> Void in didFail = true })
+        self.setFailFunc(failFunc: { (msg) -> Void in didFail = true })
 
         self.whenUpdatingSectionIDs(["a", "a", "a"])
         XCTAssert(didFail)
@@ -187,7 +197,7 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         var didWarn = false
-        self.setWarnFunc({ (message: String?) -> Void in
+        self.setWarnFunc(warnFunc: { (message: String?) -> Void in
             didWarn = true
         })
 
@@ -213,7 +223,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         var didFail = false
-        self.setFailFunc({ (msg) -> Void in didFail = true })
+        self.setFailFunc(failFunc: { (msg) -> Void in didFail = true })
         self.whenUpdatingRowsWithIdentifiers(["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
     }

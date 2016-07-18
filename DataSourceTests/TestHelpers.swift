@@ -8,6 +8,18 @@
 
 import Foundation
 
+#if swift(>=3.0)
+    func testHelper_indexListMapper() -> ([Int]) -> IndexPath {
+        return { (indexList: [Int]) -> IndexPath in
+
+            if indexList.count != 2 {
+                return IndexPath(item: Int.max, section: Int.max)
+            }
+            return IndexPath(item: indexList[0], section: indexList[1])
+        }
+    }
+
+#else
 func testHelper_indexListMapper() -> ([Int]) -> NSIndexPath {
     return { (indexList: [Int]) -> NSIndexPath in
 
@@ -17,3 +29,4 @@ func testHelper_indexListMapper() -> ([Int]) -> NSIndexPath {
         return NSIndexPath(forItem: indexList[0], inSection: indexList[1])
     }
 }
+#endif

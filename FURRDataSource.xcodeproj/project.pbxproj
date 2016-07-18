@@ -13,6 +13,7 @@
 		5698BA571B8DD163008805E2 /* TableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* TableDataSource.swift */; };
 		5698BA811B8DD292008805E2 /* TableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* TableDataSource.swift */; };
 		DD04FBEC1C59FB8200E5F7FA /* BaseDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD04FBEB1C59FB8200E5F7FA /* BaseDataSourceTests.swift */; };
+		DD3242911D36A29C00E5F7FA /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3242901D36A29C00E5F7FA /* Reporting.swift */; };
 		DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */; };
 		DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */; };
 		DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB361C31718000E5F7FA /* CollectionDataSource.swift */; };
@@ -53,6 +54,7 @@
 		5698BA4D1B8DD0CB008805E2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5698BA561B8DD163008805E2 /* TableDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableDataSource.swift; sourceTree = "<group>"; };
 		DD04FBEB1C59FB8200E5F7FA /* BaseDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDataSourceTests.swift; sourceTree = "<group>"; };
+		DD3242901D36A29C00E5F7FA /* Reporting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reporting.swift; sourceTree = "<group>"; };
 		DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockCollectionView.swift; sourceTree = "<group>"; };
 		DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionDataSourceTests.swift; sourceTree = "<group>"; };
 		DD4A260A1D298E6400E5F7FA /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				DD6EAB3A1C3172D600E5F7FA /* Location.swift */,
 				5698BA561B8DD163008805E2 /* TableDataSource.swift */,
 				DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */,
+				DD3242901D36A29C00E5F7FA /* Reporting.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -313,6 +316,7 @@
 				DD4A260D1D2C216E00E5F7FA /* SwiftVersionsCompat.swift in Sources */,
 				DDBAF1B91C2E953900E5F7FA /* DataSourceEngine.swift in Sources */,
 				5698BA571B8DD163008805E2 /* TableDataSource.swift in Sources */,
+				DD3242911D36A29C00E5F7FA /* Reporting.swift in Sources */,
 				DD6EAB3B1C3172D600E5F7FA /* Location.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

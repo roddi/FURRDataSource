@@ -42,8 +42,6 @@ internal class DataSourceEngine <T where T: DataItem> {
     private var sectionsInternal: Array<String> = []
     private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
 
-    internal var reportingLevel: DataSourceReportingLevel = .Assert
-
     // MARK: - delegate blocks
     var beginUpdates: (() -> Void)?
     var endUpdates: (() -> Void)?
@@ -66,6 +64,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
+    internal var reportingLevel: DataSourceReportingLevel = .Assert
 
     // MARK: - querying
 
