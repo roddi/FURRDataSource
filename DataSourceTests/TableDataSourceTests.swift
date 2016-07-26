@@ -452,9 +452,9 @@ class TableDataSourceTests: BaseDataSourceTests {
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2", "3"], sectionID: "a")
 
         #if swift(>=3.0)
-            let willDeleteExpectation = expectation(withDescription: "will delete callback")
-            let didDeleteExpectation = expectation(withDescription: "did delete callback")
-            let sectionChangedExpectation = expectation(withDescription: "sections changed callback")
+            let willDeleteExpectation = expectation(description: "will delete callback")
+            let didDeleteExpectation = expectation(description: "did delete callback")
+            let sectionChangedExpectation = expectation(description: "sections changed callback")
         #else
             let willDeleteExpectation = expectationWithDescription("will delete callback")
             let didDeleteExpectation = expectationWithDescription("did delete callback")
@@ -504,7 +504,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         }
         #if swift(>=3.0)
             dataSource.tableView(tableView, commit: UITableViewCellEditingStyle.delete, forRowAt: IndexPath(row: 1, section: 0))
-            waitForExpectations(withTimeout: 10, handler: nil)
+            waitForExpectations(timeout: 10, handler: nil)
         #else
             dataSource.tableView(tableView, commitEditingStyle: UITableViewCellEditingStyle.Delete, forRowAtIndexPath: NSIndexPath(forRow: 1, inSection: 0))
             waitForExpectationsWithTimeout(10, handler: nil)

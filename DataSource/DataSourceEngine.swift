@@ -4,6 +4,9 @@
 // swiftlint:disable file_length
 // swiftlint:disable cyclomatic_complexity
 
+// for swift 3 this is in conflict with what the compiler warns about
+// swiftlint:disable conditional_binding_cascade
+
 //
 //  DataSourceEngine.swift
 //  FURRDataSource
@@ -143,9 +146,9 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         guard
             let beginUpdatesFunc = self.beginUpdates,
-            endUpdatesFunc = self.endUpdates,
-            deleteSectionsFunc = self.deleteSections,
-            insertSectionsFunc = self.insertSections else {
+            let endUpdatesFunc = self.endUpdates,
+            let deleteSectionsFunc = self.deleteSections,
+            let insertSectionsFunc = self.insertSections else {
                 self.fail(message: "At least one of the required callback funcs of DataSourceEngine is nil. Severity: lethal, sorry, nevertheless have a good evening!")
                 return
         }
@@ -199,9 +202,9 @@ internal class DataSourceEngine <T where T: DataItem> {
 
         guard
             let beginUpdatesFunc = self.beginUpdates,
-            endUpdatesFunc = self.endUpdates,
-            deleteRowsAtIndexPathsFunc = self.deleteRowsAtIndexPaths,
-            insertRowsAtIndexPathsFunc = self.insertRowsAtIndexPaths else {
+            let endUpdatesFunc = self.endUpdates,
+            let deleteRowsAtIndexPathsFunc = self.deleteRowsAtIndexPaths,
+            let insertRowsAtIndexPathsFunc = self.insertRowsAtIndexPaths else {
                 self.fail(message: "At least one of the required callback funcs of DataSourceEngine is nil. Severity: lethal, sorry, nevertheless have a good evening!")
                 return
         }

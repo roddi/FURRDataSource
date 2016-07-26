@@ -2,6 +2,9 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 
+// for swift 3 this is in conflict with what the compiler warns about
+// swiftlint:disable conditional_binding_cascade
+
 //
 //  TableDataSource.swift
 //  DBDB
@@ -334,7 +337,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         let actualDestination = callback(fromLocation: fromLocation, proposedLocation: toLocation)
 
         // check whether actual destination is OK
-        if let item = actualDestination.item, indexPath = self.engine.indexPath(forSectionID: actualDestination.sectionID, rowItem: item) {
+        if let item = actualDestination.item, let indexPath = self.engine.indexPath(forSectionID: actualDestination.sectionID, rowItem: item) {
             return indexPath
         }
 
