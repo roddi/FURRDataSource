@@ -28,6 +28,7 @@
 
 
 import XCTest
+@testable import FURRDataSource
 
 class DataSourceEngineTests: XCTestCase {
 

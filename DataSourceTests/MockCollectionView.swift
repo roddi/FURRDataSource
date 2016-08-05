@@ -7,6 +7,7 @@
 //
 
 import UIKit
+@testable import FURRDataSource
 
 class MockCollectionView: UICollectionView {
 
