@@ -139,7 +139,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     func selectedLocations() -> [Location<T>] {
-        let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems
+        #if swift(>=3.0)
+            let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems
+        #else
+            let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems()
+        #endif
         guard let selectedIndexPaths_ = selectedIndexPaths else {
             return []
         }
