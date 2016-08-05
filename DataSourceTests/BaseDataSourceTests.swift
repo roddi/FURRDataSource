@@ -28,6 +28,7 @@
 
 
 import XCTest
+@testable import FURRDataSource
 
 class MockTVItem: DataItem {
     let identifier: String
@@ -343,7 +344,7 @@ class BaseDataSourceTests: XCTestCase {
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "b")
 
         #if swift(>=3.0)
-            let expectation = self.expectation(withDescription: "sections changed callback")
+            let expectation = self.expectation(description: "sections changed callback")
         #else
             let expectation = expectationWithDescription("sections changed callback")
         #endif
@@ -378,7 +379,7 @@ class BaseDataSourceTests: XCTestCase {
         self.whenMoving(sourceRow: 3, sourceSection: 0, toRow: 2, toSection: 1)
 
         #if swift(>=3.0)
-            self.waitForExpectations(withTimeout: 10, handler: nil)
+            self.waitForExpectations(timeout: 10, handler: nil)
         #else
             self.waitForExpectationsWithTimeout(10, handler: nil)
         #endif

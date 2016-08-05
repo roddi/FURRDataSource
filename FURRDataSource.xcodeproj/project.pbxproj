@@ -11,15 +11,11 @@
 		5698BA471B8DD0CB008805E2 /* FURRDataSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5698BA3C1B8DD0CB008805E2 /* FURRDataSource.framework */; };
 		5698BA4C1B8DD0CB008805E2 /* TableDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA4B1B8DD0CB008805E2 /* TableDataSourceTests.swift */; };
 		5698BA571B8DD163008805E2 /* TableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* TableDataSource.swift */; };
-		5698BA811B8DD292008805E2 /* TableDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698BA561B8DD163008805E2 /* TableDataSource.swift */; };
 		DD04FBEC1C59FB8200E5F7FA /* BaseDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD04FBEB1C59FB8200E5F7FA /* BaseDataSourceTests.swift */; };
 		DD3242911D36A29C00E5F7FA /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3242901D36A29C00E5F7FA /* Reporting.swift */; };
-		DD3242921D36C4FB00E5F7FA /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD3242901D36A29C00E5F7FA /* Reporting.swift */; };
 		DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA31C478BAE00E5F7FA /* CollectionDataSourceTests.swift */; };
 		DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD423DA11C478A9400E5F7FA /* MockCollectionView.swift */; };
-		DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB361C31718000E5F7FA /* CollectionDataSource.swift */; };
 		DD4A260D1D2C216E00E5F7FA /* SwiftVersionsCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */; };
-		DD4A260E1D2C2A2E00E5F7FA /* SwiftVersionsCompat.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */; };
 		DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD4C374F1BD54BC400E5F7FA /* MockTableView.swift */; };
 		DD6449291BCD297100E5F7FA /* FURRDiff.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449271BCD297100E5F7FA /* FURRDiff.framework */; };
 		DD64492A1BCD297100E5F7FA /* FURRExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6449281BCD297100E5F7FA /* FURRExtensions.framework */; };
@@ -29,11 +25,8 @@
 		DD6EAB371C31718000E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB361C31718000E5F7FA /* CollectionDataSource.swift */; };
 		DD6EAB391C31729D00E5F7FA /* DataItemProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB381C31729D00E5F7FA /* DataItemProtocol.swift */; };
 		DD6EAB3B1C3172D600E5F7FA /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB3A1C3172D600E5F7FA /* Location.swift */; };
-		DD6EAB3C1C32DDCB00E5F7FA /* DataItemProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB381C31729D00E5F7FA /* DataItemProtocol.swift */; };
-		DD6EAB3D1C32DDD500E5F7FA /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB3A1C3172D600E5F7FA /* Location.swift */; };
 		DDBAF1B91C2E953900E5F7FA /* DataSourceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBAF1B81C2E953900E5F7FA /* DataSourceEngine.swift */; };
 		DDBAF1BB1C2EA2A400E5F7FA /* DataSourceEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBAF1BA1C2EA2A400E5F7FA /* DataSourceEngineTests.swift */; };
-		DDBAF1BC1C2EA89900E5F7FA /* DataSourceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDBAF1B81C2E953900E5F7FA /* DataSourceEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +170,7 @@
 				5698BA391B8DD0CB008805E2 /* Headers */,
 				5698BA3A1B8DD0CB008805E2 /* Resources */,
 				DD2E12C01BCD219900E5F7FA /* Run swiftlint */,
+				DD16A5801D4B34D500E5F7FA /* Run Xcode 8b3 Copy Library Workaround Script  */,
 			);
 			buildRules = (
 			);
@@ -196,6 +190,7 @@
 				DD2E12B61BCCFDE000E5F7FA /* Run Carthage Copy Script */,
 				5698BA441B8DD0CB008805E2 /* Resources */,
 				DD2E12BF1BCD217B00E5F7FA /* Run swiftlint */,
+				DDEE42201D54981A00E5F7FA /* Xcode 8 Beta 4 workaround script */,
 			);
 			buildRules = (
 			);
@@ -261,6 +256,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		DD16A5801D4B34D500E5F7FA /* Run Xcode 8b3 Copy Library Workaround Script  */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"",
+				"$(SRCROOT)/Carthage/Build/iOS/FURRDiff.framework ",
+				"$(SRCROOT)/Carthage/Build/iOS/FURRExtensions.framework",
+			);
+			name = "Run Xcode 8b3 Copy Library Workaround Script ";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Include Frameworks\nfor i in `seq 1 ${SCRIPT_INPUT_FILE_COUNT}`; do\nNUM=`expr $i - 1`\nNEXT_FOLDER_ARG=SCRIPT_INPUT_FILE_$NUM\nINCLUDE_FRAMEWORK_FOLDER_ARGS=\"${INCLUDE_FRAMEWORK_FOLDER_ARGS} --scan-folder ${!NEXT_FOLDER_ARG}\"\ndone\n\n# Run the correct tool 🤗\n${TOOLCHAIN_DIR}/usr/bin/swift-stdlib-tool \\\n--copy --verbose --sign ${EXPANDED_CODE_SIGN_IDENTITY} \\\n--scan-executable \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}\" \\\n--platform ${PLATFORM_NAME} \\\n--toolchain ${TOOLCHAIN_DIR} \\\n--destination \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--strip-bitcode --resource-destination \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\" \\\n--resource-library libswiftRemoteMirror.dylib \\\n${INCLUDE_FRAMEWORK_FOLDER_ARGS}";
+		};
 		DD2E12B61BCCFDE000E5F7FA /* Run Carthage Copy Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -305,6 +317,20 @@
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed.  Skipping lint.\"\nfi";
 		};
+		DDEE42201D54981A00E5F7FA /* Xcode 8 Beta 4 workaround script */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Xcode 8 Beta 4 workaround script";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Include Frameworks\nfor i in `seq 1 ${SCRIPT_INPUT_FILE_COUNT}`; do\nNUM=`expr $i - 1`\nNEXT_FOLDER_ARG=SCRIPT_INPUT_FILE_$NUM\nINCLUDE_FRAMEWORK_FOLDER_ARGS=\"${INCLUDE_FRAMEWORK_FOLDER_ARGS} --scan-folder ${!NEXT_FOLDER_ARG}\"\ndone\n\n# Run the correct tool 🤗\n${TOOLCHAIN_DIR}/usr/bin/swift-stdlib-tool \\\n--copy --verbose --sign ${EXPANDED_CODE_SIGN_IDENTITY} \\\n--scan-executable \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}\" \\\n--platform ${PLATFORM_NAME} \\\n--toolchain ${TOOLCHAIN_DIR} \\\n--destination \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--strip-bitcode --resource-destination \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\" \\\n--resource-library libswiftRemoteMirror.dylib \\\n${INCLUDE_FRAMEWORK_FOLDER_ARGS}";
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -326,19 +352,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5698BA811B8DD292008805E2 /* TableDataSource.swift in Sources */,
 				DD04FBEC1C59FB8200E5F7FA /* BaseDataSourceTests.swift in Sources */,
 				DD4C37501BD54BC400E5F7FA /* MockTableView.swift in Sources */,
-				DD6EAB3D1C32DDD500E5F7FA /* Location.swift in Sources */,
-				DD423DA71C478C7B00E5F7FA /* CollectionDataSource.swift in Sources */,
-				DDBAF1BC1C2EA89900E5F7FA /* DataSourceEngine.swift in Sources */,
 				DD423DA51C478BD700E5F7FA /* MockCollectionView.swift in Sources */,
 				DD423DA41C478BAE00E5F7FA /* CollectionDataSourceTests.swift in Sources */,
 				DDBAF1BB1C2EA2A400E5F7FA /* DataSourceEngineTests.swift in Sources */,
-				DD6EAB3C1C32DDCB00E5F7FA /* DataItemProtocol.swift in Sources */,
-				DD4A260E1D2C2A2E00E5F7FA /* SwiftVersionsCompat.swift in Sources */,
 				5698BA4C1B8DD0CB008805E2 /* TableDataSourceTests.swift in Sources */,
-				DD3242921D36C4FB00E5F7FA /* Reporting.swift in Sources */,
 				DD6EAB331C3013F300E5F7FA /* TestHelpers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -358,6 +377,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -407,6 +429,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_SECURITY_FLOATLOOPCOUNTER = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_RAND = YES;
+				CLANG_ANALYZER_SECURITY_INSECUREAPI_STRCPY = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -448,6 +473,7 @@
 		5698BA511B8DD0CB008805E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -472,6 +498,7 @@
 		5698BA521B8DD0CB008805E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -496,6 +523,7 @@
 		5698BA541B8DD0CB008805E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -503,6 +531,7 @@
 				INFOPLIST_FILE = DataSourceTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSourceTests;
+				PRODUCT_MODULE_NAME = FURRDataSourceTests;
 				PRODUCT_NAME = FURRDataSource;
 			};
 			name = Debug;
@@ -510,6 +539,7 @@
 		5698BA551B8DD0CB008805E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
@@ -517,6 +547,7 @@
 				INFOPLIST_FILE = DataSourceTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSourceTests;
+				PRODUCT_MODULE_NAME = FURRDataSourceTests;
 				PRODUCT_NAME = FURRDataSource;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};

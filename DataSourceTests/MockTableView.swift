@@ -8,6 +8,7 @@
 //
 
 import UIKit
+@testable import FURRDataSource
 
 class MockTableView: UITableView {
 
