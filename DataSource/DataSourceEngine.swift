@@ -62,18 +62,15 @@ internal class DataSourceEngine <T where T: DataItem> {
     #if swift(>=3.0)
     var deleteSections: ((IndexSet) -> Void)?
     var insertSections: ((IndexSet) -> Void)?
-
-    var deleteRowsAtIndexPaths: (([IndexPath]) -> Void)?
-    var insertRowsAtIndexPaths: (([IndexPath]) -> Void)?
     #else
     var deleteSections: ((NSIndexSet) -> Void)?
     var insertSections: ((NSIndexSet) -> Void)?
-
-    var deleteRowsAtIndexPaths: (([NSIndexPath]) -> Void)?
-    var insertRowsAtIndexPaths: (([NSIndexPath]) -> Void)?
     #endif
 
     var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
+    var deleteRowsAtIndexPaths: (([IndexPathway]) -> Void)?
+    var insertRowsAtIndexPaths: (([IndexPathway]) -> Void)?
+
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
@@ -108,7 +105,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return rows.count
     }
 
-    func sectionIDAndItem(forIndexPath indexPath: NSIndexPath) -> (String, T)? {
+    func sectionIDAndItem(forIndexPath indexPath: IndexPathway) -> (String, T)? {
         let sectionIndex: Int = indexPath.section
         guard let (sectionID, rowArray) = self.sectionIDAndRows(forSectionIndex: sectionIndex) else {
             return nil
@@ -285,7 +282,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - initiated by user
 
-    func moveRow(at sourceIndexPath: NSIndexPath, to destinationIndexPath: NSIndexPath) {
+    func moveRow(at sourceIndexPath: IndexPathway, to destinationIndexPath: IndexPathway) {
         guard let (fromSectionID, fromItem) = self.sectionIDAndItem(forIndexPath: sourceIndexPath) else {
             print("source not found!")
             return
@@ -372,7 +369,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
 
-    func location(forIndexPath indexPath: NSIndexPath) -> Location<T>? {
+    func location(forIndexPath indexPath: IndexPathway) -> Location<T>? {
         guard let (sectionID, item) = self.sectionIDAndItem(forIndexPath: indexPath) else {
             return nil
         }
@@ -381,7 +378,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return location
     }
 
-    func locationWithOptionalItem(forIndexPath indexPath: NSIndexPath) -> LocationWithOptionalItem<T>? {
+    func locationWithOptionalItem(forIndexPath indexPath: IndexPathway) -> LocationWithOptionalItem<T>? {
         guard let (sectionID, rows) = self.sectionIDAndRows(forSectionIndex: indexPath.section) else {
             print("sectionID/row not found!")
             return nil
