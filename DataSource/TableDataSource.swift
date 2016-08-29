@@ -260,7 +260,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if swift(>=3.0)
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPathway) -> UITableViewCell {
         return private_tableView(tableView: tableView, cellForRowAtIndexPath: indexPath)
     }
     #else
@@ -268,7 +268,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return private_tableView(tableView, cellForRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    private func private_tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPathway) -> UITableViewCell {
         self.engine.logWhenVerbose(message:"tableView(,cellForRowAtIndexPath: \(indexPath))")
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
@@ -369,7 +369,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         private_tableView(tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+    private func private_tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: IndexPathway) {
 
         switch CompatTableViewCellEditingStyle(editingStyle: editingStyle) {
         case .delete:
@@ -414,7 +414,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if swift(>=3.0)
-    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPathway) -> Bool {
         return private_tableView(tableView: tableView, canEditRowAtIndexPath: indexPath)
     }
     #else
@@ -490,7 +490,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         private_tableView(tableView, didSelectRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPathway) {
         guard let callback = self.didSelect else {
             return
         }
