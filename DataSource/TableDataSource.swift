@@ -144,7 +144,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
     #endif
-    public func sectionIDAndItem(indexPath inIndexPath: IndexPathway) -> (String, T)? {
+    public func sectionIDAndItem(indexPath inIndexPath: CompatIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
@@ -268,7 +268,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return private_tableView(tableView, cellForRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPathway) -> UITableViewCell {
+    private func private_tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: CompatIndexPath) -> UITableViewCell {
         self.engine.logWhenVerbose(message:"tableView(,cellForRowAtIndexPath: \(indexPath))")
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
@@ -286,7 +286,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return private_tableView(tableView, canMoveRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: IndexPathway) -> Bool {
+    private func private_tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: CompatIndexPath) -> Bool {
         guard let canActuallyMove = self.canMove else {
             // callback not implemented, so... no, you can't!
             return false
@@ -318,7 +318,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return private_tableView(tableView, targetIndexPathForMoveFromRowAtIndexPath: sourceIndexPath, toProposedIndexPath: proposedDestinationIndexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: IndexPathway, toProposedIndexPath proposedDestinationIndexPath: IndexPathway) -> IndexPathway {
+    private func private_tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: CompatIndexPath, toProposedIndexPath proposedDestinationIndexPath: CompatIndexPath) -> CompatIndexPath {
         guard let callback = self.targetMovedItem else {
             return proposedDestinationIndexPath
         }
@@ -369,7 +369,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         private_tableView(tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: IndexPathway) {
+    private func private_tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: CompatIndexPath) {
 
         switch CompatTableViewCellEditingStyle(editingStyle: editingStyle) {
         case .delete:
@@ -490,7 +490,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         private_tableView(tableView, didSelectRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPathway) {
+    private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: CompatIndexPath) {
         guard let callback = self.didSelect else {
             return
         }

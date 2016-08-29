@@ -68,8 +68,8 @@ internal class DataSourceEngine <T where T: DataItem> {
     #endif
 
     var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
-    var deleteRowsAtIndexPaths: (([IndexPathway]) -> Void)?
-    var insertRowsAtIndexPaths: (([IndexPathway]) -> Void)?
+    var deleteRowsAtIndexPaths: (([CompatIndexPath]) -> Void)?
+    var insertRowsAtIndexPaths: (([CompatIndexPath]) -> Void)?
 
 
     internal var fail: ((String) -> Void )?
@@ -105,7 +105,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return rows.count
     }
 
-    func sectionIDAndItem(forIndexPath indexPath: IndexPathway) -> (String, T)? {
+    func sectionIDAndItem(forIndexPath indexPath: CompatIndexPath) -> (String, T)? {
         let sectionIndex: Int = indexPath.section
         guard let (sectionID, rowArray) = self.sectionIDAndRows(forSectionIndex: sectionIndex) else {
             return nil
@@ -282,7 +282,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - initiated by user
 
-    func moveRow(at sourceIndexPath: IndexPathway, to destinationIndexPath: IndexPathway) {
+    func moveRow(at sourceIndexPath: CompatIndexPath, to destinationIndexPath: CompatIndexPath) {
         guard let (fromSectionID, fromItem) = self.sectionIDAndItem(forIndexPath: sourceIndexPath) else {
             print("source not found!")
             return
@@ -332,7 +332,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - private
 
-    func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> IndexPathway? {
+    func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> CompatIndexPath? {
         guard let sectionIndex = sectionIndex(forSectionID: inSectionID) else {
             return nil
         }
@@ -369,7 +369,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
 
-    func location(forIndexPath indexPath: IndexPathway) -> Location<T>? {
+    func location(forIndexPath indexPath: CompatIndexPath) -> Location<T>? {
         guard let (sectionID, item) = self.sectionIDAndItem(forIndexPath: indexPath) else {
             return nil
         }
@@ -378,7 +378,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return location
     }
 
-    func locationWithOptionalItem(forIndexPath indexPath: IndexPathway) -> LocationWithOptionalItem<T>? {
+    func locationWithOptionalItem(forIndexPath indexPath: CompatIndexPath) -> LocationWithOptionalItem<T>? {
         guard let (sectionID, rows) = self.sectionIDAndRows(forSectionIndex: indexPath.section) else {
             print("sectionID/row not found!")
             return nil

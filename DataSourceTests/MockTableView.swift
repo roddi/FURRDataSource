@@ -12,13 +12,13 @@ import UIKit
 
 class MockTableView: UITableView {
 
-    var insertRowsCallback: ((indexPaths: [IndexPathway]) -> Void)?
-    var deleteRowsCallback: ((indexPaths: [IndexPathway]) -> Void)?
+    var insertRowsCallback: ((indexPaths: [CompatIndexPath]) -> Void)?
+    var deleteRowsCallback: ((indexPaths: [CompatIndexPath]) -> Void)?
     var insertSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
     var deleteSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
 
-    var insertionRowIndexPaths: [IndexPathway] = []
-    var deletionRowIndexPaths: [IndexPathway] = []
+    var insertionRowIndexPaths: [CompatIndexPath] = []
+    var deletionRowIndexPaths: [CompatIndexPath] = []
     var insertionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
     var deletionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
 
