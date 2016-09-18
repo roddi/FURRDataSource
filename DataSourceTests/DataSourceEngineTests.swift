@@ -35,15 +35,15 @@ class DataSourceEngineTests: XCTestCase {
     var engine = DataSourceEngine<MockTVItem>()
 
     #if swift(>=3.0)
-    var insertionRowIndexPaths: [IndexPath] = []
-    var deletionRowIndexPaths: [IndexPath] = []
-    var insertionSectionIndexSet: IndexSet = IndexSet()
-    var deletionSectionIndexSet: IndexSet = IndexSet()
+        var insertionRowIndexPaths: [IndexPath] = []
+        var deletionRowIndexPaths: [IndexPath] = []
+        var insertionSectionIndexSet: IndexSet = IndexSet()
+        var deletionSectionIndexSet: IndexSet = IndexSet()
     #else
-    var insertionRowIndexPaths: [NSIndexPath] = []
-    var deletionRowIndexPaths: [NSIndexPath] = []
-    var insertionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
-    var deletionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
+        var insertionRowIndexPaths: [NSIndexPath] = []
+        var deletionRowIndexPaths: [NSIndexPath] = []
+        var insertionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
+        var deletionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
     #endif
 
     override func setUp() {

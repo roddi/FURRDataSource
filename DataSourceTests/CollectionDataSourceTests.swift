@@ -82,44 +82,57 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         #endif
     }
 
-    override func setFunc(fail inFailFunc: (String) -> Void) {
+    #if swift(>=3.0)
+    override func setFunc(warn warnFunc: @escaping (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-
-        #if swift(>=3.0)
-            dataSource.setFunc(fail: inFailFunc)
-        #else
-            dataSource.setFailFunc(inFailFunc)
-        #endif
+        dataSource.setFunc(warn: warnFunc)
     }
 
+    override func setFunc(fail failFunc: @escaping (String) -> Void) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setFunc(fail: failFunc)
+    }
+
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setFunc(didChangeSectionIDsFunc: inDidChangeFunc)
+    }
+
+    #else
     override func setFunc(warn warnFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-
-        #if swift(>=3.0)
-            dataSource.setFunc(warn: warnFunc)
-        #else
-            dataSource.setWarnFunc(warnFunc)
-        #endif
+        dataSource.setWarnFunc(warnFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setFunc(fail inFailFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-
-        #if swift(>=3.0)
-            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: inDidChangeFunc)
-        #else
-            dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
-        #endif
+        dataSource.setFailFunc(inFailFunc)
     }
+
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
+    }
+
+    #endif
 
     // MARK: - given
 
@@ -172,11 +185,19 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
         didCallDidSelectHandler = false
-        dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
-            XCTAssert(inLocation.sectionID == "a")
-            XCTAssert(inLocation.item.identifier == "1")
-            self.didCallDidSelectHandler = true
-        }
+        #if swift(>=3.0)
+            dataSource.didSelectLocation = { (inLocation: Location<MockTVItem>) -> Void in
+                XCTAssert(inLocation.sectionID == "a")
+                XCTAssert(inLocation.item.identifier == "1")
+                self.didCallDidSelectHandler = true
+            }
+        #else
+            dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
+                XCTAssert(inLocation.sectionID == "a")
+                XCTAssert(inLocation.item.identifier == "1")
+                self.didCallDidSelectHandler = true
+            }
+        #endif
     }
 
     override func givenCanMoveItem(atSectionID inSectionID: String, rowID inRowID: String) {
@@ -184,9 +205,15 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
-            return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
-        }
+        #if swift(>=3.0)
+            dataSource.canMoveToLocation = {(toLocation: Location<MockTVItem>) -> Bool in
+                return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
+            }
+        #else
+            dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
+                return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
+            }
+        #endif
     }
 
     override func givenExpectRowIDsAfterMove(rowIDs inRowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
@@ -211,7 +238,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         }
 
         #if swift(>=3.0)
-            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeSectionIDsFunc)
+            dataSource.setFunc(didChangeSectionIDsFunc: didChangeSectionIDsFunc)
         #else
             dataSource.setDidChangeSectionIDsFunc(didChangeSectionIDsFunc)
         #endif

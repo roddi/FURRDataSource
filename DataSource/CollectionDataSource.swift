@@ -302,7 +302,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         private_collectionView(collectionView, didSelectItemAt: indexPath)
     }
     #endif
-    private func private_collectionView(collectionView: UICollectionView, didSelectItemAt indexPath: IndexPathway) {
+    private func private_collectionView(collectionView: UICollectionView, didSelectItemAt indexPath: CompatIndexPath) {
         guard let didSelectLocation = self.didSelectLocation else {
             return
         }
@@ -315,11 +315,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     #if swift(>=3.0)
-    public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPathway) -> Bool {
+    public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
         return private_collectionView(collectionView: collectionView, canMoveItemAtIndexPath: indexPath)
     }
     #else
-    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: CompatIndexPath) -> Bool {
+    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: NSIndexPath) -> Bool {
         return private_collectionView(collectionView, canMoveItemAtIndexPath: indexPath)
     }
     #endif
@@ -339,11 +339,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     #if swift(>=3.0)
-    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPathway, to destinationIndexPath: IndexPathway) {
+    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         return private_collectionView(collectionView: collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
     }
     #else
-    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: CompatIndexPath, toIndexPath destinationIndexPath: CompatIndexPath) {
+    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: CompatIndexPath) {
     return private_collectionView(collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
     }
     #endif

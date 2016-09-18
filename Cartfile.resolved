@@ -1,2 +1,2 @@
-git "file:///Users/roddi/GitDev/FURRExtensions" "d0f56ca5d1f19226ce2b949106f6436724eeedf9"
-git "file:///Users/roddi/GitDev/FURRDiff" "503b71a6bf8a88dbb89a4af14180fc9f59646cc9"
+github "roddi/FURRExtensions" "d0f56ca5d1f19226ce2b949106f6436724eeedf9"
+github "roddi/FURRDiff" "22456f1d0bfc0d6e6a27a3ee2eefbe620748b0d6"
