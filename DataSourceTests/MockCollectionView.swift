@@ -11,10 +11,10 @@ import UIKit
 
 class MockCollectionView: UICollectionView {
 
-    var insertRowsCallback: ((indexPaths: [IndexPathway]) -> Void)?
-    var deleteRowsCallback: ((indexPaths: [IndexPathway]) -> Void)?
-    var insertSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
-    var deleteSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
+    var insertRowsCallback: (([IndexPathway]) -> Void)?
+    var deleteRowsCallback: (([IndexPathway]) -> Void)?
+    var insertSectionsCallback: ((NSIndexSet) -> Void)?
+    var deleteSectionsCallback: ((NSIndexSet) -> Void)?
 
     var insertionRowIndexPaths: [IndexPathway] = []
     var deletionRowIndexPaths: [IndexPathway] = []
@@ -25,7 +25,7 @@ class MockCollectionView: UICollectionView {
     override func insertSections(_ sections: IndexSet) {
         self.insertionSectionIndexSet.add(sections)
         if let callback = insertSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
         super.insertSections(sections)
     }

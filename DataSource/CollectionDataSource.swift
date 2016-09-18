@@ -1,8 +1,9 @@
+// swiftlint:disable type_body_length
+// swiftlint:disable line_length
+
 //
 //  CollectionDataSource.swift
 //  FURRDataSource
-// swiftlint:disable line_length
-
 //
 //  Created by Ruotger Deecke on 28.12.15.
 //  Copyright © 2015-2016 Ruotger Deecke. All rights reserved.
@@ -55,23 +56,91 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     @available(*, deprecated) public func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
-    #endif
 
     // MARK: - trampoline methods
-    public var cell: (forLocation: Location<T>) -> UICollectionViewCell
-    public var didSelect: ((inLocation: Location<T>) -> Void)?
-    public var canMove: ((toLocation: Location<T>) -> Bool)?
+    @available(*, deprecated, renamed="cellForLocation()", message="Thanks Apple for SE-111!")
+    public var cell: (forLocation: Location<T>) -> UICollectionViewCell {
+        set(cell) {
+            self.cellForLocation = { (location: Location<T>) -> UICollectionViewCell in cell(forLocation: location) }
+        }
+        get {
+            preconditionFailure("write-only. Use 'cellForLocation' if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="didSelectLocation()", message="Thanks Apple for SE-111!")
+    public var didSelect: ((inLocation: Location<T>) -> Void)? {
+        set(selectFunc) {
+            if selectFunc != nil {
+                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc?(inLocation: location) }
+            } else {
+                self.didSelectLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use 'didSelectLocation' if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="canMoveToLocation()", message="Thanks Apple for SE-111!")
+    public var canMove: ((toLocation: Location<T>) -> Bool)? {
+        set(moveFunc) {
+            if moveFunc != nil {
+                self.canMoveToLocation = { (location: Location<T>) -> Bool in
+                    return moveFunc != nil ? moveFunc!(toLocation: location) : false
+                }
+            } else {
+                self.canMoveToLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use 'canMoveToLocation' if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
     public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
         self.engine.didChangeSectionIDs = didChangeFunc
     }
 
+    #endif
+
+    public var cellForLocation: (Location<T>) -> UICollectionViewCell
+    public var didSelectLocation: ((Location<T>) -> Void)?
+    public var canMoveToLocation: ((Location<T>) -> Bool)?
+
+    #if !swift(>=3.0)
+    public func setFunc(didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
+    }
+    #else
+    public func setFunc(didChangeSectionIDsFunc: @escaping ((Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
+    }
+    #endif
+
+
     // MARK: -
+
+    // due to the `@escaping` in the parameter we need two complete init() methods... *sigh*
+    #if !swift(>=3.0)
     public init(collectionView: UICollectionView, cellForLocationCallback cellForLocation: (inLocation: Location<T>) -> UICollectionViewCell) {
         self.engine = DataSourceEngine<T>()
         self.collectionView = collectionView
-        self.cell = cellForLocation
+        self.cellForLocation = cellForLocation
         super.init()
 
+        setup()
+    }
+    #else
+    public init(collectionView: UICollectionView, cellForLocationCallback cellForLocation: @escaping (Location<T>) -> UICollectionViewCell) {
+        self.engine = DataSourceEngine<T>()
+        self.collectionView = collectionView
+        self.cellForLocation = cellForLocation
+        super.init()
+
+        setup()
+    }
+    #endif
+
+    private func setup() {
         self.collectionView.dataSource = self
         self.engine.beginUpdates = {}
         self.engine.endUpdates = {}
@@ -139,7 +208,12 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     func selectedLocations() -> [Location<T>] {
-        let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems
+        #if swift(>=3.0)
+            let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems
+        #else
+            let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems()
+        #endif
+
         guard let selectedIndexPaths_ = selectedIndexPaths else {
             return []
         }
@@ -216,7 +290,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             preconditionFailure("rows not found")
         }
 
-        return self.cell(forLocation: location)
+        return self.cellForLocation(location)
     }
 
 
@@ -230,7 +304,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
     #endif
     private func private_collectionView(collectionView: UICollectionView, didSelectItemAt indexPath: IndexPathway) {
-        guard let callback = self.didSelect else {
+        guard let didSelectLocation = self.didSelectLocation else {
             return
         }
 
@@ -238,7 +312,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             return
         }
 
-        callback(inLocation: location)
+        didSelectLocation(location)
     }
 
     #if swift(>=3.0)
@@ -253,7 +327,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     private func private_collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: IndexPathway) -> Bool {
 
-        guard let canActuallyMove = self.canMove else {
+        guard let canActuallyMove = self.canMoveToLocation else {
             // callback not implemented, so... no, you can't!
             return false
         }
@@ -262,7 +336,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
             return false
         }
 
-        return canActuallyMove(toLocation: location)
+        return canActuallyMove(location)
     }
 
     #if swift(>=3.0)

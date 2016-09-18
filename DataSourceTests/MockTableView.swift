@@ -12,10 +12,10 @@ import UIKit
 
 class MockTableView: UITableView {
 
-    var insertRowsCallback: ((indexPaths: [IndexPathway]) -> Void)?
-    var deleteRowsCallback: ((indexPaths: [IndexPathway]) -> Void)?
-    var insertSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
-    var deleteSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
+    var insertRowsCallback: (([IndexPathway]) -> Void)?
+    var deleteRowsCallback: (([IndexPathway]) -> Void)?
+    var insertSectionsCallback: ((NSIndexSet) -> Void)?
+    var deleteSectionsCallback: ((NSIndexSet) -> Void)?
 
     var insertionRowIndexPaths: [IndexPathway] = []
     var deletionRowIndexPaths: [IndexPathway] = []
@@ -26,7 +26,7 @@ class MockTableView: UITableView {
     override func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation) {
         self.insertionSectionIndexSet.add(sections)
         if let callback = insertSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
     }
     #else
@@ -42,7 +42,7 @@ class MockTableView: UITableView {
     override func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation) {
         self.deletionSectionIndexSet.add(sections)
         if let callback = deleteSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
     }
     #else
@@ -58,7 +58,7 @@ class MockTableView: UITableView {
     override func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
         self.insertionRowIndexPaths.append(contentsOf: indexPaths)
         if let callback = self.insertRowsCallback {
-            callback(indexPaths: indexPaths)
+            callback(indexPaths)
         }
     }
     #else
