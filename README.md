@@ -1,5 +1,6 @@
 # FURRDataSource
 __Please Read about the Swift 3 API changes and Swift 2 / 3 compatibility further down. It's kind of important!__
+
 a generic and robust way to drive a table view (or collection view)
 
 You probably know the problem: Programming a table view data source and the delegate starts out easy but then you add view controller pushing and popping. You add network calls that modify cells and create more cells. Different network calls create different cells. Some cells need an explicit reload to actually do what they should do. That one coworker added a reloadData at this one line to make this esoteric edge case work without understanding why this actaully fixes the problem. 
@@ -17,7 +18,7 @@ There are two catches:
 2. If your table view gets really large (several thousand cells?) FURRDataSource might get a tad slow and use quite a bit of memory.
 
 ## Swift 3 API changes and Swift 2 / 3 support going forward
-If you haven't been living under a cave you will have gotten the news about Swift 3. It breaks _a lot_ of stuff if you happen to build in the wrong part of town. Which this framework does. 
+If you haven't been living in a cave you will have gotten the news about Swift 3. It breaks _a lot_ of stuff if you happen to build in the wrong part of town. Which this framework does. 
 
 The most hard hitting changes I can think of in no particular order:
 
@@ -38,3 +39,14 @@ There is two catches though:
 The old API will definitely go away sooner than the support for Swift 2 so do yourself a favor and update as soon as you find the time. It is mostly renames so updating shouldn't be a particularly hard task.
 
 If you plan moving to Swift 3 update to the new API first. 
+
+## How to Swift 3
+All of the code uses `#if swift(>=3.0)` conditional compiling so no matter which Swift version you use, you will compile the same files. Unfortunately I have not found a way to propagate the Swift version settings down to the dependencies so there are two branches for Swift 2 and 3 which are only different by the Cartfile and the `SWIFT_VERSION` setting.
+
+__Swift 2__ remains on the `master` branch for now with all tagged releases being Swift 2. So you don't need to do anything as of now.
+
+__Swift 3__ is on the `swift3` branch. If you want to move to Swift 3 configure your Cartfile to point to that branch.
+
+If you have a good proposal on how to improve on that, please let me know! 
+
+#### And as always: Bug tickets and PRs are very welcome!
