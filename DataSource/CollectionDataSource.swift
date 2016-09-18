@@ -178,11 +178,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     #endif
 
     #if !swift(>=3.0)
-    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: IndexPathway) -> (String, T)? {
+    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: CompatIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
     #endif
-    public func sectionIDAndItem(forIndexPath inIndexPath: IndexPathway) -> (String, T)? {
+    public func sectionIDAndItem(forIndexPath inIndexPath: CompatIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
@@ -213,7 +213,6 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         #else
             let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems()
         #endif
-
         guard let selectedIndexPaths_ = selectedIndexPaths else {
             return []
         }
@@ -281,11 +280,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return private_collectionView(collectionView: collectionView, cellForItemAt: indexPath)
     }
     #else
-    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: IndexPathway) -> UICollectionViewCell {
+    public func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: CompatIndexPath) -> UICollectionViewCell {
         return private_collectionView(collectionView, cellForItemAt: indexPath)
     }
     #endif
-    private func private_collectionView(collectionView: UICollectionView, cellForItemAt indexPath: IndexPathway) -> UICollectionViewCell {
+    private func private_collectionView(collectionView: UICollectionView, cellForItemAt indexPath: CompatIndexPath) -> UICollectionViewCell {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }
@@ -320,12 +319,12 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return private_collectionView(collectionView: collectionView, canMoveItemAtIndexPath: indexPath)
     }
     #else
-    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: IndexPathway) -> Bool {
+    public func collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: CompatIndexPath) -> Bool {
         return private_collectionView(collectionView, canMoveItemAtIndexPath: indexPath)
     }
     #endif
 
-    private func private_collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: IndexPathway) -> Bool {
+    private func private_collectionView(collectionView: UICollectionView, canMoveItemAtIndexPath indexPath: CompatIndexPath) -> Bool {
 
         guard let canActuallyMove = self.canMoveToLocation else {
             // callback not implemented, so... no, you can't!
@@ -344,13 +343,13 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         return private_collectionView(collectionView: collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
     }
     #else
-    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: IndexPathway, toIndexPath destinationIndexPath: IndexPathway) {
+    public func collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: CompatIndexPath, toIndexPath destinationIndexPath: CompatIndexPath) {
     return private_collectionView(collectionView, moveItemAtIndexPath: sourceIndexPath, toIndexPath: destinationIndexPath)
     }
     #endif
 
 
-    private func private_collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: IndexPathway, toIndexPath destinationIndexPath: IndexPathway) {
+    private func private_collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: CompatIndexPath, toIndexPath destinationIndexPath: CompatIndexPath) {
         self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
     }
 }

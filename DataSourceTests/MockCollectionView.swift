@@ -11,13 +11,13 @@ import UIKit
 
 class MockCollectionView: UICollectionView {
 
-    var insertRowsCallback: (([IndexPathway]) -> Void)?
-    var deleteRowsCallback: (([IndexPathway]) -> Void)?
+    var insertRowsCallback: (([CompatIndexPath]) -> Void)?
+    var deleteRowsCallback: (([CompatIndexPath]) -> Void)?
     var insertSectionsCallback: ((NSIndexSet) -> Void)?
     var deleteSectionsCallback: ((NSIndexSet) -> Void)?
 
-    var insertionRowIndexPaths: [IndexPathway] = []
-    var deletionRowIndexPaths: [IndexPathway] = []
+    var insertionRowIndexPaths: [CompatIndexPath] = []
+    var deletionRowIndexPaths: [CompatIndexPath] = []
     var insertionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
     var deletionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
 
