@@ -1,5 +1,6 @@
 # FURRDataSource
-a generic and robust way to drive a table view
+__Please Read about the Swift 3 API changes and Swift 2 / 3 compatibility further down. It's kind of important!__
+a generic and robust way to drive a table view (or collection view)
 
 You probably know the problem: Programming a table view data source and the delegate starts out easy but then you add view controller pushing and popping. You add network calls that modify cells and create more cells. Different network calls create different cells. Some cells need an explicit reload to actually do what they should do. That one coworker added a reloadData at this one line to make this esoteric edge case work without understanding why this actaully fixes the problem. 
 
@@ -14,3 +15,26 @@ So this project tries to do help you there. The idea is that FURRDataSource keep
 There are two catches:
 1. each of your data objects must have a unique identifier
 2. If your table view gets really large (several thousand cells?) FURRDataSource might get a tad slow and use quite a bit of memory.
+
+## Swift 3 API changes and Swift 2 / 3 support going forward
+If you haven't been living under a cave you will have gotten the news about Swift 3. It breaks _a lot_ of stuff if you happen to build in the wrong part of town. Which this framework does. 
+
+The most hard hitting changes I can think of in no particular order:
+
+* [SE-23 New API guidelines](https://github.com/apple/swift-evolution/blob/master/proposals/0023-api-guidelines.md) 
+* [SE-111 the infamous "triple-one"](https://github.com/apple/swift-evolution/blob/master/proposals/0111-remove-arg-label-type-significance.md)
+* [SE-86 Drop NS prefix](https://github.com/apple/swift-evolution/blob/master/proposals/0086-drop-foundation-ns.md)
+* [SE-49 Move @noescape and @autoclosure to be type attributes](https://github.com/apple/swift-evolution/blob/master/proposals/0049-noescape-autoclosure-type-attrs.md)
+* [SE-81 Move where clause to end of declaration](https://github.com/apple/swift-evolution/blob/master/proposals/0081-move-where-expression.md)
+* [SE-46 Establish consistent label behavior across all parameters including first labels](https://github.com/apple/swift-evolution/blob/master/proposals/0046-first-label.md)
+
+Now especially SE-46 (function labels), SE-111 and SE-23 (API guidelines) forced me to redo the complete API of FURRDataSource. Sorry for that but I'm convinced that it is now a better API.
+
+There is two catches though: 
+
+1. The old API is not available for Swift 3
+2. The old API is available but deprecated for Swift 2
+
+The old API will definitely go away sooner than the support for Swift 2 so do yourself a favor and update as soon as you find the time. It is mostly renames so updating shouldn't be a particularly hard task.
+
+If you plan moving to Swift 3 update to the new API first. 

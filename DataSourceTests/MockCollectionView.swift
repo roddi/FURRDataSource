@@ -11,10 +11,10 @@ import UIKit
 
 class MockCollectionView: UICollectionView {
 
-    var insertRowsCallback: ((indexPaths: [CompatIndexPath]) -> Void)?
-    var deleteRowsCallback: ((indexPaths: [CompatIndexPath]) -> Void)?
-    var insertSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
-    var deleteSectionsCallback: ((indexSet: NSIndexSet) -> Void)?
+    var insertRowsCallback: (([CompatIndexPath]) -> Void)?
+    var deleteRowsCallback: (([CompatIndexPath]) -> Void)?
+    var insertSectionsCallback: ((CompatIndexSet) -> Void)?
+    var deleteSectionsCallback: ((CompatIndexSet) -> Void)?
 
     var insertionRowIndexPaths: [CompatIndexPath] = []
     var deletionRowIndexPaths: [CompatIndexPath] = []
@@ -25,7 +25,7 @@ class MockCollectionView: UICollectionView {
     override func insertSections(_ sections: IndexSet) {
         self.insertionSectionIndexSet.add(sections)
         if let callback = insertSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
         super.insertSections(sections)
     }
@@ -33,7 +33,7 @@ class MockCollectionView: UICollectionView {
     override func insertSections(sections: NSIndexSet) {
         self.insertionSectionIndexSet.addIndexes(sections)
         if let callback = insertSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
         super.insertSections(sections)
     }
@@ -43,7 +43,7 @@ class MockCollectionView: UICollectionView {
     override func deleteSections(_ sections: IndexSet) {
         self.deletionSectionIndexSet.add(sections)
         if let callback = deleteSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
         super.deleteSections(sections)
     }
@@ -51,7 +51,7 @@ class MockCollectionView: UICollectionView {
     override func deleteSections(sections: NSIndexSet) {
         self.deletionSectionIndexSet.addIndexes(sections)
         if let callback = deleteSectionsCallback {
-            callback(indexSet: sections)
+            callback(sections)
         }
         super.deleteSections(sections)
     }
@@ -61,7 +61,7 @@ class MockCollectionView: UICollectionView {
     override func insertItems(at indexPaths: [IndexPath]) {
         self.insertionRowIndexPaths.append(contentsOf: indexPaths)
         if let callback = self.insertRowsCallback {
-            callback(indexPaths: indexPaths)
+            callback(indexPaths)
         }
         super.insertItems(at: indexPaths)
     }
@@ -69,7 +69,7 @@ class MockCollectionView: UICollectionView {
     override func insertItemsAtIndexPaths(indexPaths: [NSIndexPath]) {
         self.insertionRowIndexPaths.appendContentsOf(indexPaths)
         if let callback = self.insertRowsCallback {
-            callback(indexPaths: indexPaths)
+            callback(indexPaths)
         }
         super.insertItemsAtIndexPaths(indexPaths)
     }
@@ -79,7 +79,7 @@ class MockCollectionView: UICollectionView {
     override func deleteItems(at indexPaths: [IndexPath]) {
         self.deletionRowIndexPaths.append(contentsOf: indexPaths)
         if let callback = self.deleteRowsCallback {
-            callback(indexPaths: indexPaths)
+            callback(indexPaths)
         }
         super.deleteItems(at: indexPaths)
     }
@@ -87,7 +87,7 @@ class MockCollectionView: UICollectionView {
     override func deleteItemsAtIndexPaths(indexPaths: [NSIndexPath]) {
         self.deletionRowIndexPaths.appendContentsOf(indexPaths)
         if let callback = self.deleteRowsCallback {
-            callback(indexPaths: indexPaths)
+            callback(indexPaths)
         }
         super.deleteItemsAtIndexPaths(indexPaths)
     }

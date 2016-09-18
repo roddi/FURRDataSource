@@ -83,17 +83,30 @@ class BaseDataSourceTests: XCTestCase {
         return []
     }
 
+    #if swift(>=3.0)
+    func setFunc(fail inFailFunc: @escaping (String) -> Void) {
+        XCTFail("needs to be overridden")
+    }
+    func setFunc(warn inWarnFunc: @escaping (String) -> Void) {
+        XCTFail("needs to be overridden")
+    }
+    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
+        XCTFail("needs to be overridden")
+    }
+
+    #else
+
     func setFunc(fail inFailFunc: (String) -> Void) {
         XCTFail("needs to be overridden")
     }
-
     func setFunc(warn inWarnFunc: (String) -> Void) {
         XCTFail("needs to be overridden")
     }
-
-    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
         XCTFail("needs to be overridden")
     }
+    #endif
+
 
     // MARK: - given
 

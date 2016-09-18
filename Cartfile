@@ -1,4 +1,4 @@
-github "roddi/FURRExtensions"
-github "roddi/FURRDiff"
+github "roddi/FURRExtensions" "swift3"
+github "roddi/FURRDiff" "swift3"
 #git "file:///Users/roddi/GitDev/FURRExtensions" "master"
 #git "file:///Users/roddi/GitDev/FURRDiff" "master"

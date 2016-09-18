@@ -1,6 +1,8 @@
 // swiftlint:disable line_length
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
+// swiftlint:disable function_body_length
+// swiftlint:disable variable_name
 
 // for swift 3 this is in conflict with what the compiler warns about
 // swiftlint:disable conditional_binding_cascade
@@ -52,42 +54,200 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if !swift(>=3.0)
-    @available(*, deprecated) public func setFailFunc(failFunc: (String) -> Void) {
+    @available(*, deprecated, renamed="setFunc(fail:)") public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
 
-    @available(*, deprecated) public func setWarnFunc(warnFunc: (String) -> Void) {
+    @available(*, deprecated, renamed="setFunc(warn:)") public func setWarnFunc(warnFunc: (String) -> Void) {
         self.engine.warn = warnFunc
     }
 
-    @available(*, deprecated) public func setReportingLevel(level: DataSourceReportingLevel) {
+    @available(*, deprecated, renamed="setReporting(level:)") public func setReportingLevel(level: DataSourceReportingLevel) {
         self.engine.reportingLevel = level
     }
-    #endif
 
-    // MARK: - trampoline methods
-    public var cell: (forLocation: Location<T>) -> UITableViewCell
-    public var didSelect: ((inLocation: Location<T>) -> Void)?
-    public var canMove: ((toLocation: Location<T>) -> Bool)?
-    public var targetMovedItem: ((fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
-    public var canEdit: ((atLocation: Location<T>) -> Bool)?
-    public var willDelete: ((atLocation: Location<T>) -> Void)?
-    public var didDelete: ((item: T) -> Void)?
+    @available(*, deprecated, renamed="cellForLocation", message="Thanks Apple for SE-111!")
+    public var cell: (forLocation: Location<T>) -> UITableViewCell {
+        set(cell) {
+            self.cellForLocation = { (location: Location<T>) -> UITableViewCell in cell(forLocation: location) }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="didSelectLocation", message="Thanks Apple for SE-111!")
+    public var didSelect: ((inLocation: Location<T>) -> Void)? {
+        set(selectFunc) {
+            if let selectFunc = selectFunc {
+                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc(inLocation: location) }
+            } else {
+                self.didSelectLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="canMoveToLocation", message="Thanks Apple for SE-111!")
+    public var canMove: ((toLocation: Location<T>) -> Bool)? {
+        set(moveFunc) {
+            if let moveFunc = moveFunc {
+                self.canMoveToLocation = { (location: Location<T>) -> Bool in
+                    return moveFunc(toLocation: location)
+                }
+            } else {
+                self.canMoveToLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
 
-    public var sectionHeaderTitle: ((sectionID: String) -> String)?
-    public var sectionFooterTitle: ((sectionID: String) -> String)?
+    @available(*, deprecated, renamed="canEditAtLocation", message="Thanks Apple for SE-111!")
+    public var canEdit: ((atLocation: Location<T>) -> Bool)? {
+        set(canEditFunc) {
+            if let canEditFunc = canEditFunc {
+                self.canEditAtLocation = { (location: Location<T>) -> Bool in
+                    return canEditFunc(atLocation: location)
+                }
+            } else {
+                self.canEditAtLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
 
+    @available(*, deprecated, renamed="targetMovedItemFromLocationToProposedLocation", message="Thanks Apple for SE-111!")
+    public var targetMovedItem: ((fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)? {
+        set(targetFunc) {
+            if let targetFunc = targetFunc {
+                self.targetMovedItemFromLocationToProposedLocation = { (fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T> in
+                    return targetFunc(fromLocation: fromLocation, proposedLocation: proposedLocation)
+                }
+            } else {
+                self.targetMovedItemFromLocationToProposedLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="willDeleteAtLocation", message="Thanks Apple for SE-111!")
+    public var willDelete: ((atLocation: Location<T>) -> Void)? {
+        set(willDeleteFunc) {
+            if let willDeleteFunc = willDeleteFunc {
+                self.willDeleteAtLocation = { (location: Location<T>) -> Void in willDeleteFunc(atLocation: location) }
+            } else {
+                self.willDeleteAtLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="didDeleteItem", message="Thanks Apple for SE-111!")
+    public var didDelete: ((item: T) -> Void)? {
+        set(didDeleteFunc) {
+            if let didDeleteFunc = didDeleteFunc {
+                self.didDeleteItem = { (item: T) -> Void in didDeleteFunc(item: item) }
+            } else {
+                self.didDeleteItem = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="sectionHeaderTitleForSectionID", message="Thanks Apple for SE-111!")
+    public var sectionHeaderTitle: ((sectionID: String) -> String)? {
+        set(sectionHeaderFunc) {
+            if let sectionHeaderFunc = sectionHeaderFunc {
+                self.sectionHeaderTitleForSectionID = { (sectionID: String) -> String in sectionHeaderFunc(sectionID: sectionID) }
+            } else {
+                self.sectionHeaderTitleForSectionID = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="sectionFooterTitleForSectionID", message="Thanks Apple for SE-111!")
+    public var sectionFooterTitle: ((sectionID: String) -> String)? {
+        set(sectionFooterFunc) {
+            if let sectionFooterFunc = sectionFooterFunc {
+                self.sectionFooterTitleForSectionID = { (sectionID: String) -> String in sectionFooterFunc(sectionID: sectionID) }
+            } else {
+                self.sectionFooterTitleForSectionID = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
     public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
         self.engine.didChangeSectionIDs = didChangeFunc
     }
 
+    #endif
+
+    // MARK: - trampoline methods
+    public var cellForLocation: (Location<T>) -> UITableViewCell
+    public var didSelectLocation: ((Location<T>) -> Void)?
+    public var canMoveToLocation: ((Location<T>) -> Bool)?
+    // here SE-111 shows the potentional of its deviousness
+    // swiftlint:disable variable_name
+    public var targetMovedItemFromLocationToProposedLocation: ((Location<T>, LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
+    // swiftlint:enable variable_name
+    public var canEditAtLocation: ((Location<T>) -> Bool)?
+    public var willDeleteAtLocation: ((Location<T>) -> Void)?
+    public var didDeleteItem: ((T) -> Void)?
+
+    public var sectionHeaderTitleForSectionID: ((String) -> String)?
+    public var sectionFooterTitleForSectionID: ((String) -> String)?
+
+    #if !swift(>=3.0)
+    public func setFunc(didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
+    }
+    #else
+    public func setFunc(didChangeSectionIDsFunc: @escaping ((Dictionary<String, Array<T>>) -> Void)) {
+    self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
+    }
+    #endif
+
+
+
     // MARK: -
+    #if !swift(>=3.0)
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: (inLocation: Location<T>) -> UITableViewCell) {
+    self.engine = DataSourceEngine<T>()
+    self.tableView = inTableView
+    self.cellForLocation = inCellForLocation
+    super.init()
+
+    setup()
+    }
+    #else
+    public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: @escaping (Location<T>) -> UITableViewCell) {
         self.engine = DataSourceEngine<T>()
         self.tableView = inTableView
-        self.cell = inCellForLocation
-
+        self.cellForLocation = inCellForLocation
         super.init()
+        setup()
+    }
+    #endif
+
+
+    func setup() {
         self.engine.logWhenVerbose(message: "TableDataSource.init(,cellForLocation:)")
         self.tableView.dataSource = self
         self.tableView.delegate = self
@@ -260,7 +420,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if swift(>=3.0)
-    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPathway) -> UITableViewCell {
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         return private_tableView(tableView: tableView, cellForRowAtIndexPath: indexPath)
     }
     #else
@@ -274,7 +434,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             preconditionFailure("rows not found")
         }
 
-        return self.cell(forLocation: location)
+        return self.cellForLocation(location)
     }
 
     #if swift(>=3.0)
@@ -287,7 +447,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #endif
     private func private_tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: CompatIndexPath) -> Bool {
-        guard let canActuallyMove = self.canMove else {
+        guard let canActuallyMove = self.canMoveToLocation else {
             // callback not implemented, so... no, you can't!
             return false
         }
@@ -296,7 +456,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return false
         }
 
-        return canActuallyMove(toLocation: location)
+        return canActuallyMove(location)
     }
 
     #if swift(>=3.0)
@@ -319,7 +479,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #endif
     private func private_tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: CompatIndexPath, toProposedIndexPath proposedDestinationIndexPath: CompatIndexPath) -> CompatIndexPath {
-        guard let callback = self.targetMovedItem else {
+        guard let callback = self.targetMovedItemFromLocationToProposedLocation else {
             return proposedDestinationIndexPath
         }
 
@@ -334,7 +494,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         }
 
         // ask the our delegate where he/she wants the row
-        let actualDestination = callback(fromLocation: fromLocation, proposedLocation: toLocation)
+        let actualDestination = callback(fromLocation, toLocation)
 
         // check whether actual destination is OK
         if let item = actualDestination.item, let indexPath = self.engine.indexPath(forSectionID: actualDestination.sectionID, rowItem: item) {
@@ -377,8 +537,8 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
                 return
             }
 
-            if let callback = self.willDelete {
-                callback(atLocation: location)
+            if let callback = self.willDeleteAtLocation {
+                callback(location)
             }
 
             var rows = self.engine.rows(forSection: location.sectionID)
@@ -391,15 +551,15 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
                 self.engine.update(rows: rows, section: location.sectionID, animated: true)
             }
 
-            if let callback = self.didDelete {
-                callback(item: location.item)
+            if let callback = self.didDeleteItem {
+                callback(location.item)
             }
 
             // HACK? Is this really the right thing to do here conceptually???
             if let callback = self.engine.didChangeSectionIDs {
                 let sectionID = location.sectionID
                 let rows = self.engine.rows(forSection: sectionID)
-                callback(inSectionIDs: [sectionID:rows])
+                callback([sectionID:rows])
             }
 
             #if swift(>=3.0)
@@ -414,7 +574,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 
     #if swift(>=3.0)
-    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPathway) -> Bool {
+    public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return private_tableView(tableView: tableView, canEditRowAtIndexPath: indexPath)
     }
     #else
@@ -422,16 +582,16 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return private_tableView(tableView, canEditRowAtIndexPath: indexPath)
     }
     #endif
-    private func private_tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+    private func private_tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: CompatIndexPath) -> Bool {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             return false
         }
 
-        guard let callback = self.canEdit else {
+        guard let callback = self.canEditAtLocation else {
             return false
         }
 
-        return callback(atLocation: location)
+        return callback(location)
     }
 
     #if swift(>=3.0)
@@ -449,11 +609,11 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return nil
         }
 
-        guard let callback = self.sectionHeaderTitle else {
+        guard let callback = self.sectionHeaderTitleForSectionID else {
             return nil
         }
 
-        return callback(sectionID: sectionID)
+        return callback(sectionID)
 
     }
 
@@ -472,11 +632,11 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return nil
         }
 
-        guard let callback = self.sectionFooterTitle else {
+        guard let callback = self.sectionFooterTitleForSectionID else {
             return nil
         }
 
-        return callback(sectionID: sectionID)
+        return callback(sectionID)
     }
 
     // MARK: - UITableViewDelegate
@@ -491,7 +651,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
     #endif
     private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: CompatIndexPath) {
-        guard let callback = self.didSelect else {
+        guard let callback = self.didSelectLocation else {
             return
         }
 
@@ -499,7 +659,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return
         }
 
-        callback(inLocation: location)
+        callback(location)
     }
 }
 

@@ -43,16 +43,39 @@ class TableDataSourceTests: BaseDataSourceTests {
         #endif
     }
 
+    #if swift(>=3.0)
+    override func setFunc(fail inFailFunc: @escaping (String) -> Void) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setFunc(fail: inFailFunc)
+    }
+
+    override func setFunc(warn inWarnFunc: @escaping (String) -> Void) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setFunc(warn: inWarnFunc)
+    }
+
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping((Dictionary<String, Array<MockTVItem>>) -> Void)) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+        dataSource.setFunc(didChangeSectionIDsFunc: inDidChangeFunc)
+    }
+
+    #else
+
     override func setFunc(fail inFailFunc: (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-        #if swift(>=3.0)
-            dataSource.setFunc(fail: inFailFunc)
-            #else
-            dataSource.setFailFunc(inFailFunc)
-            #endif
+        dataSource.setFailFunc(inFailFunc)
     }
 
     override func setFunc(warn inWarnFunc: (String) -> Void) {
@@ -60,26 +83,18 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-
-        #if swift(>=3.0)
-            dataSource.setFunc(warn: inWarnFunc)
-        #else
-            dataSource.setWarnFunc(inWarnFunc)
-        #endif
+        dataSource.setWarnFunc(inWarnFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-
-        #if swift(>=3.0)
-            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: inDidChangeFunc)
-        #else
-            dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
-        #endif
+        dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
     }
+
+    #endif
 
     // MARK: - given
 
@@ -114,9 +129,15 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
-            return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
-        }
+        #if swift(>=3.0)
+            dataSource.canMoveToLocation = {(toLocation: Location<MockTVItem>) -> Bool in
+                return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
+            }
+        #else
+            dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
+                return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
+            }
+        #endif
     }
 
     func givenRetargetsTo(rowID inRowID: String, sectionID: String) {
@@ -126,9 +147,15 @@ class TableDataSourceTests: BaseDataSourceTests {
         }
 
         let location = LocationWithOptionalItem(sectionID: sectionID, item: MockTVItem(identifier: inRowID))
-        dataSource.targetMovedItem = { (fromLocation: Location<MockTVItem>, proposedLocation: LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
-            return location
-        }
+        #if swift(>=3.0)
+            dataSource.targetMovedItemFromLocationToProposedLocation = { (fromLocation: Location<MockTVItem>, proposedLocation: LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
+                return location
+            }
+        #else
+            dataSource.targetMovedItem = { (fromLocation: Location<MockTVItem>, proposedLocation: LocationWithOptionalItem<MockTVItem>) -> LocationWithOptionalItem<MockTVItem> in
+                return location
+            }
+        #endif
     }
 
     func givenCanEditItemAt(sectionID inSectionID: String, rowID inRowID: String) {
@@ -136,9 +163,16 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        dataSource.canEdit = {(atLocation: Location<MockTVItem>) -> Bool in
-            return atLocation.sectionID == inSectionID && atLocation.item.identifier == inRowID
-        }
+
+        #if swift(>=3.0)
+            dataSource.canEditAtLocation = {(atLocation: Location<MockTVItem>) -> Bool in
+                return atLocation.sectionID == inSectionID && atLocation.item.identifier == inRowID
+            }
+        #else
+            dataSource.canEdit = {(atLocation: Location<MockTVItem>) -> Bool in
+                return atLocation.sectionID == inSectionID && atLocation.item.identifier == inRowID
+            }
+        #endif
     }
 
     override func givenWillAllowSelect(sectionID inSectionID: String, rowID inRowID: String) {
@@ -147,11 +181,19 @@ class TableDataSourceTests: BaseDataSourceTests {
             return
         }
         didCallDidSelectHandler = false
-        dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
-            XCTAssert(inLocation.sectionID == "a")
-            XCTAssert(inLocation.item.identifier == "1")
-            self.didCallDidSelectHandler = true
-        }
+        #if swift(>=3.0)
+            dataSource.didSelectLocation = { (inLocation: Location<MockTVItem>) -> Void in
+                XCTAssert(inLocation.sectionID == "a")
+                XCTAssert(inLocation.item.identifier == "1")
+                self.didCallDidSelectHandler = true
+            }
+        #else
+            dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
+                XCTAssert(inLocation.sectionID == "a")
+                XCTAssert(inLocation.item.identifier == "1")
+                self.didCallDidSelectHandler = true
+            }
+        #endif
     }
 
     override func givenDiffsAreCleared() {
@@ -185,7 +227,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTAssert(mappedIDs == inRowIDs)
         }
         #if swift(>=3.0)
-            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeFunc)
+            dataSource.setFunc(didChangeSectionIDsFunc: didChangeFunc)
         #else
             dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
         #endif
@@ -193,8 +235,13 @@ class TableDataSourceTests: BaseDataSourceTests {
     }
 
     func givenTableViewReflectsSectionIDsAsHeaderAndFooterTitles() {
-        self.dataSource?.sectionHeaderTitle = { return $0 }
-        self.dataSource?.sectionFooterTitle = { return $0+$0 }
+        #if swift(>=3.0)
+            self.dataSource?.sectionHeaderTitleForSectionID = { return $0 }
+            self.dataSource?.sectionFooterTitleForSectionID = { return $0+$0 }
+        #else
+            self.dataSource?.sectionHeaderTitle = { return $0 }
+            self.dataSource?.sectionFooterTitle = { return $0+$0 }
+        #endif
     }
 
     // MARK: - when
@@ -465,16 +512,31 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail()
             return
         }
-        dataSource.willDelete = { (atLocation: Location<MockTVItem>) -> Void in
-            XCTAssert(atLocation.sectionID == "a")
-            XCTAssert(atLocation.item.identifier == "1")
-            willDeleteExpectation.fulfill()
-        }
+        #if swift(>=3.0)
+            dataSource.willDeleteAtLocation = { (atLocation: Location<MockTVItem>) -> Void in
+                XCTAssert(atLocation.sectionID == "a")
+                XCTAssert(atLocation.item.identifier == "1")
+                willDeleteExpectation.fulfill()
+            }
 
-        dataSource.didDelete = { (item: MockTVItem) -> Void in
-            XCTAssert(item.identifier == "1")
-            didDeleteExpectation.fulfill()
-        }
+            dataSource.didDeleteItem = { (item: MockTVItem) -> Void in
+                XCTAssert(item.identifier == "1")
+                didDeleteExpectation.fulfill()
+            }
+
+        #else
+            dataSource.willDelete = { (atLocation: Location<MockTVItem>) -> Void in
+                XCTAssert(atLocation.sectionID == "a")
+                XCTAssert(atLocation.item.identifier == "1")
+                willDeleteExpectation.fulfill()
+            }
+
+            dataSource.didDelete = { (item: MockTVItem) -> Void in
+                XCTAssert(item.identifier == "1")
+                didDeleteExpectation.fulfill()
+            }
+
+        #endif
 
         let didChangeFunc = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
             sectionChangedExpectation.fulfill()
@@ -493,10 +555,10 @@ class TableDataSourceTests: BaseDataSourceTests {
         }
 
         #if swift(>=3.0)
-            dataSource.setDidChangeSectionIDsFunc(didChangeFunc: didChangeFunc)
-            #else
+            dataSource.setFunc(didChangeSectionIDsFunc: didChangeFunc)
+        #else
             dataSource.setDidChangeSectionIDsFunc(didChangeFunc)
-            #endif
+        #endif
 
         guard let tableView = self.tableView else {
             XCTFail("no table view")

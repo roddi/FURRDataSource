@@ -67,10 +67,9 @@ internal class DataSourceEngine <T where T: DataItem> {
     var insertSections: ((NSIndexSet) -> Void)?
     #endif
 
-    var didChangeSectionIDs: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)?
+    var didChangeSectionIDs: ((Dictionary<String, Array<T>>) -> Void)?
     var deleteRowsAtIndexPaths: (([CompatIndexPath]) -> Void)?
     var insertRowsAtIndexPaths: (([CompatIndexPath]) -> Void)?
-
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
@@ -327,7 +326,7 @@ internal class DataSourceEngine <T where T: DataItem> {
             changed[sectionID] = self.rowsBySectionID[sectionID]
         }
 
-        didChangeSectionIDsFunc(inSectionIDs: changed)
+        didChangeSectionIDsFunc(changed)
     }
 
     // MARK: - private
