@@ -36,6 +36,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     private let engine: DataSourceEngine<T>
 
     // MARK: - logging / failing
+
     public func setFunc(fail failFunc: ((String) -> Void )?) {
         self.engine.fail = failFunc
     }
@@ -46,68 +47,14 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
         self.engine.reportingLevel = inLevel
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func setFailFunc(failFunc: (String) -> Void) {
-        self.engine.fail = failFunc
-    }
-    @available(*, deprecated) public func setWarnFunc(warnFunc: (String) -> Void) {
-        self.engine.warn = warnFunc
-    }
-    @available(*, deprecated) public func setReportingLevel(level: DataSourceReportingLevel) {
-        self.engine.reportingLevel = level
-    }
-
-    // MARK: - trampoline methods
-    @available(*, deprecated, renamed="cellForLocation()", message="Thanks Apple for SE-111!")
-    public var cell: (forLocation: Location<T>) -> UICollectionViewCell {
-        set(cell) {
-            self.cellForLocation = { (location: Location<T>) -> UICollectionViewCell in cell(forLocation: location) }
-        }
-        get {
-            preconditionFailure("write-only. Use 'cellForLocation' if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="didSelectLocation()", message="Thanks Apple for SE-111!")
-    public var didSelect: ((inLocation: Location<T>) -> Void)? {
-        set(selectFunc) {
-            if selectFunc != nil {
-                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc?(inLocation: location) }
-            } else {
-                self.didSelectLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use 'didSelectLocation' if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="canMoveToLocation()", message="Thanks Apple for SE-111!")
-    public var canMove: ((toLocation: Location<T>) -> Bool)? {
-        set(moveFunc) {
-            if moveFunc != nil {
-                self.canMoveToLocation = { (location: Location<T>) -> Bool in
-                    return moveFunc != nil ? moveFunc!(toLocation: location) : false
-                }
-            } else {
-                self.canMoveToLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use 'canMoveToLocation' if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
-    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
-        self.engine.didChangeSectionIDs = didChangeFunc
-    }
-
-    #endif
+    // MARK: - delegate closures
 
     public var cellForLocation: (Location<T>) -> UICollectionViewCell
     public var didSelectLocation: ((Location<T>) -> Void)?
     public var canMoveToLocation: ((Location<T>) -> Bool)?
 
     #if !swift(>=3.0)
-    public func setFunc(didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
+    public func setFunc(didChangeSectionIDsFunc didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
         self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
     }
     #else
@@ -171,30 +118,11 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     public func rows(forSection section: String) -> [T] {
         return self.engine.rows(forSection: section)
     }
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func rowsForSection(section: String) -> [T] {
-        return self.engine.rows(forSection: section)
-    }
-    #endif
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: CompatIndexPath) -> (String, T)? {
-        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
-    }
-    #endif
     public func sectionIDAndItem(forIndexPath inIndexPath: CompatIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
-        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
-            return nil
-        }
-
-        return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
-    }
-    #endif
     public func dequeueReusableCell(withReuseIdentifier reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
         guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
@@ -224,14 +152,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
     }
 
     // MARK: - updating
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
-        self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.update(sections: inSections, animated: inAnimated)
-            }, completion: nil)
 
-    }
-    #endif
     func update(sections inSections: Array<String>, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
             self.engine.update(sections: inSections, animated: inAnimated)
@@ -239,21 +160,14 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
-        self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
-            }, completion: nil)
-    }
-    #endif
     public func update(rows inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
             self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
             }, completion: nil)
     }
 
-    // MARK: -
     // MARK: - delegate / data source
+
     #if swift(>=3.0)
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return self.engine.numberOfRows(forSectionIndex: section)
@@ -351,5 +265,98 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 
     private func private_collectionView(collectionView: UICollectionView, moveItemAtIndexPath sourceIndexPath: CompatIndexPath, toIndexPath destinationIndexPath: CompatIndexPath) {
         self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
+    }
+}
+
+// MARK: -
+// MARK: - deprecated API
+
+extension CollectionDataSource {
+
+    // MARK: deprecated API (logging/failing)
+
+    @available(*, deprecated) public func setFailFunc(failFunc: (String) -> Void) {
+        self.engine.fail = failFunc
+    }
+    @available(*, deprecated) public func setWarnFunc(warnFunc: (String) -> Void) {
+        self.engine.warn = warnFunc
+    }
+    @available(*, deprecated) public func setReportingLevel(level: DataSourceReportingLevel) {
+        self.engine.reportingLevel = level
+    }
+    // MARK: deprecated API (delegate closures)
+
+    @available(*, deprecated, renamed="cellForLocation()", message="Thanks Apple for SE-111!")
+    public var cell: (forLocation: Location<T>) -> UICollectionViewCell {
+        set(cell) {
+            self.cellForLocation = { (location: Location<T>) -> UICollectionViewCell in cell(forLocation: location) }
+        }
+        get {
+            preconditionFailure("write-only. Use 'cellForLocation' if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="didSelectLocation()", message="Thanks Apple for SE-111!")
+    public var didSelect: ((inLocation: Location<T>) -> Void)? {
+        set(selectFunc) {
+            if selectFunc != nil {
+                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc?(inLocation: location) }
+            } else {
+                self.didSelectLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use 'didSelectLocation' if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="canMoveToLocation()", message="Thanks Apple for SE-111!")
+    public var canMove: ((toLocation: Location<T>) -> Bool)? {
+        set(moveFunc) {
+            if moveFunc != nil {
+                self.canMoveToLocation = { (location: Location<T>) -> Bool in
+                    return moveFunc != nil ? moveFunc!(toLocation: location) : false
+                }
+            } else {
+                self.canMoveToLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use 'canMoveToLocation' if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
+    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeFunc
+    }
+
+    // MARK: deprecated API (querying)
+
+    @available(*, deprecated) public func rowsForSection(section: String) -> [T] {
+        return self.engine.rows(forSection: section)
+    }
+
+    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: CompatIndexPath) -> (String, T)? {
+        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
+    }
+
+    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UICollectionViewCell? {
+        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
+            return nil
+        }
+
+        return self.collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath)
+    }
+    // MARK: deprecated API (updating)
+
+    @available(*, deprecated) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.engine.update(sections: inSections, animated: inAnimated)
+            }, completion: nil)
+
+    }
+
+    @available(*, deprecated) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
+            }, completion: nil)
     }
 }
