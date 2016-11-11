@@ -53,153 +53,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         self.engine.reportingLevel = inLevel
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated, renamed="setFunc(fail:)") public func setFailFunc(failFunc: (String) -> Void) {
-        self.engine.fail = failFunc
-    }
-
-    @available(*, deprecated, renamed="setFunc(warn:)") public func setWarnFunc(warnFunc: (String) -> Void) {
-        self.engine.warn = warnFunc
-    }
-
-    @available(*, deprecated, renamed="setReporting(level:)") public func setReportingLevel(level: DataSourceReportingLevel) {
-        self.engine.reportingLevel = level
-    }
-
-    @available(*, deprecated, renamed="cellForLocation", message="Thanks Apple for SE-111!")
-    public var cell: (forLocation: Location<T>) -> UITableViewCell {
-        set(cell) {
-            self.cellForLocation = { (location: Location<T>) -> UITableViewCell in cell(forLocation: location) }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="didSelectLocation", message="Thanks Apple for SE-111!")
-    public var didSelect: ((inLocation: Location<T>) -> Void)? {
-        set(selectFunc) {
-            if let selectFunc = selectFunc {
-                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc(inLocation: location) }
-            } else {
-                self.didSelectLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="canMoveToLocation", message="Thanks Apple for SE-111!")
-    public var canMove: ((toLocation: Location<T>) -> Bool)? {
-        set(moveFunc) {
-            if let moveFunc = moveFunc {
-                self.canMoveToLocation = { (location: Location<T>) -> Bool in
-                    return moveFunc(toLocation: location)
-                }
-            } else {
-                self.canMoveToLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="canEditAtLocation", message="Thanks Apple for SE-111!")
-    public var canEdit: ((atLocation: Location<T>) -> Bool)? {
-        set(canEditFunc) {
-            if let canEditFunc = canEditFunc {
-                self.canEditAtLocation = { (location: Location<T>) -> Bool in
-                    return canEditFunc(atLocation: location)
-                }
-            } else {
-                self.canEditAtLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="targetMovedItemFromLocationToProposedLocation", message="Thanks Apple for SE-111!")
-    public var targetMovedItem: ((fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)? {
-        set(targetFunc) {
-            if let targetFunc = targetFunc {
-                self.targetMovedItemFromLocationToProposedLocation = { (fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T> in
-                    return targetFunc(fromLocation: fromLocation, proposedLocation: proposedLocation)
-                }
-            } else {
-                self.targetMovedItemFromLocationToProposedLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="willDeleteAtLocation", message="Thanks Apple for SE-111!")
-    public var willDelete: ((atLocation: Location<T>) -> Void)? {
-        set(willDeleteFunc) {
-            if let willDeleteFunc = willDeleteFunc {
-                self.willDeleteAtLocation = { (location: Location<T>) -> Void in willDeleteFunc(atLocation: location) }
-            } else {
-                self.willDeleteAtLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="didDeleteItem", message="Thanks Apple for SE-111!")
-    public var didDelete: ((item: T) -> Void)? {
-        set(didDeleteFunc) {
-            if let didDeleteFunc = didDeleteFunc {
-                self.didDeleteItem = { (item: T) -> Void in didDeleteFunc(item: item) }
-            } else {
-                self.didDeleteItem = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="sectionHeaderTitleForSectionID", message="Thanks Apple for SE-111!")
-    public var sectionHeaderTitle: ((sectionID: String) -> String)? {
-        set(sectionHeaderFunc) {
-            if let sectionHeaderFunc = sectionHeaderFunc {
-                self.sectionHeaderTitleForSectionID = { (sectionID: String) -> String in sectionHeaderFunc(sectionID: sectionID) }
-            } else {
-                self.sectionHeaderTitleForSectionID = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="sectionFooterTitleForSectionID", message="Thanks Apple for SE-111!")
-    public var sectionFooterTitle: ((sectionID: String) -> String)? {
-        set(sectionFooterFunc) {
-            if let sectionFooterFunc = sectionFooterFunc {
-                self.sectionFooterTitleForSectionID = { (sectionID: String) -> String in sectionFooterFunc(sectionID: sectionID) }
-            } else {
-                self.sectionFooterTitleForSectionID = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
-    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
-        self.engine.didChangeSectionIDs = didChangeFunc
-    }
-
-    #endif
-
-    // MARK: - trampoline methods
+    // MARK: - delegate closures
     public var cellForLocation: (Location<T>) -> UITableViewCell
     public var didSelectLocation: ((Location<T>) -> Void)?
     public var canMoveToLocation: ((Location<T>) -> Bool)?
@@ -214,13 +68,13 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     public var sectionHeaderTitleForSectionID: ((String) -> String)?
     public var sectionFooterTitleForSectionID: ((String) -> String)?
 
-    #if !swift(>=3.0)
-    public func setFunc(didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
-        self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
-    }
-    #else
+    #if swift(>=3.0)
     public func setFunc(didChangeSectionIDsFunc: @escaping ((Dictionary<String, Array<T>>) -> Void)) {
     self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
+    }
+    #else
+    public func setFunc(didChangeSectionIDsFunc didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
     }
     #endif
 
@@ -290,52 +144,24 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return self.engine.sections()
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated = 0.2) public func rowsForSection(section: String) -> [T] {
-        return self.engine.rows(forSection: section)
-    }
-    #endif
     public func rows(forSection inSection: String) -> [T] {
         return self.engine.rows(forSection: inSection)
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated = 0.2) public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
-        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
-    }
-    #endif
     public func sectionIDAndItem(indexPath inIndexPath: CompatIndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
     // MARK: - updating
-    #if !swift(>=3.0)
-    @available(*, deprecated = 0.2) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
-    self.engine.update(sections: inSections, animated: inAnimated)
-    }
-    #endif
+
     public func update(sections inSections: Array<String>, animated inAnimated: Bool) {
         self.engine.update(sections: inSections, animated: inAnimated)
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated = 0.2) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
-        self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
-    }
-    #endif
     public func update(rows inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
         self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
-        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
-            return nil
-        }
-
-        return self.tableView.dequeueReusableCellWithIdentifier(reuseIdentifier, forIndexPath: indexPath)
-    }
-    #endif
     public func dequeueReusableCell(withIdentifier reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
         guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil
@@ -352,13 +178,6 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         self.tableView.reloadData()
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func reloadSectionID(inSectionID: String) {
-        if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
-                self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
-        }
-    }
-    #endif
     public func reload(sectionID inSectionID: String) {
         if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
             #if swift(>=3.0)
@@ -369,13 +188,6 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         }
     }
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) public func reloadSectionID(inSectionID: String, item inItem: T) {
-        if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
-                self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-        }
-    }
-    #endif
     public func reload(sectionID inSectionID: String, item inItem: T) {
         if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
             #if swift(>=3.0)
@@ -663,4 +475,198 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 }
 
+// MARK: - deprecated API
+
+#if !swift(>=3.0)
+extension TableDataSource {
+
+    // MARK: deprecated API (logging/failing)
+
+    @available(*, deprecated, renamed="setFunc(fail:)") public func setFailFunc(failFunc: (String) -> Void) {
+        self.engine.fail = failFunc
+    }
+
+    @available(*, deprecated, renamed="setFunc(warn:)") public func setWarnFunc(warnFunc: (String) -> Void) {
+        self.engine.warn = warnFunc
+    }
+
+    @available(*, deprecated, renamed="setReporting(level:)") public func setReportingLevel(level: DataSourceReportingLevel) {
+        self.engine.reportingLevel = level
+    }
+
+    // MARK: deprecated API (delegate closures)
+
+    @available(*, deprecated, renamed="cellForLocation", message="Thanks Apple for SE-111!")
+    public var cell: (forLocation: Location<T>) -> UITableViewCell {
+        set(cell) {
+            self.cellForLocation = { (location: Location<T>) -> UITableViewCell in cell(forLocation: location) }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="didSelectLocation", message="Thanks Apple for SE-111!")
+    public var didSelect: ((inLocation: Location<T>) -> Void)? {
+        set(selectFunc) {
+            if let selectFunc = selectFunc {
+                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc(inLocation: location) }
+            } else {
+                self.didSelectLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+    @available(*, deprecated, renamed="canMoveToLocation", message="Thanks Apple for SE-111!")
+    public var canMove: ((toLocation: Location<T>) -> Bool)? {
+        set(moveFunc) {
+            if let moveFunc = moveFunc {
+                self.canMoveToLocation = { (location: Location<T>) -> Bool in
+                    return moveFunc(toLocation: location)
+                }
+            } else {
+                self.canMoveToLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="canEditAtLocation", message="Thanks Apple for SE-111!")
+    public var canEdit: ((atLocation: Location<T>) -> Bool)? {
+        set(canEditFunc) {
+            if let canEditFunc = canEditFunc {
+                self.canEditAtLocation = { (location: Location<T>) -> Bool in
+                    return canEditFunc(atLocation: location)
+                }
+            } else {
+                self.canEditAtLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="targetMovedItemFromLocationToProposedLocation", message="Thanks Apple for SE-111!")
+    public var targetMovedItem: ((fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)? {
+        set(targetFunc) {
+            if let targetFunc = targetFunc {
+                self.targetMovedItemFromLocationToProposedLocation = { (fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T> in
+                    return targetFunc(fromLocation: fromLocation, proposedLocation: proposedLocation)
+                }
+            } else {
+                self.targetMovedItemFromLocationToProposedLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="willDeleteAtLocation", message="Thanks Apple for SE-111!")
+    public var willDelete: ((atLocation: Location<T>) -> Void)? {
+        set(willDeleteFunc) {
+            if let willDeleteFunc = willDeleteFunc {
+                self.willDeleteAtLocation = { (location: Location<T>) -> Void in willDeleteFunc(atLocation: location) }
+            } else {
+                self.willDeleteAtLocation = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="didDeleteItem", message="Thanks Apple for SE-111!")
+    public var didDelete: ((item: T) -> Void)? {
+        set(didDeleteFunc) {
+            if let didDeleteFunc = didDeleteFunc {
+                self.didDeleteItem = { (item: T) -> Void in didDeleteFunc(item: item) }
+            } else {
+                self.didDeleteItem = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="sectionHeaderTitleForSectionID", message="Thanks Apple for SE-111!")
+    public var sectionHeaderTitle: ((sectionID: String) -> String)? {
+        set(sectionHeaderFunc) {
+            if let sectionHeaderFunc = sectionHeaderFunc {
+                self.sectionHeaderTitleForSectionID = { (sectionID: String) -> String in sectionHeaderFunc(sectionID: sectionID) }
+            } else {
+                self.sectionHeaderTitleForSectionID = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="sectionFooterTitleForSectionID", message="Thanks Apple for SE-111!")
+    public var sectionFooterTitle: ((sectionID: String) -> String)? {
+        set(sectionFooterFunc) {
+            if let sectionFooterFunc = sectionFooterFunc {
+                self.sectionFooterTitleForSectionID = { (sectionID: String) -> String in sectionFooterFunc(sectionID: sectionID) }
+            } else {
+                self.sectionFooterTitleForSectionID = nil
+            }
+        }
+        get {
+            preconditionFailure("write-only. Use renamed closure property if you need to read")
+        }
+    }
+
+    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
+    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
+        self.engine.didChangeSectionIDs = didChangeFunc
+    }
+
+    // MARK: deprecated API (querying)
+
+    @available(*, deprecated) public func rowsForSection(section: String) -> [T] {
+        return self.engine.rows(forSection: section)
+    }
+
+    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
+        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
+    }
+
+    // MARK: deprecated API (updating)
+
+    @available(*, deprecated) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
+        self.engine.update(sections: inSections, animated: inAnimated)
+    }
+
+    @available(*, deprecated) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+        self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
+    }
+
+    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
+        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
+            return nil
+        }
+
+        return self.tableView.dequeueReusableCellWithIdentifier(reuseIdentifier, forIndexPath: indexPath)
+    }
+
+    @available(*, deprecated) public func reloadSectionID(inSectionID: String) {
+        if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
+            self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
+        }
+    }
+
+    @available(*, deprecated) public func reloadSectionID(inSectionID: String, item inItem: T) {
+        if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
+            self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+        }
+    }
+
+}
+#endif
 // swiftlint:enable file_length

@@ -116,9 +116,9 @@
 				DDBAF1B81C2E953900E5F7FA /* DataSourceEngine.swift */,
 				5698BA411B8DD0CB008805E2 /* Info.plist */,
 				DD6EAB3A1C3172D600E5F7FA /* Location.swift */,
-				5698BA561B8DD163008805E2 /* TableDataSource.swift */,
-				DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */,
 				DD3242901D36A29C00E5F7FA /* Reporting.swift */,
+				DD4A260C1D2C216E00E5F7FA /* SwiftVersionsCompat.swift */,
+				5698BA561B8DD163008805E2 /* TableDataSource.swift */,
 			);
 			path = DataSource;
 			sourceTree = "<group>";
@@ -209,7 +209,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Ruotger Deecke";
 				TargetAttributes = {
 					5698BA3B1B8DD0CB008805E2 = {

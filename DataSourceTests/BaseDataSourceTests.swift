@@ -1,4 +1,5 @@
 // swiftlint:disable line_length
+// swiftlint:disable file_length
 //
 //  BaseDataSourceTests.swift
 //  FURRDataSource
@@ -397,5 +398,4 @@ class BaseDataSourceTests: XCTestCase {
             self.waitForExpectationsWithTimeout(10, handler: nil)
         #endif
     }
-
 }
