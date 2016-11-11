@@ -51,6 +51,7 @@ public enum DataSourceReportingLevel {
 
 }
 
+// I didn't find a way to "#if" away the where, so we have a warning here, sorry
 internal class DataSourceEngine <T where T: DataItem> {
     private var sectionsInternal: Array<String> = []
     private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
