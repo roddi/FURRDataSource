@@ -37,6 +37,7 @@
 import UIKit
 import FURRExtensions
 
+// I didn't find a way to "#if" away the where, so we have a warning here, sorry
 public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource, Reporting {
 
     private let tableView: UITableView

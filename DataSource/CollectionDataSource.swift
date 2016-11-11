@@ -30,6 +30,7 @@
 
 import UIKit
 
+// I didn't find a way to "#if" away the where, so we have a warning here, sorry
 public class CollectionDataSource <T where T: DataItem> : NSObject, UICollectionViewDelegate, UICollectionViewDataSource, Reporting {
 
     private let collectionView: UICollectionView
@@ -274,7 +275,7 @@ public class CollectionDataSource <T where T: DataItem> : NSObject, UICollection
 extension CollectionDataSource {
 
     // MARK: deprecated API (logging/failing)
-
+    #if !swift(>=3.0)
     @available(*, deprecated) public func setFailFunc(failFunc: (String) -> Void) {
         self.engine.fail = failFunc
     }
@@ -286,7 +287,7 @@ extension CollectionDataSource {
     }
     // MARK: deprecated API (delegate closures)
 
-    @available(*, deprecated, renamed="cellForLocation()", message="Thanks Apple for SE-111!")
+    @available(*, deprecated, renamed="cellForLocation()", message: "Thanks Apple for SE-111!")
     public var cell: (forLocation: Location<T>) -> UICollectionViewCell {
         set(cell) {
             self.cellForLocation = { (location: Location<T>) -> UICollectionViewCell in cell(forLocation: location) }
@@ -359,4 +360,5 @@ extension CollectionDataSource {
             self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
             }, completion: nil)
     }
+#endif
 }
