@@ -32,7 +32,6 @@ class DetailViewController: UIViewController {
 
     @IBOutlet weak var detailDescriptionLabel: UILabel!
 
-
     var detailItem: AnyObject? {
         didSet {
             // Update the view.
@@ -59,6 +58,5 @@ class DetailViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
 
 }

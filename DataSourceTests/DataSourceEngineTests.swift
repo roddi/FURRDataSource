@@ -26,7 +26,6 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 import XCTest
 @testable import FURRDataSource
 
@@ -34,17 +33,10 @@ class DataSourceEngineTests: XCTestCase {
 
     var engine = DataSourceEngine<MockTVItem>()
 
-    #if swift(>=3.0)
-        var insertionRowIndexPaths: [IndexPath] = []
-        var deletionRowIndexPaths: [IndexPath] = []
-        var insertionSectionIndexSet: IndexSet = IndexSet()
-        var deletionSectionIndexSet: IndexSet = IndexSet()
-    #else
-        var insertionRowIndexPaths: [NSIndexPath] = []
-        var deletionRowIndexPaths: [NSIndexPath] = []
-        var insertionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
-        var deletionSectionIndexSet: NSIndexSet = NSMutableIndexSet()
-    #endif
+    var insertionRowIndexPaths: [IndexPath] = []
+    var deletionRowIndexPaths: [IndexPath] = []
+    var insertionSectionIndexSet: IndexSet = IndexSet()
+    var deletionSectionIndexSet: IndexSet = IndexSet()
 
     override func setUp() {
         super.setUp()
@@ -55,18 +47,10 @@ class DataSourceEngineTests: XCTestCase {
         self.engine.deleteSections = { indexSet in self.deletionSectionIndexSet = indexSet }
         self.engine.insertSections = { indexSet in self.insertionSectionIndexSet = indexSet }
         self.engine.insertRowsAtIndexPaths = { indexPathArray in
-            #if swift(>=3.0)
-                self.insertionRowIndexPaths.append(contentsOf: indexPathArray)
-            #else
-                self.insertionRowIndexPaths.appendContentsOf(indexPathArray)
-            #endif
+            self.insertionRowIndexPaths.append(contentsOf: indexPathArray)
         }
         self.engine.deleteRowsAtIndexPaths = { indexPathArray in
-            #if swift(>=3.0)
-                self.deletionRowIndexPaths.append(contentsOf: indexPathArray)
-            #else
-                self.deletionRowIndexPaths.appendContentsOf(indexPathArray)
-            #endif
+            self.deletionRowIndexPaths.append(contentsOf: indexPathArray)
         }
     }
 
@@ -179,18 +163,13 @@ class DataSourceEngineTests: XCTestCase {
     func givenDiffsAreCleared() {
         self.deletionRowIndexPaths = []
         self.insertionRowIndexPaths = []
-        #if swift(>=3.0)
-            self.insertionSectionIndexSet = IndexSet()
-            self.deletionSectionIndexSet = IndexSet()
-        #else
-            self.insertionSectionIndexSet = NSMutableIndexSet()
-            self.deletionSectionIndexSet = NSMutableIndexSet()
-        #endif
+        self.insertionSectionIndexSet = IndexSet()
+        self.deletionSectionIndexSet = IndexSet()
     }
 
     // MARK: - when
 
-    func whenUpdatingSections(withIDs inSectionIDs: Array<String>) {
+    func whenUpdatingSections(withIDs inSectionIDs: [String]) {
         self.engine.update(sections: inSectionIDs, animated: true)
     }
 

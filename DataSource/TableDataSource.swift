@@ -37,8 +37,7 @@
 import UIKit
 import FURRExtensions
 
-// I didn't find a way to "#if" away the where, so we have a warning here, sorry
-public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelegate, UITableViewDataSource, Reporting {
+public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDataSource, Reporting where T: DataItem {
 
     private let tableView: UITableView
     private let engine: DataSourceEngine<T>
@@ -69,38 +68,19 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     public var sectionHeaderTitleForSectionID: ((String) -> String)?
     public var sectionFooterTitleForSectionID: ((String) -> String)?
 
-    #if swift(>=3.0)
-    public func setFunc(didChangeSectionIDsFunc: @escaping ((Dictionary<String, Array<T>>) -> Void)) {
-    self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
-    }
-    #else
-    public func setFunc(didChangeSectionIDsFunc didChangeSectionIDsFunc: ((Dictionary<String, Array<T>>) -> Void)) {
+    public func setFunc(didChangeSectionIDsFunc: @escaping (([String: [T]]) -> Void)) {
         self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
     }
-    #endif
-
-
 
     // MARK: -
-    #if !swift(>=3.0)
-    public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: (inLocation: Location<T>) -> UITableViewCell) {
-    self.engine = DataSourceEngine<T>()
-    self.tableView = inTableView
-    self.cellForLocation = inCellForLocation
-    super.init()
-
-    setup()
-    }
-    #else
-    public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: @escaping (Location<T>) -> UITableViewCell) {
+    public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: @escaping (_ inLocation: Location<T>) -> UITableViewCell) {
         self.engine = DataSourceEngine<T>()
         self.tableView = inTableView
         self.cellForLocation = inCellForLocation
         super.init()
+
         setup()
     }
-    #endif
-
 
     func setup() {
         self.engine.logWhenVerbose(message: "TableDataSource.init(,cellForLocation:)")
@@ -109,32 +89,16 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         self.engine.beginUpdates = {self.tableView.beginUpdates()}
         self.engine.endUpdates = {self.tableView.endUpdates()}
         self.engine.deleteSections = { indexSet in
-            #if swift(>=3.0)
-                self.tableView.deleteSections(indexSet, with: UITableViewRowAnimation.automatic)
-            #else
-                self.tableView.deleteSections(indexSet, withRowAnimation: UITableViewRowAnimation.Automatic)
-            #endif
+            self.tableView.deleteSections(indexSet, with: UITableViewRowAnimation.automatic)
         }
         self.engine.insertSections = { indexSet in
-            #if swift(>=3.0)
-                self.tableView.insertSections(indexSet, with: UITableViewRowAnimation.automatic)
-            #else
-                self.tableView.insertSections(indexSet, withRowAnimation: UITableViewRowAnimation.Automatic)
-            #endif
+            self.tableView.insertSections(indexSet, with: UITableViewRowAnimation.automatic)
         }
         self.engine.deleteRowsAtIndexPaths = { indexPaths in
-            #if swift(>=3.0)
-                self.tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.automatic)
-            #else
-                self.tableView.deleteRowsAtIndexPaths(indexPaths, withRowAnimation: UITableViewRowAnimation.Automatic)
-            #endif
+            self.tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.automatic)
         }
         self.engine.insertRowsAtIndexPaths = { indexPaths in
-            #if swift(>=3.0)
-                self.tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.automatic)
-            #else
-                self.tableView.insertRowsAtIndexPaths(indexPaths, withRowAnimation: UITableViewRowAnimation.Automatic)
-            #endif
+            self.tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.automatic)
         }
         self.engine.didChangeSectionIDs = { sectionIDs in }
     }
@@ -149,17 +113,17 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return self.engine.rows(forSection: inSection)
     }
 
-    public func sectionIDAndItem(indexPath inIndexPath: CompatIndexPath) -> (String, T)? {
+    public func sectionIDAndItem(indexPath inIndexPath: IndexPath) -> (String, T)? {
         return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
     }
 
     // MARK: - updating
 
-    public func update(sections inSections: Array<String>, animated inAnimated: Bool) {
+    public func update(sections inSections: [String], animated inAnimated: Bool) {
         self.engine.update(sections: inSections, animated: inAnimated)
     }
 
-    public func update(rows inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+    public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool) {
         self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
     }
 
@@ -168,11 +132,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             return nil
         }
 
-        #if swift(>=3.0)
-            return self.tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
-        #else
-            return self.tableView.dequeueReusableCellWithIdentifier(reuseIdentifier, forIndexPath: indexPath)
-        #endif
+        return self.tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath)
     }
 
     public func reloadAll() {
@@ -181,67 +141,32 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     public func reload(sectionID inSectionID: String) {
         if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
-            #if swift(>=3.0)
-                self.tableView.reloadSections(IndexSet(integer: sectionID), with: UITableViewRowAnimation.automatic)
-            #else
-                self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
-            #endif
+            self.tableView.reloadSections(IndexSet(integer: sectionID), with: UITableViewRowAnimation.automatic)
         }
     }
 
     public func reload(sectionID inSectionID: String, item inItem: T) {
         if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
-            #if swift(>=3.0)
-                self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
-            #else
-                self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-            #endif
+            self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
     }
 
-
     // MARK: -
     // MARK: UITableViewDataSource
-    #if swift(>=3.0)
     public func numberOfSections(in tableView: UITableView) -> Int {
-        return private_numberOfSectionsInTableView(tableView: tableView)
-    }
-    #else
-    public func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return private_numberOfSectionsInTableView(tableView)
-    }
-    #endif
-    private func private_numberOfSectionsInTableView(tableView: UITableView) -> Int {
         let sections = self.engine.sections()
         self.engine.logWhenVerbose(message: "TableDataSource.numberOfSectionsInTableView() -> \(sections.count)")
         return sections.count
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return private_tableView(tableView: tableView, numberOfRowsInSection: section)
-    }
-    #else
-    public func tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        return private_tableView(tableView, numberOfRowsInSection: inSection)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, numberOfRowsInSection inSection: Int) -> Int {
-        let numberOfRows = self.engine.numberOfRows(forSectionIndex: inSection)
-        self.engine.logWhenVerbose(message: "tableView(,numberOfRowsInSection: \(inSection)) -> \(numberOfRows)")
+        let numberOfRows = self.engine.numberOfRows(forSectionIndex: section)
+        self.engine.logWhenVerbose(message: "tableView(,numberOfRowsInSection: \(section)) -> \(numberOfRows)")
         return numberOfRows
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return private_tableView(tableView: tableView, cellForRowAtIndexPath: indexPath)
-    }
-    #else
-    public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        return private_tableView(tableView, cellForRowAtIndexPath: indexPath)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: CompatIndexPath) -> UITableViewCell {
+
         self.engine.logWhenVerbose(message:"tableView(,cellForRowAtIndexPath: \(indexPath))")
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
@@ -250,16 +175,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return self.cellForLocation(location)
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        return private_tableView(tableView: tableView, canMoveRowAtIndexPath: indexPath)
-    }
-    #else
-    public func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return private_tableView(tableView, canMoveRowAtIndexPath: indexPath)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: CompatIndexPath) -> Bool {
         guard let canActuallyMove = self.canMoveToLocation else {
             // callback not implemented, so... no, you can't!
             return false
@@ -272,26 +188,12 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return canActuallyMove(location)
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
     }
-    #else
-    public func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
-    self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
-    }
-    #endif
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, targetIndexPathForMoveFromRowAt sourceIndexPath: IndexPath, toProposedIndexPath proposedDestinationIndexPath: IndexPath) -> IndexPath {
-        return private_tableView(tableView: tableView, targetIndexPathForMoveFromRowAtIndexPath: sourceIndexPath, toProposedIndexPath: proposedDestinationIndexPath)
-    }
-    #else
-    public func tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: NSIndexPath, toProposedIndexPath proposedDestinationIndexPath: NSIndexPath) -> NSIndexPath {
-        return private_tableView(tableView, targetIndexPathForMoveFromRowAtIndexPath: sourceIndexPath, toProposedIndexPath: proposedDestinationIndexPath)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, targetIndexPathForMoveFromRowAtIndexPath sourceIndexPath: CompatIndexPath, toProposedIndexPath proposedDestinationIndexPath: CompatIndexPath) -> CompatIndexPath {
+
         guard let callback = self.targetMovedItemFromLocationToProposedLocation else {
             return proposedDestinationIndexPath
         }
@@ -321,11 +223,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
         let rows = self.engine.rows(forSection: actualDestination.sectionID)
         if  rows.count != 0 {
-            #if swift(>=3.0)
-                return IndexPath(row: rows.count-1, section: sectionIndex)
-            #else
-                return NSIndexPath(forRow: rows.count-1, inSection: sectionIndex)
-            #endif
+            return IndexPath(row: rows.count-1, section: sectionIndex)
 
         } else {
             print("actual destination section not found!")
@@ -333,18 +231,9 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         }
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        private_tableView(tableView: tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
-    }
-    #else
-    public func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        private_tableView(tableView, commitEditingStyle: editingStyle, forRowAtIndexPath: indexPath)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: CompatIndexPath) {
 
-        switch CompatTableViewCellEditingStyle(editingStyle: editingStyle) {
+        switch editingStyle {
         case .delete:
             guard let location = self.engine.location(forIndexPath: indexPath) else {
                 return
@@ -356,11 +245,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
             var rows = self.engine.rows(forSection: location.sectionID)
             if rows.count != 0 {
-                #if swift(>=3.0)
-                    rows.remove(at: indexPath.row)
-                #else
-                    rows.removeAtIndex(indexPath.row)
-                #endif
+                rows.remove(at: indexPath.row)
                 self.engine.update(rows: rows, section: location.sectionID, animated: true)
             }
 
@@ -372,12 +257,9 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
             if let callback = self.engine.didChangeSectionIDs {
                 let sectionID = location.sectionID
                 let rows = self.engine.rows(forSection: sectionID)
-                callback([sectionID:rows])
+                callback([sectionID: rows])
             }
 
-            #if swift(>=3.0)
-            #else
-            #endif
         case .insert:
             print(".insert ????")
 
@@ -386,16 +268,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         }
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return private_tableView(tableView: tableView, canEditRowAtIndexPath: indexPath)
-    }
-    #else
-    public func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return private_tableView(tableView, canEditRowAtIndexPath: indexPath)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: CompatIndexPath) -> Bool {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             return false
         }
@@ -407,16 +280,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
         return callback(location)
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return private_tableView(tableView: tableView, titleForHeaderInSection: section)
-    }
-    #else
-    public func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return private_tableView(tableView, titleForHeaderInSection: section)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         guard let sectionID = self.engine.sections().optionalElement(index: section) else {
             self.engine.warn(message: "section not found at index \(section)")
             return nil
@@ -430,16 +294,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     }
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return private_tableView(tableView: tableView, titleForFooterInSection: section)
-    }
-    #else
-    public func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return private_tableView(tableView, titleForFooterInSection: section)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         guard let sectionID = self.engine.sections().optionalElement(index: section) else {
             self.engine.warn(message: "section not found at index \(section)")
             return nil
@@ -454,16 +309,7 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
 
     // MARK: - UITableViewDelegate
 
-    #if swift(>=3.0)
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        private_tableView(tableView: tableView, didSelectRowAtIndexPath: indexPath)
-    }
-    #else
-    public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        private_tableView(tableView, didSelectRowAtIndexPath: indexPath)
-    }
-    #endif
-    private func private_tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: CompatIndexPath) {
         guard let callback = self.didSelectLocation else {
             return
         }
@@ -476,198 +322,4 @@ public class TableDataSource <T where T: DataItem> : NSObject, UITableViewDelega
     }
 }
 
-// MARK: - deprecated API
-
-#if !swift(>=3.0)
-extension TableDataSource {
-
-    // MARK: deprecated API (logging/failing)
-
-    @available(*, deprecated, renamed="setFunc(fail:)") public func setFailFunc(failFunc: (String) -> Void) {
-        self.engine.fail = failFunc
-    }
-
-    @available(*, deprecated, renamed="setFunc(warn:)") public func setWarnFunc(warnFunc: (String) -> Void) {
-        self.engine.warn = warnFunc
-    }
-
-    @available(*, deprecated, renamed="setReporting(level:)") public func setReportingLevel(level: DataSourceReportingLevel) {
-        self.engine.reportingLevel = level
-    }
-
-    // MARK: deprecated API (delegate closures)
-
-    @available(*, deprecated, renamed="cellForLocation", message="Thanks Apple for SE-111!")
-    public var cell: (forLocation: Location<T>) -> UITableViewCell {
-        set(cell) {
-            self.cellForLocation = { (location: Location<T>) -> UITableViewCell in cell(forLocation: location) }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="didSelectLocation", message="Thanks Apple for SE-111!")
-    public var didSelect: ((inLocation: Location<T>) -> Void)? {
-        set(selectFunc) {
-            if let selectFunc = selectFunc {
-                self.didSelectLocation = { (location: Location<T>) -> Void in selectFunc(inLocation: location) }
-            } else {
-                self.didSelectLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-    @available(*, deprecated, renamed="canMoveToLocation", message="Thanks Apple for SE-111!")
-    public var canMove: ((toLocation: Location<T>) -> Bool)? {
-        set(moveFunc) {
-            if let moveFunc = moveFunc {
-                self.canMoveToLocation = { (location: Location<T>) -> Bool in
-                    return moveFunc(toLocation: location)
-                }
-            } else {
-                self.canMoveToLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="canEditAtLocation", message="Thanks Apple for SE-111!")
-    public var canEdit: ((atLocation: Location<T>) -> Bool)? {
-        set(canEditFunc) {
-            if let canEditFunc = canEditFunc {
-                self.canEditAtLocation = { (location: Location<T>) -> Bool in
-                    return canEditFunc(atLocation: location)
-                }
-            } else {
-                self.canEditAtLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="targetMovedItemFromLocationToProposedLocation", message="Thanks Apple for SE-111!")
-    public var targetMovedItem: ((fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)? {
-        set(targetFunc) {
-            if let targetFunc = targetFunc {
-                self.targetMovedItemFromLocationToProposedLocation = { (fromLocation: Location<T>, proposedLocation: LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T> in
-                    return targetFunc(fromLocation: fromLocation, proposedLocation: proposedLocation)
-                }
-            } else {
-                self.targetMovedItemFromLocationToProposedLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="willDeleteAtLocation", message="Thanks Apple for SE-111!")
-    public var willDelete: ((atLocation: Location<T>) -> Void)? {
-        set(willDeleteFunc) {
-            if let willDeleteFunc = willDeleteFunc {
-                self.willDeleteAtLocation = { (location: Location<T>) -> Void in willDeleteFunc(atLocation: location) }
-            } else {
-                self.willDeleteAtLocation = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="didDeleteItem", message="Thanks Apple for SE-111!")
-    public var didDelete: ((item: T) -> Void)? {
-        set(didDeleteFunc) {
-            if let didDeleteFunc = didDeleteFunc {
-                self.didDeleteItem = { (item: T) -> Void in didDeleteFunc(item: item) }
-            } else {
-                self.didDeleteItem = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="sectionHeaderTitleForSectionID", message="Thanks Apple for SE-111!")
-    public var sectionHeaderTitle: ((sectionID: String) -> String)? {
-        set(sectionHeaderFunc) {
-            if let sectionHeaderFunc = sectionHeaderFunc {
-                self.sectionHeaderTitleForSectionID = { (sectionID: String) -> String in sectionHeaderFunc(sectionID: sectionID) }
-            } else {
-                self.sectionHeaderTitleForSectionID = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="sectionFooterTitleForSectionID", message="Thanks Apple for SE-111!")
-    public var sectionFooterTitle: ((sectionID: String) -> String)? {
-        set(sectionFooterFunc) {
-            if let sectionFooterFunc = sectionFooterFunc {
-                self.sectionFooterTitleForSectionID = { (sectionID: String) -> String in sectionFooterFunc(sectionID: sectionID) }
-            } else {
-                self.sectionFooterTitleForSectionID = nil
-            }
-        }
-        get {
-            preconditionFailure("write-only. Use renamed closure property if you need to read")
-        }
-    }
-
-    @available(*, deprecated, renamed="setFunc(didChangeSectionIDsFunc:)", message="Thanks Apple for SE-111!")
-    public func setDidChangeSectionIDsFunc(didChangeFunc: ((inSectionIDs: Dictionary<String, Array<T>>) -> Void)) {
-        self.engine.didChangeSectionIDs = didChangeFunc
-    }
-
-    // MARK: deprecated API (querying)
-
-    @available(*, deprecated) public func rowsForSection(section: String) -> [T] {
-        return self.engine.rows(forSection: section)
-    }
-
-    @available(*, deprecated) public func sectionIDAndItemForIndexPath(inIndexPath: NSIndexPath) -> (String, T)? {
-        return self.engine.sectionIDAndItem(forIndexPath: inIndexPath)
-    }
-
-    // MARK: deprecated API (updating)
-
-    @available(*, deprecated) public func updateSections(inSections: Array<String>, animated inAnimated: Bool) {
-        self.engine.update(sections: inSections, animated: inAnimated)
-    }
-
-    @available(*, deprecated) public func updateRows(inRows: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
-        self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
-    }
-
-    @available(*, deprecated) public func dequeueReusableCellWithReuseIdentifier(reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
-        guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
-            return nil
-        }
-
-        return self.tableView.dequeueReusableCellWithIdentifier(reuseIdentifier, forIndexPath: indexPath)
-    }
-
-    @available(*, deprecated) public func reloadSectionID(inSectionID: String) {
-        if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
-            self.tableView.reloadSections(NSIndexSet(index: sectionID), withRowAnimation: UITableViewRowAnimation.Automatic)
-        }
-    }
-
-    @available(*, deprecated) public func reloadSectionID(inSectionID: String, item inItem: T) {
-        if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
-            self.tableView.reloadRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
-        }
-    }
-
-}
-#endif
 // swiftlint:enable file_length

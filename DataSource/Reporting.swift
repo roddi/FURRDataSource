@@ -31,12 +31,6 @@ import Foundation
 
 public protocol Reporting {
 
-    #if !swift(>=3.0)
-    @available(*, deprecated) func setFailFunc(failFunc: (String) -> Void)
-    @available(*, deprecated) func setWarnFunc(warnFunc: (String) -> Void)
-    @available(*, deprecated) func setReportingLevel(level: DataSourceReportingLevel)
-    #endif
-
     func setFunc(fail inFailFunc: ((String) -> Void )?)
     func setFunc(warn inWarnFunc: ((String) -> Void )?)
     func setReporting(level inLevel: DataSourceReportingLevel)

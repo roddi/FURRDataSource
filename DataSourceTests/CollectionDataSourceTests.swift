@@ -26,7 +26,6 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 // I hope you don't mind that test files are longer.
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
@@ -36,8 +35,8 @@ import XCTest
 
 class CollectionDataSourceTests: BaseDataSourceTests {
 
-    var collectionView: MockCollectionView? = nil
-    var dataSource: CollectionDataSource<MockTVItem>? = nil
+    var collectionView: MockCollectionView?
+    var dataSource: CollectionDataSource<MockTVItem>?
     var didCallDidSelectHandler = false
 
     // MARK: - helper
@@ -47,14 +46,10 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return UICollectionViewCell() // <-- will fail anyway
         }
-        #if swift(>=3.0)
-            let cell = dataSource.dequeueReusableCell(withReuseIdentifier: "Cell", sectionID: sectionID, item: inItem)
-        #else
-            let cell = dataSource.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: sectionID, item: inItem)
-        #endif
+        let cell = dataSource.dequeueReusableCell(withReuseIdentifier: "Cell", sectionID: sectionID, item: inItem)
 
-        if let cell_ = cell {
-            return cell_
+        if let cell = cell {
+            return cell
         } else {
             return UICollectionViewCell() // <-- will fail anyway
         }
@@ -75,14 +70,9 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return [] // <-- will fail anyway
         }
 
-        #if swift(>=3.0)
-            return dataSource.rows(forSection: forSection)
-        #else
-            return dataSource.rowsForSection(forSection)
-        #endif
+        return dataSource.rows(forSection: forSection)
     }
 
-    #if swift(>=3.0)
     override func setFunc(warn warnFunc: @escaping (String) -> Void) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
@@ -99,7 +89,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.setFunc(fail: failFunc)
     }
 
-    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping (([String: [MockTVItem]]) -> Void)) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -107,59 +97,20 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.setFunc(didChangeSectionIDsFunc: inDidChangeFunc)
     }
 
-    #else
-    override func setFunc(warn warnFunc: (String) -> Void) {
-        guard let dataSource = self.dataSource else {
-            XCTFail("no data source")
-            return
-        }
-        dataSource.setWarnFunc(warnFunc)
-    }
-
-    override func setFunc(fail inFailFunc: (String) -> Void) {
-        guard let dataSource = self.dataSource else {
-            XCTFail("no data source")
-            return
-        }
-        dataSource.setFailFunc(inFailFunc)
-    }
-
-    override func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
-        guard let dataSource = self.dataSource else {
-            XCTFail("no data source")
-            return
-        }
-        dataSource.setDidChangeSectionIDsFunc(inDidChangeFunc)
-    }
-
-    #endif
-
     // MARK: - given
 
     override func givenDelegateAndDataSource() {
         let collectionViewLayout = UICollectionViewFlowLayout()
         self.collectionView = MockCollectionView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), collectionViewLayout: collectionViewLayout)
-        #if swift(>=3.0)
-            self.collectionView?.register(MockCollectionViewCell.classForKeyedUnarchiver(), forCellWithReuseIdentifier: "Cell")
-        #else
-            self.collectionView?.registerClass(MockCollectionViewCell.classForKeyedUnarchiver(), forCellWithReuseIdentifier: "Cell")
-        #endif
+        self.collectionView?.register(MockCollectionViewCell.classForKeyedUnarchiver(), forCellWithReuseIdentifier: "Cell")
         guard let collectionView = self.collectionView else {
             XCTFail("could not instantiate table view")
             return
         }
         self.dataSource = CollectionDataSource<MockTVItem>(collectionView: collectionView) { (inLocation: Location<MockTVItem>) -> UICollectionViewCell in
-            #if swift(>=3.0)
-                return self.cellForSectionID(sectionID: inLocation.sectionID, item: inLocation.item, collectionView: collectionView)
-            #else
-                return self.cellForSectionID(inLocation.sectionID, item: inLocation.item, collectionView: collectionView)
-            #endif
+            return self.cellForSectionID(sectionID: inLocation.sectionID, item: inLocation.item, collectionView: collectionView)
         }
-        #if swift(>=3.0)
-            self.dataSource?.setReporting(level: .preCondition)
-        #else
-            self.dataSource?.setReportingLevel(.PreCondition)
-        #endif
+        self.dataSource?.setReporting(level: .preCondition)
 
         collectionView.insertRowsCallback = { print("insert rows \($0)") }
         collectionView.deleteRowsCallback = { print("delete rows \($0)") }
@@ -185,19 +136,11 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
         didCallDidSelectHandler = false
-        #if swift(>=3.0)
-            dataSource.didSelectLocation = { (inLocation: Location<MockTVItem>) -> Void in
-                XCTAssert(inLocation.sectionID == "a")
-                XCTAssert(inLocation.item.identifier == "1")
-                self.didCallDidSelectHandler = true
-            }
-        #else
-            dataSource.didSelect = { (inLocation: Location<MockTVItem>) -> Void in
-                XCTAssert(inLocation.sectionID == "a")
-                XCTAssert(inLocation.item.identifier == "1")
-                self.didCallDidSelectHandler = true
-            }
-        #endif
+        dataSource.didSelectLocation = { (inLocation: Location<MockTVItem>) -> Void in
+            XCTAssert(inLocation.sectionID == "a")
+            XCTAssert(inLocation.item.identifier == "1")
+            self.didCallDidSelectHandler = true
+        }
     }
 
     override func givenCanMoveItem(atSectionID inSectionID: String, rowID inRowID: String) {
@@ -205,15 +148,9 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no data source")
             return
         }
-        #if swift(>=3.0)
-            dataSource.canMoveToLocation = {(toLocation: Location<MockTVItem>) -> Bool in
-                return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
-            }
-        #else
-            dataSource.canMove = {(toLocation: Location<MockTVItem>) -> Bool in
-                return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
-            }
-        #endif
+        dataSource.canMoveToLocation = {(toLocation: Location<MockTVItem>) -> Bool in
+            return toLocation.sectionID == inSectionID && toLocation.item.identifier == inRowID
+        }
     }
 
     override func givenExpectRowIDsAfterMove(rowIDs inRowIDs: [String], forSectionID sectionID: String, withSectionCount sectionCount: Int) {
@@ -222,7 +159,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        let didChangeSectionIDsFunc = { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        let didChangeSectionIDsFunc = { (inSectionIDs: [String: [MockTVItem]]) -> Void in
             XCTAssert(inSectionIDs.count == sectionCount)
 
             guard let rows = inSectionIDs[sectionID] else {
@@ -237,24 +174,16 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTAssert(mappedIDs == inRowIDs)
         }
 
-        #if swift(>=3.0)
-            dataSource.setFunc(didChangeSectionIDsFunc: didChangeSectionIDsFunc)
-        #else
-            dataSource.setDidChangeSectionIDsFunc(didChangeSectionIDsFunc)
-        #endif
+        dataSource.setFunc(didChangeSectionIDsFunc: didChangeSectionIDsFunc)
     }
     // MARK: - when
 
-    override func whenUpdating(sectionIDs inSectionIDs: Array<String>) {
+    override func whenUpdating(sectionIDs inSectionIDs: [String]) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
         }
-        #if swift(>=3.0)
-            dataSource.update(sections: inSectionIDs, animated: true)
-        #else
-            dataSource.updateSections(inSectionIDs, animated: true)
-        #endif
+        dataSource.update(sections: inSectionIDs, animated: true)
     }
 
     override func whenUpdating(rowsWithIdentifiers inRows: [String], sectionID: String) {
@@ -263,11 +192,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             return
         }
 
-        #if swift(>=3.0)
-            dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
-        #else
-            dataSource.updateRows(MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
-        #endif
+        dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
     }
 
     override func whenSelecting(row inRow: Int, section: Int) {
@@ -279,13 +204,8 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        #if swift(>=3.0)
-            let indexPath = IndexPath(row: inRow, section: section)
-            dataSource.collectionView(collectionView, didSelectItemAt: indexPath)
-        #else
-            let indexPath = NSIndexPath(forRow: inRow, inSection: section)
-            dataSource.collectionView(collectionView, didSelectItemAtIndexPath: indexPath)
-        #endif
+        let indexPath = IndexPath(row: inRow, section: section)
+        dataSource.collectionView(collectionView, didSelectItemAt: indexPath)
     }
 
     override func whenMoving(sourceRow inSourceRow: Int, sourceSection: Int, toRow destinationRow: Int, toSection destinationSection: Int) {
@@ -297,11 +217,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        #if swift(>=3.0)
-            dataSource.collectionView(collectionView, moveItemAt: IndexPath(row: inSourceRow, section: sourceSection), to: IndexPath(row: destinationRow, section: destinationSection))
-        #else
-            dataSource.collectionView(collectionView, moveItemAtIndexPath: NSIndexPath(forRow: inSourceRow, inSection: sourceSection), toIndexPath: NSIndexPath(forRow: destinationRow, inSection: destinationSection))
-        #endif
+        dataSource.collectionView(collectionView, moveItemAt: IndexPath(row: inSourceRow, section: sourceSection), to: IndexPath(row: destinationRow, section: destinationSection))
     }
     // MARK: - then
 
@@ -314,11 +230,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no collection view")
             return
         }
-        #if swift(>=3.0)
-            XCTAssert(dataSource.numberOfSections(in: collectionView) == inNumberOfSections, "...")
-        #else
-            XCTAssert(dataSource.numberOfSectionsInCollectionView(collectionView) == inNumberOfSections, "...")
-        #endif
+        XCTAssert(dataSource.numberOfSections(in: collectionView) == inNumberOfSections, "...")
     }
 
     // should be called thenNumberOfItemsIs(...). Any volunteers for a pull request?
@@ -369,12 +281,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        #if swift(>=3.0)
-            XCTAssert(dataSource.collectionView(collectionView, canMoveItemAt: IndexPath(row: row, section: section)) == canMove)
-        #else
-            XCTAssert(dataSource.collectionView(collectionView, canMoveItemAtIndexPath: NSIndexPath(forRow: row, inSection: section)) == canMove)
-        #endif
-
+        XCTAssert(dataSource.collectionView(collectionView, canMoveItemAt: IndexPath(row: row, section: section)) == canMove)
     }
 
     // MARK: - override test

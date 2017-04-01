@@ -27,7 +27,6 @@
 // WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 import XCTest
 @testable import FURRDataSource
 
@@ -43,26 +42,21 @@ class MockTVItem: DataItem {
     }
 }
 
-
 func == (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
     return (lhs.identifier == rhs.identifier)
 }
-
 
 func < (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
     return (lhs.identifier < rhs.identifier)
 }
 
-
 func cellForSectionID(inSectionID: String, item inItem: MockTVItem, tableView inTableView: UITableView) -> UITableViewCell {
     let rowID = inItem.identifier
-    let cell = UITableViewCell(style: CompatTableViewCellStyle.subtitle.uiStyle(), reuseIdentifier: inSectionID+rowID)
+    let cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: inSectionID+rowID)
     cell.textLabel?.text = inSectionID
     cell.detailTextLabel?.text = rowID
     return cell
 }
-
-
 
 class BaseDataSourceTests: XCTestCase {
 
@@ -72,42 +66,20 @@ class BaseDataSourceTests: XCTestCase {
         return []
     }
 
-    #if !swift(>=3.0)
-    final func rows(forSection inSection: String) -> [MockTVItem] {
-        return rows(inSection)
-    }
-
-    #endif
-
     func rows(forSection: String) -> [MockTVItem] {
         XCTFail("needs to be overridden")
         return []
     }
 
-    #if swift(>=3.0)
     func setFunc(fail inFailFunc: @escaping (String) -> Void) {
         XCTFail("needs to be overridden")
     }
     func setFunc(warn inWarnFunc: @escaping (String) -> Void) {
         XCTFail("needs to be overridden")
     }
-    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
+    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: @escaping (([String: [MockTVItem]]) -> Void)) {
         XCTFail("needs to be overridden")
     }
-
-    #else
-
-    func setFunc(fail inFailFunc: (String) -> Void) {
-        XCTFail("needs to be overridden")
-    }
-    func setFunc(warn inWarnFunc: (String) -> Void) {
-        XCTFail("needs to be overridden")
-    }
-    func setDidChangeSectionIDsFunc(didChangeFunc inDidChangeFunc: ((Dictionary<String, Array<MockTVItem>>) -> Void)) {
-        XCTFail("needs to be overridden")
-    }
-    #endif
-
 
     // MARK: - given
 
@@ -132,17 +104,11 @@ class BaseDataSourceTests: XCTestCase {
     }
 
     // MARK: - when
-    #if swift(>=3.0)
-    final func whenUpdatingSectionIDs(_ inSectionIDs: Array<String>) {
+    final func whenUpdatingSectionIDs(_ inSectionIDs: [String]) {
         self.whenUpdating(sectionIDs: inSectionIDs)
     }
-    #else
-    final func whenUpdatingSectionIDs(inSectionIDs: Array<String>) {
-        self.whenUpdating(sectionIDs: inSectionIDs)
-    }
-    #endif
 
-    func whenUpdating(sectionIDs inSectionIDs: Array<String>) {
+    func whenUpdating(sectionIDs inSectionIDs: [String]) {
         XCTFail("needs to be overridden")
     }
 
@@ -208,7 +174,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         var didFail = false
-        self.setFunc(fail: { (msg) -> Void in didFail = true })
+        self.setFunc(fail: { (_) -> Void in didFail = true })
 
         self.whenUpdatingSectionIDs(["a", "a", "a"])
         XCTAssert(didFail)
@@ -218,7 +184,7 @@ class BaseDataSourceTests: XCTestCase {
         self.givenDelegateAndDataSource()
 
         var didWarn = false
-        self.setFunc(warn: { (message: String?) -> Void in
+        self.setFunc(warn: { (_: String?) -> Void in
             didWarn = true
         })
 
@@ -244,7 +210,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
 
         var didFail = false
-        self.setFunc(fail: { (msg) -> Void in didFail = true })
+        self.setFunc(fail: { (_) -> Void in didFail = true })
         self.whenUpdating(rowsWithIdentifiers: ["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
     }
@@ -324,7 +290,6 @@ class BaseDataSourceTests: XCTestCase {
         self.givenCanMoveItem(atSectionID: "a", rowID: "2")
         self.givenExpectRowIDsAfterMove(rowIDs: ["0", "2", "1"], forSectionID: "a", withSectionCount: 1)
 
-
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
@@ -357,13 +322,9 @@ class BaseDataSourceTests: XCTestCase {
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2", "3"], sectionID: "a")
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "b")
 
-        #if swift(>=3.0)
-            let expectation = self.expectation(description: "sections changed callback")
-        #else
-            let expectation = expectationWithDescription("sections changed callback")
-        #endif
+        let expectation = self.expectation(description: "sections changed callback")
 
-        self.setDidChangeSectionIDsFunc(didChangeFunc: { (inSectionIDs: Dictionary<String, Array<MockTVItem>>) -> Void in
+        self.setDidChangeSectionIDsFunc(didChangeFunc: { (inSectionIDs: [String: [MockTVItem]]) -> Void in
             expectation.fulfill()
             XCTAssert(inSectionIDs.count == 2, "should be only two sections")
 
@@ -392,10 +353,6 @@ class BaseDataSourceTests: XCTestCase {
 
         self.whenMoving(sourceRow: 3, sourceSection: 0, toRow: 2, toSection: 1)
 
-        #if swift(>=3.0)
-            self.waitForExpectations(timeout: 10, handler: nil)
-        #else
-            self.waitForExpectationsWithTimeout(10, handler: nil)
-        #endif
+        self.waitForExpectations(timeout: 10, handler: nil)
     }
 }

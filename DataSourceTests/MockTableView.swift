@@ -12,78 +12,41 @@ import UIKit
 
 class MockTableView: UITableView {
 
-    var insertRowsCallback: (([CompatIndexPath]) -> Void)?
-    var deleteRowsCallback: (([CompatIndexPath]) -> Void)?
-    var insertSectionsCallback: ((CompatIndexSet) -> Void)?
-    var deleteSectionsCallback: ((CompatIndexSet) -> Void)?
+    var insertRowsCallback: (([IndexPath]) -> Void)?
+    var deleteRowsCallback: (([IndexPath]) -> Void)?
+    var insertSectionsCallback: ((IndexSet) -> Void)?
+    var deleteSectionsCallback: ((IndexSet) -> Void)?
 
-    var insertionRowIndexPaths: [CompatIndexPath] = []
-    var deletionRowIndexPaths: [CompatIndexPath] = []
+    var insertionRowIndexPaths: [IndexPath] = []
+    var deletionRowIndexPaths: [IndexPath] = []
     var insertionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
     var deletionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
 
-    #if swift(>=3.0)
     override func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation) {
         self.insertionSectionIndexSet.add(sections)
         if let callback = insertSectionsCallback {
             callback(sections)
         }
     }
-    #else
-    override func insertSections(sections: NSIndexSet, withRowAnimation animation: UITableViewRowAnimation) {
-        self.insertionSectionIndexSet.addIndexes(sections)
-        if let callback = insertSectionsCallback {
-            callback(sections)
-        }
-    }
-    #endif
 
-    #if swift(>=3.0)
     override func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation) {
         self.deletionSectionIndexSet.add(sections)
         if let callback = deleteSectionsCallback {
             callback(sections)
         }
     }
-    #else
-    override func deleteSections(sections: NSIndexSet, withRowAnimation animation: UITableViewRowAnimation) {
-        self.deletionSectionIndexSet.addIndexes(sections)
-        if let callback = deleteSectionsCallback {
-            callback(sections)
-        }
-    }
-    #endif
 
-    #if swift(>=3.0)
     override func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
         self.insertionRowIndexPaths.append(contentsOf: indexPaths)
         if let callback = self.insertRowsCallback {
             callback(indexPaths)
         }
     }
-    #else
-    override func insertRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
-        self.insertionRowIndexPaths.appendContentsOf(indexPaths)
-        if let callback = self.insertRowsCallback {
-            callback(indexPaths)
-        }
-    }
-    #endif
 
-    #if swift(>=3.0)
     override func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
         self.deletionRowIndexPaths.append(contentsOf: indexPaths)
         if let callback = self.deleteRowsCallback {
             callback(indexPaths)
         }
     }
-    #else
-    override func deleteRowsAtIndexPaths(indexPaths: [NSIndexPath], withRowAnimation animation: UITableViewRowAnimation) {
-        self.deletionRowIndexPaths.appendContentsOf(indexPaths)
-        if let callback = self.deleteRowsCallback {
-            callback(indexPaths)
-        }
-    }
-    #endif
-
 }

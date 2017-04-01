@@ -42,35 +42,22 @@ public enum DataSourceReportingLevel {
     case print /// prints in debug versions otherwise silent.
     case verbose /// prints a lot of stuff.
     case silent /// always silently ignores everything
-
-    @available(*, deprecated) case PreCondition /// always crashes
-    @available(*, deprecated) case Assert /// crashes debug versions otherwise silent, this is the default
-    @available(*, deprecated) case Print /// prints in debug versions otherwise silent.
-    @available(*, deprecated) case Verbose /// prints a lot of stuff.
-    @available(*, deprecated) case Silent /// always silently ignores everything
-
 }
 
-// I didn't find a way to "#if" away the where, so we have a warning here, sorry
-internal class DataSourceEngine <T where T: DataItem> {
-    private var sectionsInternal: Array<String> = []
-    private var rowsBySectionID: Dictionary<String, Array<T>> = Dictionary()
+internal class DataSourceEngine <T> where T: DataItem {
+    private var sectionsInternal: [String] = []
+    private var rowsBySectionID: [String: [T]] = Dictionary()
 
     // MARK: - delegate blocks
     var beginUpdates: (() -> Void)?
     var endUpdates: (() -> Void)?
 
-    #if swift(>=3.0)
     var deleteSections: ((IndexSet) -> Void)?
     var insertSections: ((IndexSet) -> Void)?
-    #else
-    var deleteSections: ((NSIndexSet) -> Void)?
-    var insertSections: ((NSIndexSet) -> Void)?
-    #endif
 
-    var didChangeSectionIDs: ((Dictionary<String, Array<T>>) -> Void)?
-    var deleteRowsAtIndexPaths: (([CompatIndexPath]) -> Void)?
-    var insertRowsAtIndexPaths: (([CompatIndexPath]) -> Void)?
+    var didChangeSectionIDs: (([String: [T]]) -> Void)?
+    var deleteRowsAtIndexPaths: (([IndexPath]) -> Void)?
+    var insertRowsAtIndexPaths: (([IndexPath]) -> Void)?
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
@@ -105,7 +92,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return rows.count
     }
 
-    func sectionIDAndItem(forIndexPath indexPath: CompatIndexPath) -> (String, T)? {
+    func sectionIDAndItem(forIndexPath indexPath: IndexPath) -> (String, T)? {
         let sectionIndex: Int = indexPath.section
         guard let (sectionID, rowArray) = self.sectionIDAndRows(forSectionIndex: sectionIndex) else {
             return nil
@@ -119,13 +106,13 @@ internal class DataSourceEngine <T where T: DataItem> {
         return (sectionID, item)
     }
 
-    func sectionIDAndRows(forSectionIndex sectionIndex: Int) -> (String, Array<T>)? {
+    func sectionIDAndRows(forSectionIndex sectionIndex: Int) -> (String, [T])? {
         guard let sectionID = self.sectionsInternal.optionalElement(index: sectionIndex) else {
             print("section not found at index \(sectionIndex)")
             return nil
         }
 
-        guard let rowArray: Array<T> = self.rowsBySectionID[sectionID] else {
+        guard let rowArray: [T] = self.rowsBySectionID[sectionID] else {
             print("row array not found for sectionID \(sectionID)")
             return nil
         }
@@ -134,7 +121,7 @@ internal class DataSourceEngine <T where T: DataItem> {
     }
 
     // MARK: - updating
-    func update(sections sectionsToUpdate: Array<String>, animated inAnimated: Bool) {
+    func update(sections sectionsToUpdate: [String], animated inAnimated: Bool) {
 
         if sectionsToUpdate.containsDuplicatesFast() {
             self.fail(message: "duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
@@ -156,28 +143,18 @@ internal class DataSourceEngine <T where T: DataItem> {
         beginUpdatesFunc()
         for diff in diffs {
             switch diff.operation {
-            case .Delete:
+            case .delete:
                 for _ in diff.array {
-                    #if swift(>=3.0)
-                        self.sectionsInternal.remove(at: index)
-                        deleteSectionsFunc(IndexSet(integer: index))
-                    #else
-                        self.sectionsInternal.removeAtIndex(index)
-                        deleteSectionsFunc(NSIndexSet(index: index))
-                    #endif
+                    self.sectionsInternal.remove(at: index)
+                    deleteSectionsFunc(IndexSet(integer: index))
                 }
-            case .Insert:
+            case .insert:
                 for string in diff.array {
-                    #if swift(>=3.0)
-                        self.sectionsInternal.insert(string, at: index)
-                        insertSectionsFunc(IndexSet(integer: index))
-                    #else
-                        self.sectionsInternal.insert(string, atIndex: index)
-                        insertSectionsFunc(NSIndexSet(index: index))
-                    #endif
+                    self.sectionsInternal.insert(string, at: index)
+                    insertSectionsFunc(IndexSet(integer: index))
                     index += 1
                 }
-            case .Equal:
+            case .equal:
                 index += diff.array.count
             }
         }
@@ -186,7 +163,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         assert(self.sectionsInternal == sectionsToUpdate, "should be equal now")
     }
 
-    func update(rows rowsToUpdate: Array<T>, section inSectionID: String, animated inAnimated: Bool) {
+    func update(rows rowsToUpdate: [T], section inSectionID: String, animated inAnimated: Bool) {
         guard let sectionIndex = self.sectionIndex(forSectionID: inSectionID) else {
             self.warn(message: "sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
             return
@@ -213,7 +190,7 @@ internal class DataSourceEngine <T where T: DataItem> {
             existingRows = []
         }
 
-        var newRows: Array<T> = existingRows
+        var newRows: [T] = existingRows
 
         let newIdentifiers = rowsToUpdate.map({ (inDataSourceItem) -> String in
             return inDataSourceItem.identifier
@@ -229,39 +206,25 @@ internal class DataSourceEngine <T where T: DataItem> {
         var deleteRowIndex = 0
         for diff in diffs {
             switch diff.operation {
-            case .Delete:
+            case .delete:
                 for _ in diff.array {
-                    #if swift(>=3.0)
-                        newRows.remove(at: rowIndex)
-                        let indexPath = IndexPath(row: deleteRowIndex, section: sectionIndex)
-                    #else
-                        newRows.removeAtIndex(rowIndex)
-                        let indexPath = NSIndexPath(forRow: deleteRowIndex, inSection: sectionIndex)
-                    #endif
+                    newRows.remove(at: rowIndex)
+                    let indexPath = IndexPath(row: deleteRowIndex, section: sectionIndex)
                     deleteRowsAtIndexPathsFunc([indexPath])
                     deleteRowIndex += 1
                 }
-            case .Insert:
+            case .insert:
                 for rowID in diff.array {
                     // find index of new row
                     let findBlock = { (inDataSourceItem: T) -> Bool in
                         return rowID == inDataSourceItem.identifier
                     }
 
-                    #if swift(>=3.0)
-                        let rowIDIndex = rowsToUpdate.index(where: findBlock)
-                    #else
-                        let rowIDIndex = rowsToUpdate.indexOf(findBlock)
-                    #endif
+                    let rowIDIndex = rowsToUpdate.index(where: findBlock)
                     if let actualIndex = rowIDIndex {
                         let newRow = rowsToUpdate[actualIndex]
-                        #if swift(>=3.0)
-                            newRows.insert(newRow, at: rowIndex)
-                            let indexPath = [IndexPath(row: rowIndex, section: sectionIndex)]
-                        #else
-                            newRows.insert(newRow, atIndex: rowIndex)
-                            let indexPath = [NSIndexPath(forRow: rowIndex, inSection: sectionIndex)]
-                        #endif
+                        newRows.insert(newRow, at: rowIndex)
+                        let indexPath = [IndexPath(row: rowIndex, section: sectionIndex)]
                         insertRowsAtIndexPathsFunc(indexPath)
                         rowIndex += 1
                     } else {
@@ -269,7 +232,7 @@ internal class DataSourceEngine <T where T: DataItem> {
                     }
                 }
 
-            case .Equal:
+            case .equal:
                 rowIndex += diff.array.count
                 deleteRowIndex += diff.array.count
             }
@@ -282,7 +245,7 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - initiated by user
 
-    func moveRow(at sourceIndexPath: CompatIndexPath, to destinationIndexPath: CompatIndexPath) {
+    func moveRow(at sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         guard let (fromSectionID, fromItem) = self.sectionIDAndItem(forIndexPath: sourceIndexPath) else {
             print("source not found!")
             return
@@ -294,11 +257,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         }
 
         var rows = self.rows(forSection: fromSectionID)
-        #if swift(>=3.0)
-            rows.remove(at: sourceIndexPath.row)
-        #else
-            rows.removeAtIndex(sourceIndexPath.row)
-        #endif
+        rows.remove(at: sourceIndexPath.row)
         self.rowsBySectionID[fromSectionID] = rows
 
         guard let (toSectionID, toRows) = self.sectionIDAndRows(forSectionIndex: destinationIndexPath.section) else {
@@ -312,17 +271,13 @@ internal class DataSourceEngine <T where T: DataItem> {
         if destinationIndexPath.row >= toRows.count {
             rows.append(fromItem)
         } else {
-            #if swift(>=3.0)
-                rows.insert(fromItem, at: destinationIndexPath.row)
-            #else
-                rows.insert(fromItem, atIndex: destinationIndexPath.row)
-            #endif
+            rows.insert(fromItem, at: destinationIndexPath.row)
         }
         self.rowsBySectionID[toSectionID] = rows
 
         let sectionIDs = (fromSectionID == toSectionID) ? [fromSectionID] : [fromSectionID, toSectionID]
 
-        var changed: Dictionary<String, Array<T>> = Dictionary()
+        var changed: [String: [T]] = Dictionary()
         for sectionID in sectionIDs {
             changed[sectionID] = self.rowsBySectionID[sectionID]
         }
@@ -332,28 +287,20 @@ internal class DataSourceEngine <T where T: DataItem> {
 
     // MARK: - private
 
-    func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> CompatIndexPath? {
+    func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> IndexPath? {
         guard let sectionIndex = sectionIndex(forSectionID: inSectionID) else {
             return nil
         }
 
-        guard let rows: Array<T> = self.rowsBySectionID[inSectionID] else {
+        guard let rows: [T] = self.rowsBySectionID[inSectionID] else {
             return nil
         }
 
-        #if swift(>=3.0)
-            guard let rowIndex = rows.index(of: inRowItem) else {
-                return nil
-            }
-
-            return IndexPath(row: rowIndex, section: sectionIndex)
-        #else
-            guard let rowIndex = rows.indexOf(inRowItem) else {
+        guard let rowIndex = rows.index(of: inRowItem) else {
             return nil
-            }
+        }
 
-            return NSIndexPath(forRow: rowIndex, inSection: sectionIndex)
-        #endif
+        return IndexPath(row: rowIndex, section: sectionIndex)
     }
 
     func sectionIndex(forSectionID sectionID: String) -> Int? {
@@ -361,15 +308,10 @@ internal class DataSourceEngine <T where T: DataItem> {
             return nil
         }
 
-        #if swift(>=3.0)
         return self.sectionsInternal.index(of: sectionID)
-        #else
-            return self.sectionsInternal.indexOf(sectionID)
-            #endif
     }
 
-
-    func location(forIndexPath indexPath: CompatIndexPath) -> Location<T>? {
+    func location(forIndexPath indexPath: IndexPath) -> Location<T>? {
         guard let (sectionID, item) = self.sectionIDAndItem(forIndexPath: indexPath) else {
             return nil
         }
@@ -378,7 +320,7 @@ internal class DataSourceEngine <T where T: DataItem> {
         return location
     }
 
-    func locationWithOptionalItem(forIndexPath indexPath: CompatIndexPath) -> LocationWithOptionalItem<T>? {
+    func locationWithOptionalItem(forIndexPath indexPath: IndexPath) -> LocationWithOptionalItem<T>? {
         guard let (sectionID, rows) = self.sectionIDAndRows(forSectionIndex: indexPath.section) else {
             print("sectionID/row not found!")
             return nil
@@ -395,14 +337,14 @@ internal class DataSourceEngine <T where T: DataItem> {
     func reportWarningAccordingToLevel(message inMessage: String) {
         switch self.reportingLevel {
         // a warning will still trigger an assertion.
-        case .PreCondition, .preCondition:
+        case .preCondition:
             preconditionFailure("ERROR: \(inMessage)")
 
-        case .Assert, .assert:
+        case .assert:
             assertionFailure("WARNING: \(inMessage)")
-        case .Print, .Verbose, .print, .verbose:
+        case .print, .verbose:
             print("WARNING: \(inMessage)")
-        case .Silent, .silent:
+        case .silent:
             // nothing to do here
             break
         }
@@ -430,17 +372,9 @@ internal class DataSourceEngine <T where T: DataItem> {
         self.reportWarningAccordingToLevel(message: inMessage)
     }
 
-    #if swift(>=3.0)
     func logWhenVerbose( message: @autoclosure() -> String) {
         if self.reportingLevel == .verbose {
             print(message)
         }
     }
-    #else
-    func logWhenVerbose(@autoclosure message inMessage: () -> String) {
-        if self.reportingLevel == .verbose {
-            print(inMessage)
-        }
-    }
-    #endif
 }

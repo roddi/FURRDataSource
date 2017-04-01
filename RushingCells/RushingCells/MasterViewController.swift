@@ -35,14 +35,14 @@
 import UIKit
 
 enum Breathing: String {
-    case Inhale, Exhale, Keep
+    case inhale, exhale, keep
 }
 
 class MasterViewController: UITableViewController {
 
-    var detailViewController: DetailViewController? = nil
+    var detailViewController: DetailViewController?
     @IBOutlet weak var masterTableView: UITableView?
-    var dataSource: TableDataSource<Rusher>? = nil
+    var dataSource: TableDataSource<Rusher>?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,7 +77,7 @@ class MasterViewController: UITableViewController {
             self.dataSource?.willDelete = { (atLocation: Location<Rusher>) -> Void in
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
-            self.dataSource?.setDidChangeSectionIDsFunc({ (inSectionIDs: Dictionary<String, Array<Rusher>>) -> Void in
+            self.dataSource?.setDidChangeSectionIDsFunc({ (_: [String: [Rusher]]) -> Void in
             })
 
             self.dataSource?.sectionHeaderTitle = { return "header: \($0)" }
