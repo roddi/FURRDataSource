@@ -1,5 +1,5 @@
 # FURRDataSource
-__Please Read about the Swift 3 API changes and Swift 2 / 3 compatibility further down. It's kind of important!__
+__Swift 3 only now! Please Read about the Swift 3 API changes and Swift 2  further down.__
 
 a generic and robust way to drive a table view (or collection view)
 
@@ -41,11 +41,11 @@ The old API will definitely go away sooner than the support for Swift 2 so do yo
 If you plan moving to Swift 3 update to the new API first. 
 
 ## How to Swift 3
-All of the code uses `#if swift(>=3.0)` conditional compiling so no matter which Swift version you use, you will compile the same files. Unfortunately I have not found a way to propagate the Swift version settings down to the dependencies so there are two branches for Swift 2 and 3 which are only different by the Cartfile and the `SWIFT_VERSION` setting.
+Swift 2 is gone from the master branch as of `0.4.0`. 
 
-__Swift 2__ remains on the `master` branch for now with all tagged releases being Swift 2. So you don't need to do anything as of now.
+__Swift 2__ remains on the `swift2` branch. If you want to still use Swift 2 configure your Cartfile to point to that branch.
 
-__Swift 3__ is on the `swift3` branch. If you want to move to Swift 3 configure your Cartfile to point to that branch.
+__Swift 3__ is on the `master` branch. All tagged releases are Swift 3 beginning from `0.4.0`.  So you don't need to do anything.
 
 If you have a good proposal on how to improve on that, please let me know! 
 
