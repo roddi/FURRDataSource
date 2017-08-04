@@ -30,11 +30,11 @@ import UIKit
 
 class Rusher: DataItem {
     let identifier: String
-    var date: NSDate
+    var date: Date
 
     init(inIdentifier: String) {
         self.identifier = inIdentifier
-        self.date = NSDate.distantPast()
+        self.date = Date.distantPast
     }
 }
 

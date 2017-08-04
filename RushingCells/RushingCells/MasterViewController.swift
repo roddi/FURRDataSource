@@ -47,9 +47,9 @@ class MasterViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        self.navigationItem.leftBarButtonItem = self.editButtonItem
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .Add, target: self, action: #selector(MasterViewController.insertNewObject(_:)))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(MasterViewController.insertNewObject(sender:)))
         self.navigationItem.rightBarButtonItem = addButton
         if let split = self.splitViewController {
             let controllers = split.viewControllers
@@ -61,36 +61,36 @@ class MasterViewController: UITableViewController {
         if let tableView_ = self.masterTableView {
             self.dataSource = TableDataSource(tableView: tableView_, cellForLocationCallback: { (inLocation) -> UITableViewCell in
                 let cell: UITableViewCell
-                let dequeuedCell = self.dataSource?.dequeueReusableCellWithReuseIdentifier("Cell", sectionID: inLocation.sectionID, item: inLocation.item)
+                let dequeuedCell = self.dataSource?.dequeueReusableCell(withIdentifier: "Cell", sectionID: inLocation.sectionID, item: inLocation.item)
                 if let cell_ = dequeuedCell {
                     cell = cell_
                 } else {
-                    cell = UITableViewCell(style: UITableViewCellStyle.Subtitle, reuseIdentifier: "Cell")
+                    cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: "Cell")
                 }
                 let rusher = inLocation.item
                 cell.textLabel?.text = rusher.date.description
                 cell.detailTextLabel?.text = rusher.identifier
                 return cell
             })
-            self.dataSource?.canEdit = { (atLocation: Location<Rusher>) -> Bool in return true }
-            self.dataSource?.canMove = { (toLocation: Location<Rusher>) -> Bool in return true }
-            self.dataSource?.willDelete = { (atLocation: Location<Rusher>) -> Void in
+            self.dataSource?.canEditAtLocation = { (atLocation: Location<Rusher>) -> Bool in return true }
+            self.dataSource?.canMoveToLocation = { (toLocation: Location<Rusher>) -> Bool in return true }
+            self.dataSource?.willDeleteAtLocation = { (atLocation: Location<Rusher>) -> Void in
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
-            self.dataSource?.setDidChangeSectionIDsFunc({ (_: [String: [Rusher]]) -> Void in
+            self.dataSource?.setFunc(didChangeSectionIDsFunc: { (_: [String: [Rusher]]) -> Void in
             })
 
-            self.dataSource?.sectionHeaderTitle = { return "header: \($0)" }
-            self.dataSource?.sectionFooterTitle = { return "footer: \($0)" }
+            self.dataSource?.sectionHeaderTitleForSectionID = { return "header: \($0)" }
+            self.dataSource?.sectionFooterTitleForSectionID = { return "footer: \($0)" }
 
-            self.dataSource?.updateSections(["first"], animated: false)
+            self.dataSource?.update(sections: ["first"], animated: false)
 
             self.testRush1()
         }
     }
 
-    override func viewWillAppear(animated: Bool) {
-        self.clearsSelectionOnViewWillAppear = self.splitViewController!.collapsed
+    override func viewWillAppear(_ animated: Bool) {
+        self.clearsSelectionOnViewWillAppear = self.splitViewController!.isCollapsed
         super.viewWillAppear(animated)
     }
 
@@ -100,8 +100,8 @@ class MasterViewController: UITableViewController {
     }
 
     func newRusher() -> Rusher {
-        let rusher = Rusher(inIdentifier: NSUUID().UUIDString)
-        rusher.date = NSDate()
+        let rusher = Rusher(inIdentifier: UUID().uuidString)
+        rusher.date = Date()
         return rusher
     }
 
@@ -111,15 +111,15 @@ class MasterViewController: UITableViewController {
         if let sectionID_ = self.dataSource?.sections().last {
             sectionID = sectionID_
         } else {
-            sectionID = NSUUID().UUIDString
+            sectionID = UUID().uuidString
             if let dataSource_ = self.dataSource {
                 var sections = dataSource_.sections()
                 sections.append(sectionID)
-                dataSource_.updateSections(sections, animated: true)
+                dataSource_.update(sections: sections, animated: true)
             }
         }
 
-        var rows = self.dataSource?.rowsForSection(sectionID)
+        var rows = self.dataSource?.rows(forSection: sectionID)
         if rows == nil {
             rows = []
         }
@@ -128,14 +128,14 @@ class MasterViewController: UITableViewController {
         }
 
         rows_.append(rusher)
-        self.dataSource?.updateRows(rows_, section: sectionID, animated: true)
+        self.dataSource?.update(rows: rows_, section: sectionID, animated: true)
         if rows_.count > 5 {
-            let newSectionID = NSUUID().UUIDString
+            let newSectionID = UUID().uuidString
             if let dataSource_ = self.dataSource {
                 var sections = dataSource_.sections()
                 sections.append(newSectionID)
-                dataSource_.updateSections(sections, animated: true)
-                dataSource_.updateRows([], section: newSectionID, animated: true)
+                dataSource_.update(sections: sections, animated: true)
+                dataSource_.update(rows: [], section: newSectionID, animated: true)
             }
         }
 
@@ -143,20 +143,20 @@ class MasterViewController: UITableViewController {
 
     // MARK: - Segues
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             guard let indexPath = self.tableView.indexPathForSelectedRow else {
                 return
             }
-            guard let (_, row) = self.dataSource?.sectionIDAndItemForIndexPath(indexPath) else {
+            guard let (_, row) = self.dataSource?.sectionIDAndItem(indexPath: indexPath) else {
                 return
             }
 
             // swiftlint:disable force_cast
-            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+            let controller = (segue.destination as! UINavigationController).topViewController as! DetailViewController
             // swiftlint:enable force_cast
-            controller.detailItem = row.date
-            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+            controller.detailItem = row.date as AnyObject
+            controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
     }
@@ -165,23 +165,24 @@ class MasterViewController: UITableViewController {
 
     func testRush1() {
         for _ in 0 ..< 12 {
-            self.insertNewObject(self)
+            self.insertNewObject(sender: self)
         }
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500*1000*1000), dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: 500*1000*1000)) {
+            () -> Void in
             self.testRush1b()
         }
     }
 
     func testRush1b() {
-        if let firstSectionID = self.dataSource?.sections().first, var rows = self.dataSource?.rowsForSection(firstSectionID) {
-            rows.removeAtIndex(rows.count - 1)
-            rows.insert(newRusher(), atIndex: 3)
+        if let firstSectionID = self.dataSource?.sections().first, var rows = self.dataSource?.rows(forSection: firstSectionID) {
+            rows.remove(at: rows.count - 1)
+            rows.insert(newRusher(), at: 3)
 
-            self.dataSource?.updateRows(rows, section: firstSectionID, animated: true)
+            self.dataSource?.update(rows: rows, section: firstSectionID, animated: true)
         }
 
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 500*1000*1000), dispatch_get_main_queue()) { () -> Void in
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: 500*1000*1000)) { () -> Void in
             self.rush()
         }
     }
@@ -189,45 +190,45 @@ class MasterViewController: UITableViewController {
     func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, breathe: Breathing) {
         let sectionID: String
 
-        if let sectionID_ = self.dataSource?.sections().optionalElementAtIndex(sectionIndex) {
+        if let sectionID_ = self.dataSource?.sections().optionalElement(index: sectionIndex) {
             sectionID = sectionID_
         } else {
-            sectionID = NSUUID().UUIDString
+            sectionID = NSUUID().uuidString
             if let dataSource_ = self.dataSource {
                 var sections = dataSource_.sections()
                 sections.append(sectionID)
-                dataSource_.updateSections(sections, animated: true)
+                dataSource_.update(sections: sections, animated: true)
             }
         }
 
-        guard var rows = self.dataSource?.rowsForSection(sectionID) else {
+        guard var rows = self.dataSource?.rows(forSection: sectionID) else {
             return
         }
 
-        if breathe != .Inhale && deleteIndex < rows.count {
-            rows.removeAtIndex(deleteIndex)
+        if breathe != .inhale && deleteIndex < rows.count {
+            rows.remove(at: deleteIndex)
         }
         if rows.count < insertIndex {
             rows.append(newRusher())
         } else {
-            rows.insert(newRusher(), atIndex: insertIndex)
+            rows.insert(newRusher(), at: insertIndex)
         }
 
-        self.dataSource?.updateRows(rows, section: sectionID, animated: true)
+        self.dataSource?.update(rows: rows, section: sectionID, animated: true)
     }
 
     private var count = 0
     private var breatheCount = 0
-    private var breathe = Breathing.Inhale
+    private var breathe = Breathing.inhale
     func rush() {
-        if breathe == .Inhale {
+        if breathe == .inhale {
             if breatheCount > 100 {
-                breathe = .Exhale
+                breathe = .exhale
             }
             breatheCount += 1
         } else {
             if breatheCount < 5 {
-                breathe = .Inhale
+                breathe = .inhale
             }
             breatheCount -= 1
         }
@@ -241,11 +242,11 @@ class MasterViewController: UITableViewController {
         let insertIndex2 = (count % 7)
         let deleteIndex2 = count % 11
 
-        handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, breathe: .Keep)
+        handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, breathe: .keep)
         handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, breathe: breathe)
 
         if count < 1000 {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 150*1000*1000), dispatch_get_main_queue()) { () -> Void in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: 150*1000*1000)) { () -> Void in
                 self.rush()
             }
         }
