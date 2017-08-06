@@ -170,7 +170,6 @@
 				5698BA391B8DD0CB008805E2 /* Headers */,
 				5698BA3A1B8DD0CB008805E2 /* Resources */,
 				DD2E12C01BCD219900E5F7FA /* Run swiftlint */,
-				DD16A5801D4B34D500E5F7FA /* Run Xcode 8b3 Copy Library Workaround Script  */,
 			);
 			buildRules = (
 			);
@@ -190,7 +189,6 @@
 				DD2E12B61BCCFDE000E5F7FA /* Run Carthage Copy Script */,
 				5698BA441B8DD0CB008805E2 /* Resources */,
 				DD2E12BF1BCD217B00E5F7FA /* Run swiftlint */,
-				DDEE42201D54981A00E5F7FA /* Xcode 8 Beta 4 workaround script */,
 			);
 			buildRules = (
 			);
@@ -256,23 +254,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		DD16A5801D4B34D500E5F7FA /* Run Xcode 8b3 Copy Library Workaround Script  */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"",
-				"$(SRCROOT)/Carthage/Build/iOS/FURRDiff.framework ",
-				"$(SRCROOT)/Carthage/Build/iOS/FURRExtensions.framework",
-			);
-			name = "Run Xcode 8b3 Copy Library Workaround Script ";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Include Frameworks\nfor i in `seq 1 ${SCRIPT_INPUT_FILE_COUNT}`; do\nNUM=`expr $i - 1`\nNEXT_FOLDER_ARG=SCRIPT_INPUT_FILE_$NUM\nINCLUDE_FRAMEWORK_FOLDER_ARGS=\"${INCLUDE_FRAMEWORK_FOLDER_ARGS} --scan-folder ${!NEXT_FOLDER_ARG}\"\ndone\n\n# Run the correct tool 🤗\n${TOOLCHAIN_DIR}/usr/bin/swift-stdlib-tool \\\n--copy --verbose --sign ${EXPANDED_CODE_SIGN_IDENTITY} \\\n--scan-executable \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}\" \\\n--platform ${PLATFORM_NAME} \\\n--toolchain ${TOOLCHAIN_DIR} \\\n--destination \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--strip-bitcode --resource-destination \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\" \\\n--resource-library libswiftRemoteMirror.dylib \\\n${INCLUDE_FRAMEWORK_FOLDER_ARGS}";
-		};
 		DD2E12B61BCCFDE000E5F7FA /* Run Carthage Copy Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -316,20 +297,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed.  Skipping lint.\"\nfi";
-		};
-		DDEE42201D54981A00E5F7FA /* Xcode 8 Beta 4 workaround script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Xcode 8 Beta 4 workaround script";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Include Frameworks\nfor i in `seq 1 ${SCRIPT_INPUT_FILE_COUNT}`; do\nNUM=`expr $i - 1`\nNEXT_FOLDER_ARG=SCRIPT_INPUT_FILE_$NUM\nINCLUDE_FRAMEWORK_FOLDER_ARGS=\"${INCLUDE_FRAMEWORK_FOLDER_ARGS} --scan-folder ${!NEXT_FOLDER_ARG}\"\ndone\n\n# Run the correct tool 🤗\n${TOOLCHAIN_DIR}/usr/bin/swift-stdlib-tool \\\n--copy --verbose --sign ${EXPANDED_CODE_SIGN_IDENTITY} \\\n--scan-executable \"${TARGET_BUILD_DIR}/${EXECUTABLE_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--scan-folder \"${TARGET_BUILD_DIR}/${PLUGINS_FOLDER_PATH}\" \\\n--platform ${PLATFORM_NAME} \\\n--toolchain ${TOOLCHAIN_DIR} \\\n--destination \"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}\" \\\n--strip-bitcode --resource-destination \"${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}\" \\\n--resource-library libswiftRemoteMirror.dylib \\\n${INCLUDE_FRAMEWORK_FOLDER_ARGS}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -487,7 +454,6 @@
 		5698BA511B8DD0CB008805E2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
@@ -511,7 +477,6 @@
 		5698BA521B8DD0CB008805E2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
