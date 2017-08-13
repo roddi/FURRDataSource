@@ -80,6 +80,12 @@ internal class DataSourceEngine <T> where T: DataItem {
         }
     }
 
+    // MARK: by location
+
+    func indexPath(forLocation location: Location<T>) -> IndexPath? {
+        return indexPath(forSectionID: location.sectionID, rowItem: location.item)
+    }
+
     // MARK: by index
 
     func numberOfRows(forSectionIndex index: Int) -> Int {
@@ -119,6 +125,18 @@ internal class DataSourceEngine <T> where T: DataItem {
 
         return (sectionID, rowArray)
     }
+
+    // MARK: by index path
+
+    func location(forIndexPath indexPath: IndexPath) -> Location<T>? {
+        guard let (sectionID, item) = self.sectionIDAndItem(forIndexPath: indexPath) else {
+            return nil
+        }
+
+        let location = Location(sectionID: sectionID, item: item)
+        return location
+    }
+
 
     // MARK: - updating
     func update(sections sectionsToUpdate: [String], animated inAnimated: Bool) {
@@ -309,15 +327,6 @@ internal class DataSourceEngine <T> where T: DataItem {
         }
 
         return self.sectionsInternal.index(of: sectionID)
-    }
-
-    func location(forIndexPath indexPath: IndexPath) -> Location<T>? {
-        guard let (sectionID, item) = self.sectionIDAndItem(forIndexPath: indexPath) else {
-            return nil
-        }
-
-        let location = Location(sectionID: sectionID, item: item)
-        return location
     }
 
     func locationWithOptionalItem(forIndexPath indexPath: IndexPath) -> LocationWithOptionalItem<T>? {

@@ -119,6 +119,16 @@ class DataSourceEngineTests: XCTestCase {
         XCTAssert(didFail)
     }
 
+    func testIndexPathByLocation() {
+        self.whenUpdatingSections(withIDs: ["a", "b", "c"])
+        self.whenUpdatingRows(identifiers: ["0", "1", "2"], sectionID: "a")
+        self.givenDiffsAreCleared()
+
+        self.thenIndexPathIs(indexPath: IndexPath(indexes: [0, 0]), forLocation: Location(sectionID: "a", item: MockTVItem(identifier: "0")))
+        self.thenIndexPathIs(indexPath: IndexPath(indexes: [0, 1]), forLocation: Location(sectionID: "a", item: MockTVItem(identifier: "1")))
+        self.thenIndexPathIs(indexPath: IndexPath(indexes: [0, 2]), forLocation: Location(sectionID: "a", item: MockTVItem(identifier: "2")))
+    }
+
     func testDataSourceRowsDelete() {
         self.whenUpdatingSections(withIDs: ["a", "b", "c"])
         self.thenNumberOfSectionsIs(numberOfSections: 3)
@@ -189,6 +199,10 @@ class DataSourceEngineTests: XCTestCase {
         } else {
             XCTFail()
         }
+    }
+
+    func thenIndexPathIs(indexPath: IndexPath?, forLocation: Location<MockTVItem>) {
+        XCTAssertEqual(indexPath, engine.indexPath(forLocation: forLocation))
     }
 
     func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
