@@ -161,6 +161,21 @@ class DataSourceEngineTests: XCTestCase {
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
     }
 
+    func testDataSourceConvenienceDelete() {
+        self.whenUpdatingSections(withIDs: ["a", "b", "c"])
+        self.thenNumberOfSectionsIs(numberOfSections: 3)
+
+        self.whenUpdatingRows(identifiers: ["0", "1", "2", "3", "4"], sectionID: "a")
+        self.givenDiffsAreCleared()
+
+        self.whenDeletingRows(identifiers: ["1", "3"])
+
+        self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0]])
+    }
+
+
     func testDataSourceWhenCompletelyEmpty() {
 
         self.thenNumberOfSectionsIs(numberOfSections: 0)
@@ -187,6 +202,10 @@ class DataSourceEngineTests: XCTestCase {
         self.engine.update(rows: MockTVItem.mockTVItems(identifiers: rowIdentifiers), section: sectionID, animated: true)
     }
 
+    func whenDeletingRows(identifiers rowIdentifiers: [String]) {
+        self.engine.deleteItems(MockTVItem.mockTVItems(identifiers: rowIdentifiers), animated: true)
+    }
+
     // MARK: - then
 
     func thenNumberOfSectionsIs(numberOfSections inNumberOfSections: Int) {
@@ -208,13 +227,13 @@ class DataSourceEngineTests: XCTestCase {
     func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
-        XCTAssert(self.insertionRowIndexPaths == realIndexPaths)
+        XCTAssertEqual(self.insertionRowIndexPaths, realIndexPaths)
     }
 
     func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
-        XCTAssert(self.deletionRowIndexPaths == realIndexPaths)
+        XCTAssertEqual(self.deletionRowIndexPaths, realIndexPaths)
     }
 
 }

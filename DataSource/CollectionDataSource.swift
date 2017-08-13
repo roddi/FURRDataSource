@@ -132,6 +132,14 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
         }, completion: nil)
     }
 
+    // MARK: updating, convenience
+
+    public func deleteItems(_ items: [T], animated: Bool = true) {
+        self.collectionView.performBatchUpdates({ () -> Void in
+            self.engine.deleteItems(items, animated: animated)
+        }, completion: nil)
+    }
+
     // MARK: - delegate / data source
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

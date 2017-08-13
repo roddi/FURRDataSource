@@ -127,6 +127,14 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
     }
 
+    // MARK: updating, convenience
+
+    public func deleteItems(_ items: [T], animated: Bool = true) {
+        self.engine.deleteItems(items, animated: animated)
+    }
+
+    // MARK: -
+
     public func dequeueReusableCell(withIdentifier reuseIdentifier: String, sectionID inSectionID: String, item inItem: T) -> UITableViewCell? {
         guard let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) else {
             return nil

@@ -261,6 +261,20 @@ internal class DataSourceEngine <T> where T: DataItem {
         assert(newRows == rowsToUpdate, "must be equal")
     }
 
+    // MARK: updating, convenience
+
+    public func deleteItems(_ items: [T], animated: Bool = true) {
+        let identifiers = items.map { $0.identifier }
+        let allSections = sections()
+        for section in allSections {
+            let sectionItems = rows(forSection: section)
+            let filteredItems = sectionItems.filter({ (item: T) -> Bool in
+                return !identifiers.contains(item.identifier)
+            })
+            update(rows: filteredItems, section: section, animated: animated)
+        }
+    }
+
     // MARK: - initiated by user
 
     func moveRow(at sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
