@@ -57,6 +57,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     public var cellForLocation: (Location<T>) -> UITableViewCell
     public var didSelectLocation: ((Location<T>) -> Void)?
     public var canMoveToLocation: ((Location<T>) -> Bool)?
+    public var editActionsForLocation: ((Location<T>) -> [TableViewRowAction<T>])?
     // here SE-111 shows the potentional of its deviousness
     // swiftlint:disable variable_name
     public var targetMovedItemFromLocationToProposedLocation: ((Location<T>, LocationWithOptionalItem<T>) -> LocationWithOptionalItem<T>)?
@@ -327,6 +328,25 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         }
 
         callback(location)
+    }
+
+    public func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        guard let callback = self.editActionsForLocation else {
+            return nil
+        }
+        guard let location = self.engine.location(forIndexPath: indexPath) else {
+            return nil
+        }
+
+        let actions = callback(location)
+
+        for action in actions {
+            action.engine = engine
+        }
+
+        return actions.flatMap({ (action) -> UITableViewRowAction? in
+            return action.uiTableViewRowAction
+        })
     }
 }
 

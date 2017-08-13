@@ -83,6 +83,18 @@ class MasterViewController: UITableViewController {
             self.dataSource?.sectionHeaderTitleForSectionID = { return "header: \($0)" }
             self.dataSource?.sectionFooterTitleForSectionID = { return "footer: \($0)" }
 
+            let deleteAction = TableViewRowAction(style: UITableViewRowActionStyle.destructive, title: "XXX", handler: { (_: TableViewRowAction, location: Location<Rusher>) in
+                print("delete \(location.item.identifier)")
+                self.dataSource?.deleteItems([location.item])
+            })
+            deleteAction.title = "Nuke it!"
+            deleteAction.backgroundColor = UIColor.brown
+            deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffectStyle.prominent))
+
+            self.dataSource?.editActionsForLocation = { (location: Location<Rusher>) -> [TableViewRowAction<Rusher>] in
+                return [deleteAction]
+            }
+
             self.dataSource?.update(sections: ["first"], animated: false)
 
             self.testRush1()
