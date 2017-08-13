@@ -89,7 +89,7 @@ class MasterViewController: UITableViewController {
             })
             deleteAction.title = "Nuke it!"
             deleteAction.backgroundColor = UIColor.brown
-            deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffectStyle.prominent))
+            deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffectStyle.extraLight))
 
             self.dataSource?.editActionsForLocation = { (location: Location<Rusher>) -> [TableViewRowAction<Rusher>] in
                 return [deleteAction]

@@ -15,24 +15,24 @@ public class TableViewRowAction <T> where T: DataItem {
     private let handler: (TableViewRowAction, Location<T>) -> Void
     internal var engine: DataSourceEngine<T>?
 
-    var style: UITableViewRowActionStyle {
+    public var style: UITableViewRowActionStyle {
         return uiTableViewRowAction?.style ?? .default
     }
-    var title: String? {
+    public var title: String? {
         get {
             return uiTableViewRowAction?.title
         } set (value) {
             uiTableViewRowAction?.title = value
         }
     }
-    var backgroundColor: UIColor? {
+    public var backgroundColor: UIColor? {
         get {
             return uiTableViewRowAction?.backgroundColor
         } set (value) {
             uiTableViewRowAction?.backgroundColor = value
         }
     }
-    var backgroundEffect: UIVisualEffect? {
+    public var backgroundEffect: UIVisualEffect? {
         get {
             return uiTableViewRowAction?.backgroundEffect
         } set (value) {
@@ -40,7 +40,7 @@ public class TableViewRowAction <T> where T: DataItem {
         }
     }
 
-    init(style: UITableViewRowActionStyle, title: String?, handler: @escaping (TableViewRowAction, Location<T>) -> Void) {
+    public init(style: UITableViewRowActionStyle, title: String?, handler: @escaping (TableViewRowAction, Location<T>) -> Void) {
         self.handler = handler
 
         uiTableViewRowAction = UITableViewRowAction(style: style, title: title, handler: handle)
