@@ -1,5 +1,4 @@
 // swiftlint:disable function_body_length
-// swiftlint:disable type_body_length
 // swiftlint:disable line_length
 
 //
@@ -177,12 +176,12 @@ internal class DataSourceEngine <T> where T: DataItem {
 
     func update(rows rowsToUpdate: [T], section inSectionID: String, animated inAnimated: Bool) {
         guard let sectionIndex = self.sectionIndex(forSectionID: inSectionID) else {
-            self.warn(message: "sectionID does not exists. Severity: non lethal but update will fail and data source remains unaltered.")
+            self.warn(message: "sectionID does not exists. Severity: non lethal but the update just failed and the data source remains unaltered.")
             return
         }
 
         if rowsToUpdate.containsDuplicates() {
-            self.fail(message: "Supplied rows contain duplicates. This will confuse FURRDataSource later on. Severity: lethal, sorry.")
+            self.fail(message: "Supplied rows contain duplicates. This will confuse FURRDataSource later on and we can't have that. Severity: lethal, sorry.")
             return
         }
 
@@ -196,15 +195,10 @@ internal class DataSourceEngine <T> where T: DataItem {
         }
 
         let existingRows: [T] = self.rowsBySectionID[inSectionID] ?? []
-
         var newRows: [T] = existingRows
 
-        let newIdentifiers = rowsToUpdate.map({ (inDataSourceItem) -> String in
-            return inDataSourceItem.identifier
-        })
-        let existingIdentifiers = existingRows.map({ (inDataSourceItem) -> String in
-            return inDataSourceItem.identifier
-        })
+        let newIdentifiers = rowsToUpdate.map { $0.identifier }
+        let existingIdentifiers = existingRows.map { $0.identifier }
 
         let diffs = diffBetweenArrays(arrayA: existingIdentifiers, arrayB: newIdentifiers)
 
@@ -223,11 +217,7 @@ internal class DataSourceEngine <T> where T: DataItem {
             case .insert:
                 for rowID in diff.array {
                     // find index of new row
-                    let findBlock = { (inDataSourceItem: T) -> Bool in
-                        return rowID == inDataSourceItem.identifier
-                    }
-
-                    let rowIDIndex = rowsToUpdate.index(where: findBlock)
+                    let rowIDIndex = rowsToUpdate.index(where: { rowID == $0.identifier })
                     if let actualIndex = rowIDIndex {
                         let newRow = rowsToUpdate[actualIndex]
                         newRows.insert(newRow, at: rowIndex)
