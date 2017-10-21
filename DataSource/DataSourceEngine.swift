@@ -201,12 +201,7 @@ internal class DataSourceEngine <T> where T: DataItem {
                 return
         }
 
-        let existingRows: [T]
-        if let exRows = self.rowsBySectionID[inSectionID] {
-            existingRows = exRows
-        } else {
-            existingRows = []
-        }
+        let existingRows: [T] = self.rowsBySectionID[inSectionID] ?? []
 
         var newRows: [T] = existingRows
 
