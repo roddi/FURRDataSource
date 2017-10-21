@@ -103,11 +103,11 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     // MARK: - querying
 
     public func sections() -> [String] {
-        return self.engine.sections()
+        return self.engine.sectionIDs()
     }
 
     public func rows(forSection inSection: String) -> [T] {
-        return self.engine.rows(forSection: inSection)
+        return self.engine.rows(forSectionID: inSection)
     }
 
     public func sectionIDAndItem(indexPath inIndexPath: IndexPath) -> (String, T)? {
@@ -117,11 +117,11 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     // MARK: - updating
 
     public func update(sections inSections: [String], animated inAnimated: Bool) {
-        self.engine.update(sections: inSections, animated: inAnimated)
+        self.engine.update(sectionIDs: inSections, animated: inAnimated)
     }
 
-    public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool) {
-        self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
+    public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool, doNotCopy: Bool = false) {
+        self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: doNotCopy)
     }
 
     // MARK: updating, convenience
@@ -159,7 +159,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     // MARK: -
     // MARK: UITableViewDataSource
     public func numberOfSections(in tableView: UITableView) -> Int {
-        let sections = self.engine.sections()
+        let sections = self.engine.sectionIDs()
         self.engine.logWhenVerbose(message: "TableDataSource.numberOfSectionsInTableView() -> \(sections.count)")
         return sections.count
     }
@@ -226,7 +226,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
             return proposedDestinationIndexPath
         }
 
-        let rows = self.engine.rows(forSection: actualDestination.sectionID)
+        let rows = self.engine.rows(forSectionID: actualDestination.sectionID)
         if  rows.count != 0 {
             return IndexPath(row: rows.count-1, section: sectionIndex)
 
@@ -248,10 +248,10 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
                 callback(location)
             }
 
-            var rows = self.engine.rows(forSection: location.sectionID)
+            var rows = self.engine.rows(forSectionID: location.sectionID)
             if rows.count != 0 {
                 rows.remove(at: indexPath.row)
-                self.engine.update(rows: rows, section: location.sectionID, animated: true)
+                self.engine.update(rows: rows, sectionID: location.sectionID, animated: true, doNotCopy: false)
             }
 
             if let callback = self.didDeleteItem {
@@ -261,7 +261,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
             // HACK? Is this really the right thing to do here conceptually???
             if let callback = self.engine.didChangeSectionIDs {
                 let sectionID = location.sectionID
-                let rows = self.engine.rows(forSection: sectionID)
+                let rows = self.engine.rows(forSectionID: sectionID)
                 callback([sectionID: rows])
             }
 
@@ -286,7 +286,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     }
 
     public func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let sectionID = self.engine.sections().optionalElement(index: section) else {
+        guard let sectionID = self.engine.sectionIDs().optionalElement(index: section) else {
             self.engine.warn(message: "section not found at index \(section)")
             return nil
         }
@@ -300,7 +300,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     }
 
     public func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        guard let sectionID = self.engine.sections().optionalElement(index: section) else {
+        guard let sectionID = self.engine.sectionIDs().optionalElement(index: section) else {
             self.engine.warn(message: "section not found at index \(section)")
             return nil
         }

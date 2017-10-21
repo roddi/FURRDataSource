@@ -84,12 +84,12 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
 
     // MARK: - querying
     public func sections() -> [String] {
-        let sections = self.engine.sections()
+        let sections = self.engine.sectionIDs()
         return sections
     }
 
     public func rows(forSection: String) -> [T] {
-        return self.engine.rows(forSection: forSection)
+        return self.engine.rows(forSectionID: forSection)
     }
 
     public func sectionIDAndItem(forIndexPath: IndexPath) -> (String, T)? {
@@ -120,14 +120,14 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
 
     func update(sections inSections: [String], animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.update(sections: inSections, animated: inAnimated)
+            self.engine.update(sectionIDs: inSections, animated: inAnimated)
         }, completion: nil)
 
     }
 
     public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.update(rows: inRows, section: inSectionID, animated: inAnimated)
+            self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: false)
         }, completion: nil)
     }
 
@@ -146,7 +146,7 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
     }
 
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return self.engine.sections().count
+        return self.engine.sectionIDs().count
     }
 
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

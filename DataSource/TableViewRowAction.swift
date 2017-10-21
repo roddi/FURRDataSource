@@ -5,7 +5,7 @@
 //  Created by Ruotger Deecke on 13.8.17.
 //  Copyright © 2017 Ruotger Deecke. All rights reserved.
 //
-
+// swiftlint:disable line_length
 import UIKit
 
 public class TableViewRowAction <T> where T: DataItem {

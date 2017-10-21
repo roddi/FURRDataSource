@@ -1,6 +1,7 @@
-// swiftlint:disable function_body_length
 // swiftlint:disable line_length
-
+// swiftlint:disable file_length
+// swiftlint:disable function_body_length
+// swiftlint:disable type_body_length
 //
 //  DataSourceEngine.swift
 //  FURRDataSource
@@ -39,7 +40,7 @@ public enum DataSourceReportingLevel {
 }
 
 internal class DataSourceEngine <T> where T: DataItem {
-    private var sectionsInternal: [String] = []
+    private var sectionIDsInternal: [String] = []
     private var rowsBySectionID: [String: [T]] = Dictionary()
 
     // MARK: - delegate blocks
@@ -61,13 +62,13 @@ internal class DataSourceEngine <T> where T: DataItem {
 
     // MARK: by id
 
-    func sections() -> [String] {
-        let sections = self.sectionsInternal
-        return sections
+    func sectionIDs() -> [String] {
+        let sectionIDs = self.sectionIDsInternal
+        return sectionIDs
     }
 
-    func rows(forSection section: String) -> [T] {
-        if let rows = self.rowsBySectionID[section] {
+    func rows(forSectionID sectionID: String) -> [T] {
+        if let rows = self.rowsBySectionID[sectionID] {
             return rows
         } else {
             return []
@@ -83,12 +84,12 @@ internal class DataSourceEngine <T> where T: DataItem {
     // MARK: by index
 
     func numberOfRows(forSectionIndex index: Int) -> Int {
-        guard let sectionID = self.sections().optionalElement(index: index) else {
+        guard let sectionID = self.sectionIDs().optionalElement(index: index) else {
             self.fail(message: "no section at index '\(index)'")
             return 0
         }
 
-        let rows = self.rows(forSection: sectionID)
+        let rows = self.rows(forSectionID: sectionID)
         return rows.count
     }
 
@@ -107,7 +108,7 @@ internal class DataSourceEngine <T> where T: DataItem {
     }
 
     func sectionIDAndRows(forSectionIndex sectionIndex: Int) -> (String, [T])? {
-        guard let sectionID = self.sectionsInternal.optionalElement(index: sectionIndex) else {
+        guard let sectionID = self.sectionIDsInternal.optionalElement(index: sectionIndex) else {
             print("section not found at index \(sectionIndex)")
             return nil
         }
@@ -132,9 +133,9 @@ internal class DataSourceEngine <T> where T: DataItem {
     }
 
     // MARK: - updating
-    func update(sections sectionsToUpdate: [String], animated inAnimated: Bool) {
+    func update(sectionIDs sectionIDsToUpdate: [String], animated inAnimated: Bool) {
 
-        if sectionsToUpdate.containsDuplicatesFast() {
+        if sectionIDsToUpdate.containsDuplicatesFast() {
             self.fail(message: "duplicate section ids - FURRDataSource will be confused by this later on so it is not permitted. Severity: lethal, sorry, nevertheless have a good evening!")
             return
         }
@@ -148,7 +149,7 @@ internal class DataSourceEngine <T> where T: DataItem {
                 return
         }
 
-        let diffs = diffBetweenArrays(arrayA: self.sectionsInternal, arrayB: sectionsToUpdate)
+        let diffs = diffBetweenArrays(arrayA: self.sectionIDsInternal, arrayB: sectionIDsToUpdate)
 
         var index = 0
         beginUpdatesFunc()
@@ -156,12 +157,12 @@ internal class DataSourceEngine <T> where T: DataItem {
             switch diff.operation {
             case .delete:
                 for _ in diff.array {
-                    self.sectionsInternal.remove(at: index)
+                    self.sectionIDsInternal.remove(at: index)
                     deleteSectionsFunc(IndexSet(integer: index))
                 }
             case .insert:
                 for string in diff.array {
-                    self.sectionsInternal.insert(string, at: index)
+                    self.sectionIDsInternal.insert(string, at: index)
                     insertSectionsFunc(IndexSet(integer: index))
                     index += 1
                 }
@@ -171,11 +172,11 @@ internal class DataSourceEngine <T> where T: DataItem {
         }
         endUpdatesFunc()
 
-        assert(self.sectionsInternal == sectionsToUpdate, "should be equal now")
+        assert(self.sectionIDsInternal == sectionIDsToUpdate, "should be equal now")
     }
 
-    func update(rows rowsToUpdate: [T], section inSectionID: String, animated inAnimated: Bool) {
-        guard let sectionIndex = self.sectionIndex(forSectionID: inSectionID) else {
+    func update(rows rowsToUpdate: [T], sectionID: String, animated: Bool, doNotCopy: Bool) {
+        guard let sectionIndex = self.sectionIndex(forSectionID: sectionID) else {
             self.warn(message: "sectionID does not exists. Severity: non lethal but the update just failed and the data source remains unaltered.")
             return
         }
@@ -194,64 +195,31 @@ internal class DataSourceEngine <T> where T: DataItem {
                 return
         }
 
-        let existingRows: [T] = self.rowsBySectionID[inSectionID] ?? []
-        var newRows: [T] = existingRows
+        let callbacks = Callbacks(beginUpdatesFunc: beginUpdatesFunc,
+                                  endUpdatesFunc: endUpdatesFunc,
+                                  deleteRowsAtIndexPathsFunc: deleteRowsAtIndexPathsFunc,
+                                  insertRowsAtIndexPathsFunc: insertRowsAtIndexPathsFunc)
 
-        let newIdentifiers = rowsToUpdate.map { $0.identifier }
-        let existingIdentifiers = existingRows.map { $0.identifier }
-
-        let diffs = diffBetweenArrays(arrayA: existingIdentifiers, arrayB: newIdentifiers)
-
-        beginUpdatesFunc()
-        var rowIndex = 0
-        var deleteRowIndex = 0
-        for diff in diffs {
-            switch diff.operation {
-            case .delete:
-                for _ in diff.array {
-                    newRows.remove(at: rowIndex)
-                    let indexPath = IndexPath(row: deleteRowIndex, section: sectionIndex)
-                    deleteRowsAtIndexPathsFunc([indexPath])
-                    deleteRowIndex += 1
-                }
-            case .insert:
-                for rowID in diff.array {
-                    // find index of new row
-                    let rowIDIndex = rowsToUpdate.index(where: { rowID == $0.identifier })
-                    if let actualIndex = rowIDIndex {
-                        let newRow = rowsToUpdate[actualIndex]
-                        newRows.insert(newRow, at: rowIndex)
-                        let indexPath = [IndexPath(row: rowIndex, section: sectionIndex)]
-                        insertRowsAtIndexPathsFunc(indexPath)
-                        rowIndex += 1
-                    } else {
-                        print("index not found for rowID '\(rowID)'")
-                    }
-                }
-
-            case .equal:
-                // TODO: copy over rows from the new items
-                rowIndex += diff.array.count
-                deleteRowIndex += diff.array.count
-            }
-        }
-        self.rowsBySectionID[inSectionID] = newRows
-        endUpdatesFunc()
-
-        assert(newRows == rowsToUpdate, "must be equal")
+        let existingRows: [T] = self.rowsBySectionID[sectionID] ?? []
+        private_update(existingRows: existingRows,
+                       rowsToUpdate: rowsToUpdate,
+                       callbacks: callbacks,
+                       sectionIndex: sectionIndex,
+                       sectionID: sectionID,
+                       doNotCopy: doNotCopy)
     }
 
     // MARK: updating, convenience
 
     public func deleteItems(_ items: [T], animated: Bool = true) {
         let identifiers = items.map { $0.identifier }
-        let allSections = sections()
+        let allSections = sectionIDs()
         for section in allSections {
-            let sectionItems = rows(forSection: section)
+            let sectionItems = rows(forSectionID: section)
             let filteredItems = sectionItems.filter({ (item: T) -> Bool in
                 return !identifiers.contains(item.identifier)
             })
-            update(rows: filteredItems, section: section, animated: animated)
+            update(rows: filteredItems, sectionID: section, animated: animated, doNotCopy: false)
         }
     }
 
@@ -268,7 +236,7 @@ internal class DataSourceEngine <T> where T: DataItem {
             return
         }
 
-        var rows = self.rows(forSection: fromSectionID)
+        var rows = self.rows(forSectionID: fromSectionID)
         rows.remove(at: sourceIndexPath.row)
         self.rowsBySectionID[fromSectionID] = rows
 
@@ -297,8 +265,6 @@ internal class DataSourceEngine <T> where T: DataItem {
         didChangeSectionIDsFunc(changed)
     }
 
-    // MARK: - private
-
     func indexPath(forSectionID inSectionID: String, rowItem inRowItem: T) -> IndexPath? {
         guard let sectionIndex = sectionIndex(forSectionID: inSectionID) else {
             return nil
@@ -316,11 +282,11 @@ internal class DataSourceEngine <T> where T: DataItem {
     }
 
     func sectionIndex(forSectionID sectionID: String) -> Int? {
-        guard self.sectionsInternal.contains(sectionID) else {
+        guard self.sectionIDsInternal.contains(sectionID) else {
             return nil
         }
 
-        return self.sectionsInternal.index(of: sectionID)
+        return self.sectionIDsInternal.index(of: sectionID)
     }
 
     func locationWithOptionalItem(forIndexPath indexPath: IndexPath) -> LocationWithOptionalItem<T>? {
@@ -334,6 +300,76 @@ internal class DataSourceEngine <T> where T: DataItem {
 
         return location
     }
+
+    // MARK: - private
+
+    fileprivate struct Callbacks {
+        let beginUpdatesFunc: (() -> Void)
+        let endUpdatesFunc: (() -> Void)
+        let deleteRowsAtIndexPathsFunc: (([IndexPath]) -> Void)
+        let insertRowsAtIndexPathsFunc: (([IndexPath]) -> Void)
+    }
+
+    // swiftlint:disable function_parameter_count
+    fileprivate func private_update(existingRows: [T], rowsToUpdate: [T], callbacks: Callbacks, sectionIndex: Int, sectionID: String, doNotCopy: Bool) {
+        var newRows: [T] = existingRows
+
+        let newIdentifiers = rowsToUpdate.map { $0.identifier }
+        let existingIdentifiers = existingRows.map { $0.identifier }
+
+        let diffs = diffBetweenArrays(arrayA: existingIdentifiers, arrayB: newIdentifiers)
+
+        callbacks.beginUpdatesFunc()
+        var rowIndex = 0
+        var deleteRowIndex = 0
+        for diff in diffs {
+            switch diff.operation {
+            case .delete:
+                for _ in diff.array {
+                    newRows.remove(at: rowIndex)
+                    let indexPath = IndexPath(row: deleteRowIndex, section: sectionIndex)
+                    callbacks.deleteRowsAtIndexPathsFunc([indexPath])
+                    deleteRowIndex += 1
+                }
+            case .insert:
+                for rowID in diff.array {
+                    // find index of new row
+                    let rowIDIndex = rowsToUpdate.index(where: { rowID == $0.identifier })
+                    if let actualIndex = rowIDIndex {
+                        let newRow = rowsToUpdate[actualIndex]
+                        newRows.insert(newRow, at: rowIndex)
+                        let indexPath = [IndexPath(row: rowIndex, section: sectionIndex)]
+                        callbacks.insertRowsAtIndexPathsFunc(indexPath)
+                        rowIndex += 1
+                    } else {
+                        print("index not found for rowID '\(rowID)'")
+                    }
+                }
+
+            case .equal:
+                if !doNotCopy {
+                    for rowID in diff.array {
+                        let sourceRowIDIndex = rowsToUpdate.index(where: { rowID == $0.identifier })
+                        let destinationRowIDIndex = newRows.index(where: { rowID == $0.identifier })
+
+                        if let sourceItem = rowsToUpdate.optionalElement(index: sourceRowIDIndex), let destinationIndex = destinationRowIDIndex {
+                            newRows.insert(sourceItem, at: destinationIndex)
+                            newRows.remove(at: destinationIndex+1)
+                        } else {
+                            print("at least one of the indeces not found for rowID '\(rowID)'")
+                        }
+                    }
+                }
+                rowIndex += diff.array.count
+                deleteRowIndex += diff.array.count
+            }
+        }
+        self.rowsBySectionID[sectionID] = newRows
+        callbacks.endUpdatesFunc()
+
+        assert(newRows == rowsToUpdate, "must be equal")
+    }
+    // swiftlint:enable function_parameter_count
 
     // MARK: - handling errors
 

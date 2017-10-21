@@ -62,27 +62,27 @@ class DataSourceEngineTests: XCTestCase {
     func testDataSourceSections() {
 
         var sections = ["a", "b", "c"]
-        self.engine.update(sections: sections, animated: true)
+        self.engine.update(sectionIDs: sections, animated: true)
         self.thenNumberOfSectionsIs(numberOfSections: 3)
-        XCTAssert(sections == (self.engine.sections()))
+        XCTAssert(sections == (self.engine.sectionIDs()))
 
         // test whether it's actually const
         sections = ["a", "b", "c", "d"]
-        XCTAssert(sections != (engine.sections()))
+        XCTAssert(sections != (engine.sectionIDs()))
 
-        self.engine.update(sections: ["a", "d", "c"], animated: true)
+        self.engine.update(sectionIDs: ["a", "d", "c"], animated: true)
         self.thenNumberOfSectionsIs(numberOfSections: 3)
 
-        self.engine.update(sections: ["a", "d", "c", "e"], animated: true)
+        self.engine.update(sectionIDs: ["a", "d", "c", "e"], animated: true)
         self.thenNumberOfSectionsIs(numberOfSections: 4)
 
-        self.engine.update(sections: [], animated: true)
+        self.engine.update(sectionIDs: [], animated: true)
         self.thenNumberOfSectionsIs(numberOfSections: 0)
 
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
 
-        self.engine.update(sections: ["a", "a", "a"], animated: true)
+        self.engine.update(sectionIDs: ["a", "a", "a"], animated: true)
         XCTAssert(didFail)
     }
 
@@ -104,7 +104,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [])
-        XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.engine.rows(forSection: "a")))
+        XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.engine.rows(forSectionID: "a")))
 
         self.givenDiffsAreCleared()
 
@@ -194,11 +194,11 @@ class DataSourceEngineTests: XCTestCase {
     // MARK: - when
 
     func whenUpdatingSections(withIDs inSectionIDs: [String]) {
-        self.engine.update(sections: inSectionIDs, animated: true)
+        self.engine.update(sectionIDs: inSectionIDs, animated: true)
     }
 
-    func whenUpdatingRows(identifiers rowIdentifiers: [String], sectionID: String) {
-        self.engine.update(rows: MockTVItem.mockTVItems(identifiers: rowIdentifiers), section: sectionID, animated: true)
+    func whenUpdatingRows(identifiers rowIdentifiers: [String], sectionID: String, doNotCopy: Bool = false) {
+        self.engine.update(rows: MockTVItem.mockTVItems(identifiers: rowIdentifiers), sectionID: sectionID, animated: true, doNotCopy: doNotCopy)
     }
 
     func whenDeletingRows(identifiers rowIdentifiers: [String]) {
@@ -208,7 +208,7 @@ class DataSourceEngineTests: XCTestCase {
     // MARK: - then
 
     func thenNumberOfSectionsIs(numberOfSections inNumberOfSections: Int) {
-        XCTAssert(engine.sections().count == inNumberOfSections, "...")
+        XCTAssert(engine.sectionIDs().count == inNumberOfSections, "...")
     }
 
     func thenNumberOfRowsIs(numberOfRows inNumberOfRows: Int, sectionIndex: Int) {

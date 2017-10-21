@@ -31,21 +31,39 @@ import XCTest
 
 class MockTVItem: DataItem {
     let identifier: String
+    let additionalString: String?
 
     class func mockTVItems(identifiers inIdentifiers: [String]) -> [MockTVItem] {
         return inIdentifiers.map { return MockTVItem(identifier: $0) }
     }
 
-    init (identifier: String) {
+    class func mockTVItems(identifiersAndAdditionalStrings inTupels: [(String, String)]) -> [MockTVItem] {
+        return inTupels.map { return MockTVItem(identifier: $0.0, additionalString: $0.1) }
+    }
+
+    init (identifier: String, additionalString: String? = nil) {
         self.identifier = identifier
+        self.additionalString = additionalString
     }
 }
 
 func == (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
-    return (lhs.identifier == rhs.identifier)
+    return (lhs.identifier == rhs.identifier) && (lhs.additionalString == rhs.additionalString)
 }
 
 func < (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
+    if lhs.identifier == rhs.identifier {
+        // let's define `nil < "whatever string"` (I know it doesn't make any intrinsic sense but we have to define something)
+
+        // so if rhs is nil, lhs can't be less
+        guard let rhsAdditional = rhs.additionalString else { return false }
+
+        // if rhs has a value and lhs does not, `nil < "whatever string"` must be true
+        guard let lhsAdditional = lhs.additionalString else { return true }
+
+        return (lhsAdditional < rhsAdditional)
+    }
+
     return (lhs.identifier < rhs.identifier)
 }
 
@@ -115,6 +133,10 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
+    func whenUpdating(rowsWithTupels inRows: [(String, String)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
+        XCTFail("needs to be overridden", file: file, line: line)
+    }
+
     func whenSelecting(row inRow: Int, section: Int) {
         XCTFail("needs to be overridden")
     }
@@ -147,6 +169,10 @@ class BaseDataSourceTests: XCTestCase {
 
     func thenCanMoveItem(atRow row: Int, section: Int, canMove: Bool) {
         XCTFail("needs to be overridden")
+    }
+
+    func thenAddtionalString(forIndexPath: IndexPath, isActually: String, file: StaticString = #file, line: UInt = #line) {
+        XCTFail("needs to be overridden", file: file, line: line)
     }
 
     // MARK: - test
@@ -212,6 +238,23 @@ class BaseDataSourceTests: XCTestCase {
         self.setFunc(fail: { (_) -> Void in didFail = true })
         self.whenUpdating(rowsWithIdentifiers: ["0", "0", "0"], sectionID: "a")
         XCTAssert(didFail)
+
+    }
+
+    func baseTestDataSourceRowsAreCopied() {
+        self.givenDelegateAndDataSource()
+
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
+        self.whenUpdating(rowsWithTupels: [("x", "A"), ("y", "A"), ("z", "A")], sectionID: "a")
+        self.whenUpdating(rowsWithTupels: [("x", "B"), ("y", "B"), ("z", "B")], sectionID: "a")
+
+        self.thenAddtionalString(forIndexPath: IndexPath(row: 1, section: 0), isActually: "B")
+
+        self.whenUpdating(rowsWithTupels: [("a", "C"), ("b", "C"), ("z", "C")], sectionID: "a")
+        self.thenAddtionalString(forIndexPath: IndexPath(row: 2, section: 0), isActually: "C")
+
+        self.whenUpdating(rowsWithTupels: [("a", "D"), ("z", "D"), ("d", "D")], sectionID: "a")
+        self.thenAddtionalString(forIndexPath: IndexPath(row: 1, section: 0), isActually: "D")
     }
 
     func baseTestDataSourceRowsDelete() {

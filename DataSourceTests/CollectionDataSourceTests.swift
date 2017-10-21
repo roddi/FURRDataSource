@@ -193,6 +193,15 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
     }
 
+    override func whenUpdating(rowsWithTupels inRows: [(String, String)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source", file: file, line: line)
+            return
+        }
+
+        dataSource.update(rows: MockTVItem.mockTVItems(identifiersAndAdditionalStrings: inRows), section: sectionID, animated: true)
+    }
+
     override func whenSelecting(row inRow: Int, section: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
@@ -282,6 +291,16 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.collectionView(collectionView, canMoveItemAt: IndexPath(row: row, section: section)) == canMove)
     }
 
+    override func thenAddtionalString(forIndexPath: IndexPath, isActually: String, file: StaticString = #file, line: UInt = #line) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+
+        let sectionIDAndItem = dataSource.sectionIDAndItem(forIndexPath: forIndexPath)
+        XCTAssertEqual(sectionIDAndItem?.1.additionalString, isActually, file: file, line: line)
+    }
+
     // MARK: - override test
 
     // This test crashes from time to time but only for the collection view.
@@ -291,6 +310,10 @@ class CollectionDataSourceTests: BaseDataSourceTests {
 
     func testDataSourceRows() {
         self.baseTestDataSourceRows()
+    }
+
+    func testDataSourceRowsAreCopied() {
+        self.baseTestDataSourceRowsAreCopied()
     }
 
     func testDataSourceRowsDelete() {

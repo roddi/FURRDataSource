@@ -186,6 +186,15 @@ class TableDataSourceTests: BaseDataSourceTests {
         dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
     }
 
+    override func whenUpdating(rowsWithTupels inRows: [(String, String)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source", file: file, line: line)
+            return
+        }
+
+        dataSource.update(rows: MockTVItem.mockTVItems(identifiersAndAdditionalStrings: inRows), section: sectionID, animated: true)
+    }
+
     override func whenSelecting(row inRow: Int, section: Int) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
@@ -306,6 +315,16 @@ class TableDataSourceTests: BaseDataSourceTests {
         XCTAssertEqual(footerString, footerTitle)
     }
 
+    override func thenAddtionalString(forIndexPath: IndexPath, isActually: String, file: StaticString = #file, line: UInt = #line) {
+        guard let dataSource = self.dataSource else {
+            XCTFail("no data source")
+            return
+        }
+
+        let sectionIDAndItem = dataSource.sectionIDAndItem(indexPath: forIndexPath)
+        XCTAssertEqual(sectionIDAndItem?.1.additionalString, isActually, file: file, line: line)
+    }
+
     // MARK: - test
 
     func testDataSourceSections() {
@@ -314,6 +333,10 @@ class TableDataSourceTests: BaseDataSourceTests {
 
     func testDataSourceRows() {
         self.baseTestDataSourceRows()
+    }
+
+    func testDataSourceRowsAreCopied() {
+        self.baseTestDataSourceRowsAreCopied()
     }
 
     func testDataSourceRowsDelete() {
@@ -355,7 +378,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         self.whenUpdating(rowsWithIdentifiers: ["0", "1", "2"], sectionID: "b")
 
         guard let dataSource = self.dataSource else {
-            XCTFail()
+            XCTFail("there must be a data source")
             return
         }
         guard let tableView = self.tableView else {
@@ -391,7 +414,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         let sectionChangedExpectation = expectation(description: "sections changed callback")
 
         guard let dataSource = self.dataSource else {
-            XCTFail()
+            XCTFail("there must be a data source")
             return
         }
         dataSource.willDeleteAtLocation = { (atLocation: Location<MockTVItem>) -> Void in
