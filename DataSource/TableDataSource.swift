@@ -1,8 +1,4 @@
 // swiftlint:disable line_length
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
-// swiftlint:disable function_body_length
-// swiftlint:disable variable_name
 
 // for swift 3 this is in conflict with what the compiler warns about
 // swiftlint:disable conditional_binding_cascade

@@ -27,8 +27,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // I hope you don't mind that test files are longer.
-// swiftlint:disable file_length
-// swiftlint:disable type_body_length
 
 import XCTest
 @testable import FURRDataSource

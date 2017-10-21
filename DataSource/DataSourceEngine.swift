@@ -1,11 +1,6 @@
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
-// swiftlint:disable file_length
-// swiftlint:disable cyclomatic_complexity
-
-// for swift 3 this is in conflict with what the compiler warns about
-// swiftlint:disable conditional_binding_cascade
 
 //
 //  DataSourceEngine.swift
@@ -245,6 +240,7 @@ internal class DataSourceEngine <T> where T: DataItem {
                 }
 
             case .equal:
+                // TODO: copy over rows from the new items
                 rowIndex += diff.array.count
                 deleteRowIndex += diff.array.count
             }

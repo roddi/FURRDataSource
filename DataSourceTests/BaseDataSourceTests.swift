@@ -1,5 +1,4 @@
 // swiftlint:disable line_length
-// swiftlint:disable file_length
 //
 //  BaseDataSourceTests.swift
 //  FURRDataSource

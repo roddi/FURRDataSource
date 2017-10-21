@@ -28,10 +28,6 @@
 
 // This is sample code, so I disable all of this.
 
-// swiftlint:disable type_body_length
-// swiftlint:disable file_length
-// swiftlint:disable function_body_length
-
 import UIKit
 
 enum Breathing: String {
