@@ -176,7 +176,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
 
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-        self.engine.logWhenVerbose(message:"tableView(,cellForRowAtIndexPath: \(indexPath))")
+        self.engine.logWhenVerbose(message: "tableView(,cellForRowAtIndexPath: \(indexPath))")
         guard let location = self.engine.location(forIndexPath: indexPath) else {
             preconditionFailure("rows not found")
         }

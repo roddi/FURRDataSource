@@ -38,7 +38,7 @@ class Rusher: DataItem {
     }
 }
 
-extension Rusher : Equatable {
+extension Rusher: Equatable {
 
 }
 

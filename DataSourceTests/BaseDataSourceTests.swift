@@ -34,7 +34,7 @@ class MockTVItem: DataItem {
     let identifier: String
 
     class func mockTVItems(identifiers inIdentifiers: [String]) -> [MockTVItem] {
-        return inIdentifiers.map { return MockTVItem(identifier:$0) }
+        return inIdentifiers.map { return MockTVItem(identifier: $0) }
     }
 
     init (identifier: String) {

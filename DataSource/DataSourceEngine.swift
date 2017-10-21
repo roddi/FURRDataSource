@@ -137,7 +137,6 @@ internal class DataSourceEngine <T> where T: DataItem {
         return location
     }
 
-
     // MARK: - updating
     func update(sections sectionsToUpdate: [String], animated inAnimated: Bool) {
 

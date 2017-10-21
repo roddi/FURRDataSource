@@ -175,7 +175,6 @@ class DataSourceEngineTests: XCTestCase {
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0]])
     }
 
-
     func testDataSourceWhenCompletelyEmpty() {
 
         self.thenNumberOfSectionsIs(numberOfSections: 0)
@@ -216,7 +215,7 @@ class DataSourceEngineTests: XCTestCase {
         if let sectionIDAndRows = engine.sectionIDAndRows(forSectionIndex: sectionIndex) {
             XCTAssert(sectionIDAndRows.1.count == inNumberOfRows)
         } else {
-            XCTFail()
+            XCTFail("no sectionIDsAndRows")
         }
     }
 

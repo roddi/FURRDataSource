@@ -23,7 +23,7 @@ class Image: DataItem {
 
 }
 
-extension Image : Equatable {
+extension Image: Equatable {
 
 }
 
