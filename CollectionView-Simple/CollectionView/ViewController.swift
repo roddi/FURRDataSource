@@ -49,22 +49,21 @@ class ViewController: UICollectionViewController {
         self.collectionView?.dataSource = self.dataSource
 
         var images: [Image] = Array()
-        for i in [0..<32].flatten() {
+        for i in [0..<32].joined() {
             let numberString = "\(i)"
-            if let uiimage = UIImage(named: numberString+"_full"),
-                thumb = UIImage(named: numberString) {
+            if let uiimage = UIImage(named: numberString+"_full"), let thumb = UIImage(named: numberString) {
                     let image = Image(identifier: numberString, title: "Image "+numberString, image: uiimage, thumb: thumb)
                     images.append(image)
             }
         }
 
-        self.dataSource?.updateSections(["section"], animated: true)
-        self.dataSource?.updateRows(images, section: "section", animated: true)
+        self.dataSource?.update(sections: ["section"], animated: true)
+        self.dataSource?.update(rows: images, section: "section", animated: true)
     }
 
-    func cellGeneratorFunc() -> ((inLocation: Location<Image>) -> UICollectionViewCell) {
+    func cellGeneratorFunc() -> ((_ inLocation: Location<Image>) -> UICollectionViewCell) {
         return { location in
-            if let cell = self.dataSource?.dequeueReusableCellWithReuseIdentifier(kCellID, sectionID: location.sectionID, item: location.item), cell_ = cell as? Cell {
+            if let cell = self.dataSource?.dequeueReusableCell(withReuseIdentifier: kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
                 cell_.label.text = location.item.title
                 cell_.image.image = location.item.image
                 return cell_
@@ -74,10 +73,10 @@ class ViewController: UICollectionViewController {
         }
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let selectedLocation = self.dataSource?.selectedLocations().first,
-                detailViewController = segue.destinationViewController as? DetailViewController {
+                let detailViewController = segue.destination as? DetailViewController {
                 detailViewController.image = selectedLocation.item.image
             }
         }

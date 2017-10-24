@@ -80,6 +80,9 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
         self.engine.deleteRowsAtIndexPaths = { indexPaths in
             self.collectionView.deleteItems(at: indexPaths)
         }
+        self.engine.reloadRowsAtIndexPaths = { indexPaths in
+            self.collectionView.reloadItems(at: indexPaths)
+        }
     }
 
     // MARK: - querying
@@ -125,17 +128,28 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
 
     }
 
+    private class ClosureTransporter {
+        var closure: (() -> Void)?
+    }
+
     public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool) {
-        self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: false)
-        }, completion: nil)
+        // I was not able to extract the result closure from the closure. With this transporter class it works.
+        // Yes, ugly, I know. I'm open for working(!) suggestions/solutions that are more elegant.
+        let transporter = ClosureTransporter()
+        self.collectionView.performBatchUpdates({ [unowned transporter] () -> Void in
+            let secondUpdate = self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: false)
+            transporter.closure = secondUpdate
+            }, completion: nil )
+        transporter.closure?()
     }
 
     // MARK: updating, convenience
 
     public func deleteItems(_ items: [T], animated: Bool = true) {
+        var secondUpdate: () -> Void = { _ in }
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.deleteItems(items, animated: animated)
+            secondUpdate = self.engine.deleteItems(items, animated: animated)
+            DispatchQueue.main.async { secondUpdate() }
         }, completion: nil)
     }
 

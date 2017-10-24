@@ -35,6 +35,7 @@ class DataSourceEngineTests: XCTestCase {
 
     var insertionRowIndexPaths: [IndexPath] = []
     var deletionRowIndexPaths: [IndexPath] = []
+    var reloadRowIndexPaths: [IndexPath] = []
     var insertionSectionIndexSet: IndexSet = IndexSet()
     var deletionSectionIndexSet: IndexSet = IndexSet()
 
@@ -51,6 +52,9 @@ class DataSourceEngineTests: XCTestCase {
         }
         self.engine.deleteRowsAtIndexPaths = { indexPathArray in
             self.deletionRowIndexPaths.append(contentsOf: indexPathArray)
+        }
+        self.engine.reloadRowsAtIndexPaths = { indexPathArray in
+            self.reloadRowIndexPaths.append(contentsOf: indexPathArray)
         }
     }
 
@@ -104,6 +108,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
         XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.engine.rows(forSectionID: "a")))
 
         self.givenDiffsAreCleared()
@@ -112,6 +117,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfSectionsIs(numberOfSections: 3)
         self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
         var didFail = false
         self.engine.fail = { (msg) -> Void in didFail = true }
@@ -140,6 +146,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 4, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
         self.givenDiffsAreCleared()
 
@@ -149,6 +156,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
         self.givenDiffsAreCleared()
 
@@ -159,6 +167,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
     }
 
     func testDataSourceConvenienceDelete() {
@@ -173,6 +182,7 @@ class DataSourceEngineTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
     }
 
     func testDataSourceWhenCompletelyEmpty() {
@@ -187,6 +197,7 @@ class DataSourceEngineTests: XCTestCase {
     func givenDiffsAreCleared() {
         self.deletionRowIndexPaths = []
         self.insertionRowIndexPaths = []
+        self.reloadRowIndexPaths = []
         self.insertionSectionIndexSet = IndexSet()
         self.deletionSectionIndexSet = IndexSet()
     }
@@ -198,11 +209,13 @@ class DataSourceEngineTests: XCTestCase {
     }
 
     func whenUpdatingRows(identifiers rowIdentifiers: [String], sectionID: String, doNotCopy: Bool = false) {
-        self.engine.update(rows: MockTVItem.mockTVItems(identifiers: rowIdentifiers), sectionID: sectionID, animated: true, doNotCopy: doNotCopy)
+        let secondUpdate = self.engine.update(rows: MockTVItem.mockTVItems(identifiers: rowIdentifiers), sectionID: sectionID, animated: true, doNotCopy: doNotCopy)
+        secondUpdate()
     }
 
     func whenDeletingRows(identifiers rowIdentifiers: [String]) {
-        self.engine.deleteItems(MockTVItem.mockTVItems(identifiers: rowIdentifiers), animated: true)
+        let secondUpdate = self.engine.deleteItems(MockTVItem.mockTVItems(identifiers: rowIdentifiers), animated: true)
+        secondUpdate()
     }
 
     // MARK: - then
@@ -233,6 +246,12 @@ class DataSourceEngineTests: XCTestCase {
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
         XCTAssertEqual(self.deletionRowIndexPaths, realIndexPaths)
+    }
+
+    func thenReloadRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
+
+        XCTAssertEqual(self.reloadRowIndexPaths, realIndexPaths)
     }
 
 }

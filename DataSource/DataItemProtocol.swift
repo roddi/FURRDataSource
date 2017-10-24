@@ -30,3 +30,9 @@ import Foundation
 public protocol DataItem: Equatable {
     var identifier: String { get }
 }
+
+extension DataItem {
+    var debugDescription: String {
+        return "\(identifier) - override debugDescription to know more"
+    }
+}

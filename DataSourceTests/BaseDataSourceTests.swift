@@ -1,4 +1,6 @@
 // swiftlint:disable line_length
+// swiftlint:disable file_length
+// swiftlint:disable type_body_length
 //
 //  BaseDataSourceTests.swift
 //  FURRDataSource
@@ -37,7 +39,7 @@ class MockTVItem: DataItem {
         return inIdentifiers.map { return MockTVItem(identifier: $0) }
     }
 
-    class func mockTVItems(identifiersAndAdditionalStrings inTupels: [(String, String)]) -> [MockTVItem] {
+    class func mockTVItems(identifiersAndAdditionalStrings inTupels: [(String, String?)]) -> [MockTVItem] {
         return inTupels.map { return MockTVItem(identifier: $0.0, additionalString: $0.1) }
     }
 
@@ -51,27 +53,11 @@ func == (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
     return (lhs.identifier == rhs.identifier) && (lhs.additionalString == rhs.additionalString)
 }
 
-func < (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
-    if lhs.identifier == rhs.identifier {
-        // let's define `nil < "whatever string"` (I know it doesn't make any intrinsic sense but we have to define something)
-
-        // so if rhs is nil, lhs can't be less
-        guard let rhsAdditional = rhs.additionalString else { return false }
-
-        // if rhs has a value and lhs does not, `nil < "whatever string"` must be true
-        guard let lhsAdditional = lhs.additionalString else { return true }
-
-        return (lhsAdditional < rhsAdditional)
-    }
-
-    return (lhs.identifier < rhs.identifier)
-}
-
 func cellForSectionID(inSectionID: String, item inItem: MockTVItem, tableView inTableView: UITableView) -> UITableViewCell {
     let rowID = inItem.identifier
     let cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: inSectionID+rowID)
     cell.textLabel?.text = inSectionID
-    cell.detailTextLabel?.text = rowID
+    cell.detailTextLabel?.text = rowID + "_" + (inItem.additionalString ?? "nil")
     return cell
 }
 
@@ -133,7 +119,7 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func whenUpdating(rowsWithTupels inRows: [(String, String)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
+    func whenUpdating(rowsWithTupels inRows: [(String, String?)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
         XCTFail("needs to be overridden", file: file, line: line)
     }
 
@@ -155,12 +141,16 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
-        XCTFail("needs to be overridden")
+    func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
+        XCTFail("needs to be overridden", file: file, line: line)
     }
 
-    func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
-        XCTFail("needs to be overridden")
+    func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
+        XCTFail("needs to be overridden", file: file, line: line)
+    }
+
+    func thenReloadRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
+        XCTFail("needs to be overridden", file: file, line: line)
     }
 
     func thenCanSelectHandlerWasCalled() {
@@ -171,7 +161,7 @@ class BaseDataSourceTests: XCTestCase {
         XCTFail("needs to be overridden")
     }
 
-    func thenAddtionalString(forIndexPath: IndexPath, isActually: String, file: StaticString = #file, line: UInt = #line) {
+    func thenAddtionalString(forIndexPath: IndexPath, isActually: String?, file: StaticString = #file, line: UInt = #line) {
         XCTFail("needs to be overridden", file: file, line: line)
     }
 
@@ -225,6 +215,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
         XCTAssert(MockTVItem.mockTVItems(identifiers: ["0", "1", "2"]) == (self.rows(forSection: "a")))
 
         self.givenDiffsAreCleared()
@@ -233,6 +224,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfSectionsIs(numberOfSections: 3)
         self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
         var didFail = false
         self.setFunc(fail: { (_) -> Void in didFail = true })
@@ -246,15 +238,50 @@ class BaseDataSourceTests: XCTestCase {
 
         self.whenUpdatingSectionIDs(["a", "b", "c"])
         self.whenUpdating(rowsWithTupels: [("x", "A"), ("y", "A"), ("z", "A")], sectionID: "a")
-        self.whenUpdating(rowsWithTupels: [("x", "B"), ("y", "B"), ("z", "B")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
+        self.givenDiffsAreCleared()
+
+        self.whenUpdating(rowsWithTupels: [("x", "B"), ("y", "B"), ("z", "B")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
         self.thenAddtionalString(forIndexPath: IndexPath(row: 1, section: 0), isActually: "B")
 
+        self.givenDiffsAreCleared()
+
         self.whenUpdating(rowsWithTupels: [("a", "C"), ("b", "C"), ("z", "C")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[0, 0], [1, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [[2, 0]])
         self.thenAddtionalString(forIndexPath: IndexPath(row: 2, section: 0), isActually: "C")
 
+        self.givenDiffsAreCleared()
+
         self.whenUpdating(rowsWithTupels: [("a", "D"), ("z", "D"), ("d", "D")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [[2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [[0, 0], [1, 0]])
         self.thenAddtionalString(forIndexPath: IndexPath(row: 1, section: 0), isActually: "D")
+
+        self.givenDiffsAreCleared()
+
+        // these numbers seem weird so I'll explain
+        self.whenUpdating(rowsWithTupels: [("z", "E"), ("a", "D"), ("d", "D")], sectionID: "a")
+        self.thenDeletionRowsSectionsAre(indexPaths: [[0, 0]]) // deleting at 0: [a, z, d] -> [z, d]
+        self.thenReloadRowsSectionsAre(indexPaths: [[0, 0]]) // reloading at 0: [z, d] -> [z', d]
+        self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0]]) // inserting at 1: [z', d] -> [z', a, d]
+        self.thenAddtionalString(forIndexPath: IndexPath(row: 0, section: 0), isActually: "E")
+
+        self.givenDiffsAreCleared()
+
+        self.whenUpdating(rowsWithTupels: [("z", nil), ("a", "D"), ("d", "D")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [[0, 0]])
+        self.thenAddtionalString(forIndexPath: IndexPath(row: 0, section: 0), isActually: nil)
     }
 
     func baseTestDataSourceRowsDelete() {
@@ -270,6 +297,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 4, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
         self.givenDiffsAreCleared()
 
@@ -279,6 +307,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 2, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [2, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
 
         self.givenDiffsAreCleared()
 
@@ -289,6 +318,7 @@ class BaseDataSourceTests: XCTestCase {
         self.thenNumberOfRowsIs(numberOfRows: 3, sectionIndex: 0)
         self.thenInsertionRowsSectionsAre(indexPaths: [])
         self.thenDeletionRowsSectionsAre(indexPaths: [[1, 0], [3, 0], [5, 0]])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
     }
 
     func baseTestDataSourceWhenCompletelyEmpty() {

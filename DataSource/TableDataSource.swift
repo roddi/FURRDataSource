@@ -69,6 +69,8 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
     }
 
+    public var rowAnimation: UITableViewRowAnimation = .automatic
+
     // MARK: -
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: @escaping (_ inLocation: Location<T>) -> UITableViewCell) {
         self.engine = DataSourceEngine<T>()
@@ -86,18 +88,20 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         self.engine.beginUpdates = {self.tableView.beginUpdates()}
         self.engine.endUpdates = {self.tableView.endUpdates()}
         self.engine.deleteSections = { indexSet in
-            self.tableView.deleteSections(indexSet, with: UITableViewRowAnimation.automatic)
+            self.tableView.deleteSections(indexSet, with: self.rowAnimation)
         }
         self.engine.insertSections = { indexSet in
-            self.tableView.insertSections(indexSet, with: UITableViewRowAnimation.automatic)
+            self.tableView.insertSections(indexSet, with: self.rowAnimation)
         }
         self.engine.deleteRowsAtIndexPaths = { indexPaths in
-            self.tableView.deleteRows(at: indexPaths, with: UITableViewRowAnimation.automatic)
+            self.tableView.deleteRows(at: indexPaths, with: self.rowAnimation)
         }
         self.engine.insertRowsAtIndexPaths = { indexPaths in
-            self.tableView.insertRows(at: indexPaths, with: UITableViewRowAnimation.automatic)
+            self.tableView.insertRows(at: indexPaths, with: self.rowAnimation)
         }
-        self.engine.didChangeSectionIDs = { sectionIDs in }
+        self.engine.reloadRowsAtIndexPaths = { indexPaths in
+            self.tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.none )
+        }
     }
 
     // MARK: - querying
@@ -121,13 +125,19 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
     }
 
     public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool, doNotCopy: Bool = false) {
-        self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: doNotCopy)
+        let secondUpdate = self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: doNotCopy)
+        self.tableView.beginUpdates()
+        secondUpdate()
+        self.tableView.endUpdates()
     }
 
     // MARK: updating, convenience
 
     public func deleteItems(_ items: [T], animated: Bool = true) {
-        self.engine.deleteItems(items, animated: animated)
+        let secondUpdate = self.engine.deleteItems(items, animated: animated)
+        self.tableView.beginUpdates()
+        secondUpdate()
+        self.tableView.endUpdates()
     }
 
     // MARK: -
@@ -251,7 +261,10 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
             var rows = self.engine.rows(forSectionID: location.sectionID)
             if rows.count != 0 {
                 rows.remove(at: indexPath.row)
-                self.engine.update(rows: rows, sectionID: location.sectionID, animated: true, doNotCopy: false)
+                let secondUpdate = self.engine.update(rows: rows, sectionID: location.sectionID, animated: true, doNotCopy: false)
+                self.tableView.beginUpdates()
+                secondUpdate()
+                self.tableView.endUpdates()
             }
 
             if let callback = self.didDeleteItem {

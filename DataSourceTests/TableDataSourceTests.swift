@@ -77,8 +77,11 @@ class TableDataSourceTests: BaseDataSourceTests {
 
         tableView.insertRowsCallback = { print("insert rows \($0)") }
         tableView.deleteRowsCallback = { print("delete rows \($0)") }
+        tableView.reloadRowsCallback = { print("reload rows \($0)") }
         tableView.insertSectionsCallback = { print("insert sections \($0)") }
         tableView.deleteSectionsCallback = { print("delete sections \($0)") }
+        tableView.dequeuedCellCallback = { (text: String?, detailText: String?) in
+            print("text: \(text ?? "nil") -- detailText: \(detailText ?? "nil")")}
         didCallDidSelectHandler = false
     }
 
@@ -135,6 +138,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         }
         tableView.deletionRowIndexPaths = []
         tableView.insertionRowIndexPaths = []
+        tableView.reloadRowIndexPaths = []
         tableView.insertionSectionIndexSet = NSMutableIndexSet()
         tableView.deletionSectionIndexSet = NSMutableIndexSet()
     }
@@ -186,7 +190,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRowIDs), section: sectionID, animated: true)
     }
 
-    override func whenUpdating(rowsWithTupels inRows: [(String, String)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
+    override func whenUpdating(rowsWithTupels inRows: [(String, String?)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source", file: file, line: line)
             return
@@ -246,7 +250,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.tableView(tableView, numberOfRowsInSection: sectionIndex) == inNumberOfRows)
     }
 
-    override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+    override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
         guard let tableView = self.tableView else {
             XCTFail("no table view")
             return
@@ -254,10 +258,10 @@ class TableDataSourceTests: BaseDataSourceTests {
 
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
-        XCTAssert(tableView.insertionRowIndexPaths == realIndexPaths)
+        XCTAssertEqual(tableView.insertionRowIndexPaths, realIndexPaths, file: file, line: line)
     }
 
-    override func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+    override func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
         guard let tableView = self.tableView else {
             XCTFail("no table view")
             return
@@ -265,7 +269,18 @@ class TableDataSourceTests: BaseDataSourceTests {
 
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
-        XCTAssert(tableView.deletionRowIndexPaths == realIndexPaths)
+        XCTAssertEqual(tableView.deletionRowIndexPaths, realIndexPaths, file: file, line: line)
+    }
+
+    override func thenReloadRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
+        guard let tableView = self.tableView else {
+            XCTFail("no table view")
+            return
+        }
+
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
+
+        XCTAssertEqual(tableView.reloadRowIndexPaths, realIndexPaths, file: file, line: line)
     }
 
     override func thenCanSelectHandlerWasCalled() {
@@ -315,7 +330,7 @@ class TableDataSourceTests: BaseDataSourceTests {
         XCTAssertEqual(footerString, footerTitle)
     }
 
-    override func thenAddtionalString(forIndexPath: IndexPath, isActually: String, file: StaticString = #file, line: UInt = #line) {
+    override func thenAddtionalString(forIndexPath: IndexPath, isActually: String?, file: StaticString = #file, line: UInt = #line) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return
@@ -388,6 +403,51 @@ class TableDataSourceTests: BaseDataSourceTests {
         let indexPath = dataSource.tableView(tableView, targetIndexPathForMoveFromRowAt: IndexPath(row: 3, section: 0), toProposedIndexPath: IndexPath(row: 2, section: 0))
         XCTAssert(indexPath.section == 0)
         XCTAssert(indexPath.row == 1)
+    }
+
+    func testUpdateWithoutIDChange() {
+
+        self.givenDelegateAndDataSource()
+
+        guard let dataSource = self.dataSource else {
+            XCTFail("there must be a data source")
+            return
+        }
+        guard let tableView = self.tableView else {
+            XCTFail("no table view")
+            return
+        }
+
+        let window = UIWindow(frame: tableView.bounds)
+        window.screen = UIScreen.main
+        window.rootViewController = UIViewController()
+        window.rootViewController?.view.addSubview(tableView)
+
+        dataSource.setFunc(didChangeSectionIDsFunc: { (sectionIDsDict: [String: [MockTVItem]]) in
+            sectionIDsDict.keys.forEach({ (sectionID: String) in
+                print("will reload section with ID: \(sectionID)")
+                dataSource.reload(sectionID: sectionID)
+            })
+        })
+
+        self.whenUpdatingSectionIDs(["a", "b", "c"])
+
+        tableView.dequeuedCellCallback = { (text: String?, detailText: String?) in
+            print("text: \(text ?? "nil") - detailText: \(detailText ?? "nil")")
+        }
+
+        self.whenUpdating(rowsWithTupels: [("x", "A"), ("y", "A"), ("z", "A")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [])
+
+        self.givenDiffsAreCleared()
+
+        self.whenUpdating(rowsWithTupels: [("x", "B"), ("y", "B"), ("z", "B")], sectionID: "a")
+        self.thenInsertionRowsSectionsAre(indexPaths: [])
+        self.thenDeletionRowsSectionsAre(indexPaths: [])
+        self.thenReloadRowsSectionsAre(indexPaths: [[0, 0], [1, 0], [2, 0]])
+
     }
 
     // testing: optional func tableView(_ tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool

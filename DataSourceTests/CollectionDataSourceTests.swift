@@ -112,6 +112,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
 
         collectionView.insertRowsCallback = { print("insert rows \($0)") }
         collectionView.deleteRowsCallback = { print("delete rows \($0)") }
+        collectionView.reloadRowsCallback = { print("reload rows \($0)") }
         collectionView.insertSectionsCallback = { print("insert sections \($0)") }
         collectionView.deleteSectionsCallback = { print("delete sections \($0)") }
         didCallDidSelectHandler = false
@@ -124,6 +125,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         }
         collectionView.deletionRowIndexPaths = []
         collectionView.insertionRowIndexPaths = []
+        collectionView.reloadRowIndexPaths = []
         collectionView.insertionSectionIndexSet = NSMutableIndexSet()
         collectionView.deletionSectionIndexSet = NSMutableIndexSet()
     }
@@ -193,7 +195,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         dataSource.update(rows: MockTVItem.mockTVItems(identifiers: inRows), section: sectionID, animated: true)
     }
 
-    override func whenUpdating(rowsWithTupels inRows: [(String, String)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
+    override func whenUpdating(rowsWithTupels inRows: [(String, String?)], sectionID: String, file: StaticString = #file, line: UInt = #line) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source", file: file, line: line)
             return
@@ -253,7 +255,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.collectionView(collectionView, numberOfItemsInSection: sectionIndex) == inNumberOfRows)
     }
 
-    override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+    override func thenInsertionRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
@@ -261,10 +263,10 @@ class CollectionDataSourceTests: BaseDataSourceTests {
 
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
-        XCTAssert(collectionView.insertionRowIndexPaths == realIndexPaths)
+        XCTAssertEqual(collectionView.insertionRowIndexPaths, realIndexPaths, file: file, line: line)
     }
 
-    override func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]]) {
+    override func thenDeletionRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
         guard let collectionView = self.collectionView else {
             XCTFail("no table view")
             return
@@ -272,7 +274,18 @@ class CollectionDataSourceTests: BaseDataSourceTests {
 
         let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
 
-        XCTAssert(collectionView.deletionRowIndexPaths == realIndexPaths)
+        XCTAssertEqual(collectionView.deletionRowIndexPaths, realIndexPaths, file: file, line: line)
+    }
+
+    override func thenReloadRowsSectionsAre(indexPaths inIndexPaths: [[Int]], file: StaticString = #file, line: UInt = #line) {
+        guard let collectionView = self.collectionView else {
+            XCTFail("no table view")
+            return
+        }
+
+        let realIndexPaths = inIndexPaths.map(testHelper_indexListMapper())
+
+        XCTAssertEqual(collectionView.reloadRowIndexPaths, realIndexPaths, file: file, line: line)
     }
 
     override func thenCanSelectHandlerWasCalled() {
@@ -291,7 +304,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
         XCTAssert(dataSource.collectionView(collectionView, canMoveItemAt: IndexPath(row: row, section: section)) == canMove)
     }
 
-    override func thenAddtionalString(forIndexPath: IndexPath, isActually: String, file: StaticString = #file, line: UInt = #line) {
+    override func thenAddtionalString(forIndexPath: IndexPath, isActually: String?, file: StaticString = #file, line: UInt = #line) {
         guard let dataSource = self.dataSource else {
             XCTFail("no data source")
             return

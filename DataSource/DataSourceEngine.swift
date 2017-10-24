@@ -2,6 +2,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable function_body_length
 // swiftlint:disable type_body_length
+// swiftlint:disable cyclomatic_complexity
 //
 //  DataSourceEngine.swift
 //  FURRDataSource
@@ -53,6 +54,7 @@ internal class DataSourceEngine <T> where T: DataItem {
     var didChangeSectionIDs: (([String: [T]]) -> Void)?
     var deleteRowsAtIndexPaths: (([IndexPath]) -> Void)?
     var insertRowsAtIndexPaths: (([IndexPath]) -> Void)?
+    var reloadRowsAtIndexPaths: (([IndexPath]) -> Void)?
 
     internal var fail: ((String) -> Void )?
     internal var warn: ((String) -> Void )?
@@ -175,51 +177,59 @@ internal class DataSourceEngine <T> where T: DataItem {
         assert(self.sectionIDsInternal == sectionIDsToUpdate, "should be equal now")
     }
 
-    func update(rows rowsToUpdate: [T], sectionID: String, animated: Bool, doNotCopy: Bool) {
+    func update(rows rowsToUpdate: [T], sectionID: String, animated: Bool, doNotCopy: Bool) -> (() -> Void) {
         guard let sectionIndex = self.sectionIndex(forSectionID: sectionID) else {
             self.warn(message: "sectionID does not exists. Severity: non lethal but the update just failed and the data source remains unaltered.")
-            return
+            return {}
         }
 
         if rowsToUpdate.containsDuplicates() {
             self.fail(message: "Supplied rows contain duplicates. This will confuse FURRDataSource later on and we can't have that. Severity: lethal, sorry.")
-            return
+            return {}
         }
 
         guard
             let beginUpdatesFunc = self.beginUpdates,
             let endUpdatesFunc = self.endUpdates,
             let deleteRowsAtIndexPathsFunc = self.deleteRowsAtIndexPaths,
-            let insertRowsAtIndexPathsFunc = self.insertRowsAtIndexPaths else {
+            let insertRowsAtIndexPathsFunc = self.insertRowsAtIndexPaths,
+            let reloadRowsAtIndexPathsFunc = self.reloadRowsAtIndexPaths else {
                 self.fail(message: "At least one of the required callback funcs of DataSourceEngine is nil. Severity: lethal, sorry, nevertheless have a good evening!")
-                return
+                return {}
         }
 
         let callbacks = Callbacks(beginUpdatesFunc: beginUpdatesFunc,
                                   endUpdatesFunc: endUpdatesFunc,
                                   deleteRowsAtIndexPathsFunc: deleteRowsAtIndexPathsFunc,
-                                  insertRowsAtIndexPathsFunc: insertRowsAtIndexPathsFunc)
+                                  insertRowsAtIndexPathsFunc: insertRowsAtIndexPathsFunc,
+                                  reloadRowsAtIndexPathsFunc: reloadRowsAtIndexPathsFunc)
 
         let existingRows: [T] = self.rowsBySectionID[sectionID] ?? []
-        private_update(existingRows: existingRows,
+        let secondUpdate = private_update(existingRows: existingRows,
                        rowsToUpdate: rowsToUpdate,
                        callbacks: callbacks,
                        sectionIndex: sectionIndex,
                        sectionID: sectionID,
                        doNotCopy: doNotCopy)
+        return secondUpdate
     }
 
     // MARK: updating, convenience
 
-    public func deleteItems(_ items: [T], animated: Bool = true) {
+    public func deleteItems(_ items: [T], animated: Bool = true) -> (() -> Void) {
         let identifiers = items.map { $0.identifier }
         let allSections = sectionIDs()
+        var secondUpdates: [() -> Void] = []
         for section in allSections {
             let sectionItems = rows(forSectionID: section)
             let filteredItems = sectionItems.filter({ (item: T) -> Bool in
                 return !identifiers.contains(item.identifier)
             })
-            update(rows: filteredItems, sectionID: section, animated: animated, doNotCopy: false)
+            secondUpdates.append(update(rows: filteredItems, sectionID: section, animated: animated, doNotCopy: false))
+        }
+
+        return { _ in
+            secondUpdates.forEach { $0() }
         }
     }
 
@@ -308,10 +318,11 @@ internal class DataSourceEngine <T> where T: DataItem {
         let endUpdatesFunc: (() -> Void)
         let deleteRowsAtIndexPathsFunc: (([IndexPath]) -> Void)
         let insertRowsAtIndexPathsFunc: (([IndexPath]) -> Void)
+        let reloadRowsAtIndexPathsFunc: (([IndexPath]) -> Void)
     }
 
     // swiftlint:disable function_parameter_count
-    fileprivate func private_update(existingRows: [T], rowsToUpdate: [T], callbacks: Callbacks, sectionIndex: Int, sectionID: String, doNotCopy: Bool) {
+    fileprivate func private_update(existingRows: [T], rowsToUpdate: [T], callbacks: Callbacks, sectionIndex: Int, sectionID: String, doNotCopy: Bool) -> (() -> Void) {
         var newRows: [T] = existingRows
 
         let newIdentifiers = rowsToUpdate.map { $0.identifier }
@@ -322,6 +333,7 @@ internal class DataSourceEngine <T> where T: DataItem {
         callbacks.beginUpdatesFunc()
         var rowIndex = 0
         var deleteRowIndex = 0
+        var indexPathsToUpdate: [IndexPath] = []
         for diff in diffs {
             switch diff.operation {
             case .delete:
@@ -353,6 +365,9 @@ internal class DataSourceEngine <T> where T: DataItem {
                         let destinationRowIDIndex = newRows.index(where: { rowID == $0.identifier })
 
                         if let sourceItem = rowsToUpdate.optionalElement(index: sourceRowIDIndex), let destinationIndex = destinationRowIDIndex {
+                            if let destinationItem = newRows.optionalElement(index: destinationIndex), sourceItem != destinationItem {
+                                indexPathsToUpdate.append(contentsOf: [IndexPath(row: destinationIndex, section: sectionIndex)])
+                            }
                             newRows.insert(sourceItem, at: destinationIndex)
                             newRows.remove(at: destinationIndex+1)
                         } else {
@@ -365,9 +380,14 @@ internal class DataSourceEngine <T> where T: DataItem {
             }
         }
         self.rowsBySectionID[sectionID] = newRows
-        callbacks.endUpdatesFunc()
 
         assert(newRows == rowsToUpdate, "must be equal")
+        callbacks.endUpdatesFunc()
+
+        return { _ in
+            print("update! \(indexPathsToUpdate)")
+            callbacks.reloadRowsAtIndexPathsFunc(indexPathsToUpdate)
+        }
     }
     // swiftlint:enable function_parameter_count
 

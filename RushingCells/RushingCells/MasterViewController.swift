@@ -31,7 +31,7 @@
 import UIKit
 
 enum Breathing: String {
-    case inhale, exhale, keep
+    case inhale, exhale, rehale/*, keep*/
 }
 
 class MasterViewController: UITableViewController {
@@ -65,7 +65,8 @@ class MasterViewController: UITableViewController {
                 }
                 let rusher = inLocation.item
                 cell.textLabel?.text = rusher.date.description
-                cell.detailTextLabel?.text = rusher.identifier
+                cell.detailTextLabel?.text = rusher.identifier + " " + rusher.additionalString
+                print("rusher cell: \(cell.detailTextLabel?.text ?? "nil")")
                 return cell
             })
             self.dataSource?.canEditAtLocation = { (atLocation: Location<Rusher>) -> Bool in return true }
@@ -73,7 +74,8 @@ class MasterViewController: UITableViewController {
             self.dataSource?.willDeleteAtLocation = { (atLocation: Location<Rusher>) -> Void in
                 print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
             }
-            self.dataSource?.setFunc(didChangeSectionIDsFunc: { (_: [String: [Rusher]]) -> Void in
+            self.dataSource?.setFunc(didChangeSectionIDsFunc: { (sectionIDsDict: [String: [Rusher]]) -> Void in
+                sectionIDsDict.keys.forEach { self.dataSource?.reload(sectionID: $0) }
             })
 
             self.dataSource?.sectionHeaderTitleForSectionID = { return "header: \($0)" }
@@ -195,7 +197,7 @@ class MasterViewController: UITableViewController {
         }
     }
 
-    func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, breathe: Breathing) {
+    func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, rehaleIndex: Int, breathe: Breathing) {
         let sectionID: String
 
         if let sectionID_ = self.dataSource?.sections().optionalElement(index: sectionIndex) {
@@ -213,7 +215,15 @@ class MasterViewController: UITableViewController {
             return
         }
 
-        if breathe != .inhale && deleteIndex < rows.count {
+        if rehaleIndex < rows.count {
+            let oldRusher = rows[rehaleIndex]
+            let newRusher = Rusher(inIdentifier: oldRusher.identifier)
+            newRusher.additionalString = oldRusher.additionalString + "*"
+            rows.remove(at: rehaleIndex)
+            rows.insert(newRusher, at: rehaleIndex)
+        }
+
+        if breathe == .inhale && deleteIndex < rows.count {
             rows.remove(at: deleteIndex)
         }
         if rows.count < insertIndex {
@@ -229,17 +239,23 @@ class MasterViewController: UITableViewController {
     private var breatheCount = 0
     private var breathe = Breathing.inhale
     func rush() {
-        if breathe == .inhale {
+        switch breathe {
+        case .inhale:
             if breatheCount > 100 {
                 breathe = .exhale
             }
             breatheCount += 1
-        } else {
+        case .exhale:
             if breatheCount < 5 {
+                breathe = .rehale
+            }
+            breatheCount -= 1
+        case .rehale:
+            if breatheCount < 200 {
                 breathe = .inhale
             }
             breatheCount -= 1
-        }
+       }
 
         count += 1
         let sectionIndex = (count % 37) * 3
@@ -250,8 +266,11 @@ class MasterViewController: UITableViewController {
         let insertIndex2 = (count % 7)
         let deleteIndex2 = count % 11
 
-        handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, breathe: .keep)
-        handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, breathe: breathe)
+        let rehaleIndex = (count % 2)
+        let rehaleIndex2 = (count % 4)
+
+        handleRushing(inSection: sectionIndex, insertIndex: insertIndex, deleteIndex: deleteIndex, rehaleIndex: rehaleIndex, breathe: breathe)
+        handleRushing(inSection: sectionIndex2, insertIndex: insertIndex2, deleteIndex: deleteIndex2, rehaleIndex: rehaleIndex2, breathe: breathe)
 
         if count < 1000 {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: 150*1000*1000)) { () -> Void in

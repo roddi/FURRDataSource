@@ -31,6 +31,7 @@ import UIKit
 class Rusher: DataItem {
     let identifier: String
     var date: Date
+    var additionalString = ""
 
     init(inIdentifier: String) {
         self.identifier = inIdentifier
@@ -43,5 +44,5 @@ extension Rusher: Equatable {
 }
 
 func == (lhs: Rusher, rhs: Rusher) -> Bool {
-    return lhs.identifier == rhs.identifier
+    return (lhs.identifier == rhs.identifier) && (lhs.additionalString == rhs.additionalString)
 }

@@ -13,11 +13,14 @@ class MockCollectionView: UICollectionView {
 
     var insertRowsCallback: (([IndexPath]) -> Void)?
     var deleteRowsCallback: (([IndexPath]) -> Void)?
+    var reloadRowsCallback: (([IndexPath]) -> Void)?
     var insertSectionsCallback: ((IndexSet) -> Void)?
     var deleteSectionsCallback: ((IndexSet) -> Void)?
 
     var insertionRowIndexPaths: [IndexPath] = []
     var deletionRowIndexPaths: [IndexPath] = []
+    var reloadRowIndexPaths: [IndexPath] = []
+
     var insertionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
     var deletionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
 
@@ -51,6 +54,14 @@ class MockCollectionView: UICollectionView {
             callback(indexPaths)
         }
         super.deleteItems(at: indexPaths)
+    }
+
+    override func reloadItems(at indexPaths: [IndexPath]) {
+        self.reloadRowIndexPaths.append(contentsOf: indexPaths)
+        if let callback = self.reloadRowsCallback {
+            callback(indexPaths)
+        }
+        super.reloadItems(at: indexPaths)
     }
 }
 

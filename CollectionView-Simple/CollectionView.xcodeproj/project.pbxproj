@@ -18,6 +18,7 @@
 		53C4ED49159E740D0019285D /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 53C4ED47159E740D0019285D /* MainStoryboard.storyboard */; };
 		53C4ED54159E75F40019285D /* Cell.m in Sources */ = {isa = PBXBuildFile; fileRef = 53C4ED53159E75F40019285D /* Cell.m */; };
 		53E25AA115A399EC0004F894 /* CustomCellBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E25AA015A399EC0004F894 /* CustomCellBackground.m */; };
+		DD2270D11FA5FB5D001ECA6A /* Reporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2270D01FA5FB5D001ECA6A /* Reporting.swift */; };
 		DD6EAB511C3336DF00E5F7FA /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB501C3336DF00E5F7FA /* ViewController.swift */; };
 		DD6EAB531C33378500E5F7FA /* CollectionDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB521C33378500E5F7FA /* CollectionDataSource.swift */; };
 		DD6EAB571C3337A100E5F7FA /* DataItemProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD6EAB541C3337A100E5F7FA /* DataItemProtocol.swift */; };
@@ -47,6 +48,7 @@
 		53C4ED53159E75F40019285D /* Cell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Cell.m; sourceTree = "<group>"; };
 		53E25A9F15A399EC0004F894 /* CustomCellBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCellBackground.h; sourceTree = "<group>"; };
 		53E25AA015A399EC0004F894 /* CustomCellBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCellBackground.m; sourceTree = "<group>"; };
+		DD2270D01FA5FB5D001ECA6A /* Reporting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Reporting.swift; path = ../DataSource/Reporting.swift; sourceTree = "<group>"; };
 		DD6EAB3E1C32EA9800E5F7FA /* CollViewSmpl-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CollViewSmpl-Bridging-Header.h"; sourceTree = "<group>"; };
 		DD6EAB501C3336DF00E5F7FA /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DD6EAB521C33378500E5F7FA /* CollectionDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CollectionDataSource.swift; path = ../DataSource/CollectionDataSource.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 		DD6EAB411C32EB7200E5F7FA /* DataSource */ = {
 			isa = PBXGroup;
 			children = (
+				DD2270D01FA5FB5D001ECA6A /* Reporting.swift */,
 				DD6EAB541C3337A100E5F7FA /* DataItemProtocol.swift */,
 				DD6EAB551C3337A100E5F7FA /* DataSourceEngine.swift */,
 				DD6EAB561C3337A100E5F7FA /* Location.swift */,
@@ -240,6 +243,7 @@
 				53C4ED54159E75F40019285D /* Cell.m in Sources */,
 				DD6EAB571C3337A100E5F7FA /* DataItemProtocol.swift in Sources */,
 				DD6EAB531C33378500E5F7FA /* CollectionDataSource.swift in Sources */,
+				DD2270D11FA5FB5D001ECA6A /* Reporting.swift in Sources */,
 				DD6EAB511C3336DF00E5F7FA /* ViewController.swift in Sources */,
 				53113E7D159E787A00E1FBC5 /* DetailViewController.m in Sources */,
 				53E25AA115A399EC0004F894 /* CustomCellBackground.m in Sources */,
@@ -311,6 +315,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -351,6 +356,7 @@
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
