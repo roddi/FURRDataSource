@@ -228,9 +228,7 @@ internal class DataSourceEngine <T> where T: DataItem {
             secondUpdates.append(update(rows: filteredItems, sectionID: section, animated: animated, doNotCopy: false))
         }
 
-        return { _ in
-            secondUpdates.forEach { $0() }
-        }
+        return { secondUpdates.forEach { $0() } }
     }
 
     // MARK: - initiated by user
@@ -384,7 +382,7 @@ internal class DataSourceEngine <T> where T: DataItem {
         assert(newRows == rowsToUpdate, "must be equal")
         callbacks.endUpdatesFunc()
 
-        return { _ in
+        return { 
             print("update! \(indexPathsToUpdate)")
             callbacks.reloadRowsAtIndexPathsFunc(indexPathsToUpdate)
         }

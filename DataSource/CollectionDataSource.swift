@@ -146,7 +146,7 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
     // MARK: updating, convenience
 
     public func deleteItems(_ items: [T], animated: Bool = true) {
-        var secondUpdate: () -> Void = { _ in }
+        var secondUpdate: () -> Void = { }
         self.collectionView.performBatchUpdates({ () -> Void in
             secondUpdate = self.engine.deleteItems(items, animated: animated)
             DispatchQueue.main.async { secondUpdate() }

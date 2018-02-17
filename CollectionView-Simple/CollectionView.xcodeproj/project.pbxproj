@@ -179,6 +179,11 @@
 			attributes = {
 				LastSwiftUpdateCheck = 0720;
 				LastUpgradeCheck = 0900;
+				TargetAttributes = {
+					53C4ED30159E740C0019285D = {
+						LastSwiftMigration = 0920;
+					};
+				};
 			};
 			buildConfigurationList = 53C4ED2B159E740C0019285D /* Build configuration list for PBXProject "CollectionView" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -378,6 +383,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CollectionView/CollViewSmpl-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -398,6 +404,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "CollectionView/CollViewSmpl-Bridging-Header.h";
+				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

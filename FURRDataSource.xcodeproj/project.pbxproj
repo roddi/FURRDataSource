@@ -218,9 +218,11 @@
 				TargetAttributes = {
 					5698BA3B1B8DD0CB008805E2 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0920;
 					};
 					5698BA451B8DD0CB008805E2 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0920;
 					};
 				};
 			};
@@ -479,6 +481,7 @@
 				PRODUCT_NAME = FURRDataSource;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -502,6 +505,7 @@
 				PRODUCT_NAME = FURRDataSource;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -518,6 +522,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.DataSourceTests;
 				PRODUCT_MODULE_NAME = FURRDataSourceTests;
 				PRODUCT_NAME = FURRDataSource;
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -535,6 +540,7 @@
 				PRODUCT_MODULE_NAME = FURRDataSourceTests;
 				PRODUCT_NAME = FURRDataSource;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};

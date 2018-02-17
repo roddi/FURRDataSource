@@ -115,7 +115,7 @@ class MasterViewController: UITableViewController {
         return rusher
     }
 
-    func insertNewObject(sender: AnyObject) {
+    @objc func insertNewObject(sender: AnyObject) {
         let rusher = self.newRusher()
         let sectionID: String
         if let sectionID_ = self.dataSource?.sections().last {

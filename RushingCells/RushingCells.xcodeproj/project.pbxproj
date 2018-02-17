@@ -261,13 +261,16 @@
 				TargetAttributes = {
 					5698B9D11B8DCFE4008805E2 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0920;
 					};
 					5698B9E71B8DCFE4008805E2 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0920;
 						TestTargetID = 5698B9D11B8DCFE4008805E2;
 					};
 					5698B9F21B8DCFE4008805E2 = {
 						CreatedOnToolsVersion = 7.0;
+						LastSwiftMigration = 0920;
 						TestTargetID = 5698B9D11B8DCFE4008805E2;
 					};
 				};
@@ -581,6 +584,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.RushingCells;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Debug;
 		};
@@ -595,6 +599,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.RushingCells;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 4.0;
 			};
 			name = Release;
 		};
@@ -606,6 +611,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.RushingCellsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RushingCells.app/RushingCells";
 			};
 			name = Debug;
@@ -618,6 +624,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.RushingCellsTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/RushingCells.app/RushingCells";
 			};
 			name = Release;
@@ -629,6 +636,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.RushingCellsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = RushingCells;
 				USES_XCTRUNNER = YES;
 			};
@@ -641,6 +649,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.RuotgerSkupin.RushingCellsUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
 				TEST_TARGET_NAME = RushingCells;
 				USES_XCTRUNNER = YES;
 			};
