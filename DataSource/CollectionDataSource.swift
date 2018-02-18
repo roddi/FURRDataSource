@@ -108,96 +108,104 @@ public class CollectionDataSource <T> : NSObject, UICollectionViewDelegate, UICo
     }
 
     func selectedLocations() -> [Location<T>] {
-        let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems
-        guard let selectedIndexPaths_ = selectedIndexPaths else {
+        guard let selectedIndexPaths = self.collectionView.indexPathsForSelectedItems else {
             return []
         }
-        let selectedLocations: [Location<T>] = selectedIndexPaths_.flatMap({ (indexPath) -> Location<T>? in
-            return self.engine.location(forIndexPath: indexPath)
-        })
+
+        let selectedLocations: [Location<T>]
+
+        #if swift(>=4.1)
+            selectedLocations = selectedIndexPaths.compactMap({ (indexPath) -> Location<T>? in
+                    return self.engine.location(forIndexPath: indexPath)
+                })
+        #else
+            selectedLocations = selectedIndexPaths.flatMap({ (indexPath) -> Location<T>? in
+                return self.engine.location(forIndexPath: indexPath)
+            })
+        #endif
 
         return selectedLocations
-    }
+        }
 
-    // MARK: - updating
+        // MARK: - updating
 
-    func update(sections inSections: [String], animated inAnimated: Bool) {
+        func update(sections inSections: [String], animated inAnimated: Bool) {
         self.collectionView.performBatchUpdates({ () -> Void in
-            self.engine.update(sectionIDs: inSections, animated: inAnimated)
+        self.engine.update(sectionIDs: inSections, animated: inAnimated)
         }, completion: nil)
 
-    }
+        }
 
-    private class ClosureTransporter {
+        private class ClosureTransporter {
         var closure: (() -> Void)?
-    }
+        }
 
-    public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool) {
+        public func update(rows inRows: [T], section inSectionID: String, animated inAnimated: Bool) {
         // I was not able to extract the result closure from the closure. With this transporter class it works.
         // Yes, ugly, I know. I'm open for working(!) suggestions/solutions that are more elegant.
         let transporter = ClosureTransporter()
         self.collectionView.performBatchUpdates({ [unowned transporter] () -> Void in
-            let secondUpdate = self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: false)
-            transporter.closure = secondUpdate
-            }, completion: nil )
+        let secondUpdate = self.engine.update(rows: inRows, sectionID: inSectionID, animated: inAnimated, doNotCopy: false)
+        transporter.closure = secondUpdate
+        }, completion: nil )
         transporter.closure?()
-    }
+        }
 
-    // MARK: updating, convenience
+        // MARK: updating, convenience
 
-    public func deleteItems(_ items: [T], animated: Bool = true) {
+        public func deleteItems(_ items: [T], animated: Bool = true) {
         var secondUpdate: () -> Void = { }
         self.collectionView.performBatchUpdates({ () -> Void in
-            secondUpdate = self.engine.deleteItems(items, animated: animated)
-            DispatchQueue.main.async { secondUpdate() }
+        secondUpdate = self.engine.deleteItems(items, animated: animated)
+        DispatchQueue.main.async { secondUpdate() }
         }, completion: nil)
-    }
+        }
 
-    // MARK: - delegate / data source
+        // MARK: - delegate / data source
 
-    public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return self.engine.numberOfRows(forSectionIndex: section)
-    }
+        }
 
-    public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        public func numberOfSections(in collectionView: UICollectionView) -> Int {
         return self.engine.sectionIDs().count
-    }
+        }
 
-    public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let location = self.engine.location(forIndexPath: indexPath) else {
-            preconditionFailure("rows not found")
+        preconditionFailure("rows not found")
         }
 
         return self.cellForLocation(location)
-    }
+        }
 
-    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let didSelectLocation = self.didSelectLocation else {
-            return
+        return
         }
 
         guard let location = self.engine.location(forIndexPath: indexPath) else {
-            return
+        return
         }
 
         didSelectLocation(location)
-    }
+        }
 
-    public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        public func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
 
         guard let canActuallyMove = self.canMoveToLocation else {
-            // callback not implemented, so... no, you can't!
-            return false
+        // callback not implemented, so... no, you can't!
+        return false
         }
 
         guard let location = self.engine.location(forIndexPath: indexPath) else {
-            return false
+        return false
         }
 
         return canActuallyMove(location)
-    }
+        }
 
-    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         self.engine.moveRow(at: sourceIndexPath, to: destinationIndexPath)
-    }
+        }
 }

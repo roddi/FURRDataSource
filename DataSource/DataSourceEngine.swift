@@ -382,7 +382,7 @@ internal class DataSourceEngine <T> where T: DataItem {
         assert(newRows == rowsToUpdate, "must be equal")
         callbacks.endUpdatesFunc()
 
-        return { 
+        return {
             print("update! \(indexPathsToUpdate)")
             callbacks.reloadRowsAtIndexPathsFunc(indexPathsToUpdate)
         }

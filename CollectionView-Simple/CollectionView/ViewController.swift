@@ -49,8 +49,8 @@ class ViewController: UICollectionViewController {
         self.collectionView?.dataSource = self.dataSource
 
         var images: [Image] = Array()
-        for i in [0..<32].joined() {
-            let numberString = "\(i)"
+        for idx in [0..<32].joined() {
+            let numberString = "\(idx)"
             if let uiimage = UIImage(named: numberString+"_full"), let thumb = UIImage(named: numberString) {
                     let image = Image(identifier: numberString, title: "Image "+numberString, image: uiimage, thumb: thumb)
                     images.append(image)
@@ -63,13 +63,13 @@ class ViewController: UICollectionViewController {
 
     func cellGeneratorFunc() -> ((_ inLocation: Location<Image>) -> UICollectionViewCell) {
         return { location in
-            if let cell = self.dataSource?.dequeueReusableCell(withReuseIdentifier: kCellID, sectionID: location.sectionID, item: location.item), let cell_ = cell as? Cell {
-                cell_.label.text = location.item.title
-                cell_.image.image = location.item.image
-                return cell_
-            } else {
+            guard let cell = self.dataSource?.dequeueReusableCell(withReuseIdentifier: kCellID, sectionID: location.sectionID, item: location.item) as? Cell else {
                 return UICollectionViewCell()
             }
+
+            cell.label.text = location.item.title
+            cell.image.image = location.item.image
+            return cell
         }
     }
 

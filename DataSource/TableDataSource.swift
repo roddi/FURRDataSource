@@ -352,10 +352,15 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         for action in actions {
             action.engine = engine
         }
-
+        #if swift(>=4.1)
+        return actions.compactMap({ (action) -> UITableViewRowAction? in
+            return action.uiTableViewRowAction
+        })
+        #else
         return actions.flatMap({ (action) -> UITableViewRowAction? in
             return action.uiTableViewRowAction
         })
+        #endif
     }
 }
 

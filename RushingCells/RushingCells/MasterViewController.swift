@@ -54,49 +54,46 @@ class MasterViewController: UITableViewController {
             // swiftlint:enable force_cast
         }
 
-        if let tableView_ = self.masterTableView {
-            self.dataSource = TableDataSource(tableView: tableView_, cellForLocationCallback: { (inLocation) -> UITableViewCell in
-                let cell: UITableViewCell
-                let dequeuedCell = self.dataSource?.dequeueReusableCell(withIdentifier: "Cell", sectionID: inLocation.sectionID, item: inLocation.item)
-                if let cell_ = dequeuedCell {
-                    cell = cell_
-                } else {
-                    cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: "Cell")
-                }
-                let rusher = inLocation.item
-                cell.textLabel?.text = rusher.date.description
-                cell.detailTextLabel?.text = rusher.identifier + " " + rusher.additionalString
-                print("rusher cell: \(cell.detailTextLabel?.text ?? "nil")")
-                return cell
-            })
-            self.dataSource?.canEditAtLocation = { (atLocation: Location<Rusher>) -> Bool in return true }
-            self.dataSource?.canMoveToLocation = { (toLocation: Location<Rusher>) -> Bool in return true }
-            self.dataSource?.willDeleteAtLocation = { (atLocation: Location<Rusher>) -> Void in
-                print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
-            }
-            self.dataSource?.setFunc(didChangeSectionIDsFunc: { (sectionIDsDict: [String: [Rusher]]) -> Void in
-                sectionIDsDict.keys.forEach { self.dataSource?.reload(sectionID: $0) }
-            })
+        guard let tableView = self.masterTableView else { return }
+        self.dataSource = TableDataSource(tableView: tableView, cellForLocationCallback: { (inLocation) -> UITableViewCell in
 
-            self.dataSource?.sectionHeaderTitleForSectionID = { return "header: \($0)" }
-            self.dataSource?.sectionFooterTitleForSectionID = { return "footer: \($0)" }
+            let dequeuedCell = self.dataSource?.dequeueReusableCell(withIdentifier: "Cell", sectionID: inLocation.sectionID, item: inLocation.item)
 
-            let deleteAction = TableViewRowAction(style: UITableViewRowActionStyle.destructive, title: "XXX", handler: { (_: TableViewRowAction, location: Location<Rusher>) in
-                print("delete \(location.item.identifier)")
-                self.dataSource?.deleteItems([location.item])
-            })
-            deleteAction.title = "Nuke it!"
-            deleteAction.backgroundColor = UIColor.brown
-            deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffectStyle.extraLight))
+            let cell: UITableViewCell = dequeuedCell ?? UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: "Cell")
 
-            self.dataSource?.editActionsForLocation = { (location: Location<Rusher>) -> [TableViewRowAction<Rusher>] in
-                return [deleteAction]
-            }
-
-            self.dataSource?.update(sections: ["first"], animated: false)
-
-            self.testRush1()
+            let rusher = inLocation.item
+            cell.textLabel?.text = rusher.date.description
+            cell.detailTextLabel?.text = rusher.identifier + " " + rusher.additionalString
+            print("rusher cell: \(cell.detailTextLabel?.text ?? "nil")")
+            return cell
+        })
+        self.dataSource?.canEditAtLocation = { (atLocation: Location<Rusher>) -> Bool in return true }
+        self.dataSource?.canMoveToLocation = { (toLocation: Location<Rusher>) -> Bool in return true }
+        self.dataSource?.willDeleteAtLocation = { (atLocation: Location<Rusher>) -> Void in
+            print("will delete \(atLocation.sectionID) - \(atLocation.item.identifier)")
         }
+        self.dataSource?.setFunc(didChangeSectionIDsFunc: { (sectionIDsDict: [String: [Rusher]]) -> Void in
+            sectionIDsDict.keys.forEach { self.dataSource?.reload(sectionID: $0) }
+        })
+
+        self.dataSource?.sectionHeaderTitleForSectionID = { return "header: \($0)" }
+        self.dataSource?.sectionFooterTitleForSectionID = { return "footer: \($0)" }
+
+        let deleteAction = TableViewRowAction(style: UITableViewRowActionStyle.destructive, title: "XXX", handler: { (_: TableViewRowAction, location: Location<Rusher>) in
+            print("delete \(location.item.identifier)")
+            self.dataSource?.deleteItems([location.item])
+        })
+        deleteAction.title = "Nuke it!"
+        deleteAction.backgroundColor = UIColor.brown
+        deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffectStyle.extraLight))
+
+        self.dataSource?.editActionsForLocation = { (location: Location<Rusher>) -> [TableViewRowAction<Rusher>] in
+            return [deleteAction]
+        }
+
+        self.dataSource?.update(sections: ["first"], animated: false)
+
+        self.testRush1()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -115,37 +112,35 @@ class MasterViewController: UITableViewController {
         return rusher
     }
 
+    fileprivate func lastSectionID() -> String {
+        if let sectionID = self.dataSource?.sections().last {
+            return sectionID
+        }
+
+        let sectionID = UUID().uuidString
+        if let dataSource = self.dataSource {
+            var sections = dataSource.sections()
+            sections.append(sectionID)
+            dataSource.update(sections: sections, animated: true)
+        }
+        return sectionID
+    }
+
     @objc func insertNewObject(sender: AnyObject) {
         let rusher = self.newRusher()
-        let sectionID: String
-        if let sectionID_ = self.dataSource?.sections().last {
-            sectionID = sectionID_
-        } else {
-            sectionID = UUID().uuidString
-            if let dataSource_ = self.dataSource {
-                var sections = dataSource_.sections()
-                sections.append(sectionID)
-                dataSource_.update(sections: sections, animated: true)
-            }
-        }
+        let sectionID = lastSectionID()
 
-        var rows = self.dataSource?.rows(forSection: sectionID)
-        if rows == nil {
-            rows = []
-        }
-        guard var rows_ = rows else {
-            return
-        }
+        var rows = self.dataSource?.rows(forSection: sectionID) ?? []
 
-        rows_.append(rusher)
-        self.dataSource?.update(rows: rows_, section: sectionID, animated: true)
-        if rows_.count > 5 {
+        rows.append(rusher)
+        self.dataSource?.update(rows: rows, section: sectionID, animated: true)
+        if rows.count > 5 {
             let newSectionID = UUID().uuidString
-            if let dataSource_ = self.dataSource {
-                var sections = dataSource_.sections()
+            if let dataSource = self.dataSource {
+                var sections = dataSource.sections()
                 sections.append(newSectionID)
-                dataSource_.update(sections: sections, animated: true)
-                dataSource_.update(rows: [], section: newSectionID, animated: true)
+                dataSource.update(sections: sections, animated: true)
+                dataSource.update(rows: [], section: newSectionID, animated: true)
             }
         }
 
@@ -197,19 +192,25 @@ class MasterViewController: UITableViewController {
         }
     }
 
-    func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, rehaleIndex: Int, breathe: Breathing) {
-        let sectionID: String
-
-        if let sectionID_ = self.dataSource?.sections().optionalElement(index: sectionIndex) {
-            sectionID = sectionID_
-        } else {
-            sectionID = NSUUID().uuidString
-            if let dataSource_ = self.dataSource {
-                var sections = dataSource_.sections()
-                sections.append(sectionID)
-                dataSource_.update(sections: sections, animated: true)
-            }
+    fileprivate func sectionIDForIndex(_ sectionIndex: Int) -> String {
+        if let sectionID = self.dataSource?.sections().optionalElement(index: sectionIndex) {
+            return sectionID
         }
+
+        guard let dataSource = self.dataSource else {
+            preconditionFailure("no datasource!")
+        }
+
+        var newSections = dataSource.sections()
+        let sectionID = NSUUID().uuidString
+
+        newSections.append(sectionID)
+        dataSource.update(sections: newSections, animated: true)
+        return sectionID
+    }
+
+    func handleRushing(inSection sectionIndex: Int, insertIndex: Int, deleteIndex: Int, rehaleIndex: Int, breathe: Breathing) {
+        let sectionID = sectionIDForIndex(sectionIndex)
 
         guard var rows = self.dataSource?.rows(forSection: sectionID) else {
             return
@@ -255,7 +256,7 @@ class MasterViewController: UITableViewController {
                 breathe = .inhale
             }
             breatheCount -= 1
-       }
+        }
 
         count += 1
         let sectionIndex = (count % 37) * 3
