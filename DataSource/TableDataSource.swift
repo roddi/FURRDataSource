@@ -1,7 +1,6 @@
 // swiftlint:disable line_length
 
 // for swift 3 this is in conflict with what the compiler warns about
-// swiftlint:disable conditional_binding_cascade
 
 //
 //  TableDataSource.swift
@@ -69,7 +68,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         self.engine.didChangeSectionIDs = didChangeSectionIDsFunc
     }
 
-    public var rowAnimation: UITableViewRowAnimation = .automatic
+    public var rowAnimation: UITableView.RowAnimation = .automatic
 
     // MARK: -
     public init(tableView inTableView: UITableView, cellForLocationCallback inCellForLocation: @escaping (_ inLocation: Location<T>) -> UITableViewCell) {
@@ -100,7 +99,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
             self.tableView.insertRows(at: indexPaths, with: self.rowAnimation)
         }
         self.engine.reloadRowsAtIndexPaths = { indexPaths in
-            self.tableView.reloadRows(at: indexPaths, with: UITableViewRowAnimation.none )
+            self.tableView.reloadRows(at: indexPaths, with: UITableView.RowAnimation.none )
         }
     }
 
@@ -156,13 +155,13 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
 
     public func reload(sectionID inSectionID: String) {
         if let sectionID = self.engine.sectionIndex(forSectionID: inSectionID) {
-            self.tableView.reloadSections(IndexSet(integer: sectionID), with: UITableViewRowAnimation.automatic)
+            self.tableView.reloadSections(IndexSet(integer: sectionID), with: UITableView.RowAnimation.automatic)
         }
     }
 
     public func reload(sectionID inSectionID: String, item inItem: T) {
         if let indexPath = self.engine.indexPath(forSectionID: inSectionID, rowItem: inItem) {
-            self.tableView.reloadRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            self.tableView.reloadRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
         }
     }
 
@@ -246,7 +245,7 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
         }
     }
 
-    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    public func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
 
         switch editingStyle {
         case .delete:
@@ -283,6 +282,8 @@ public class TableDataSource <T> : NSObject, UITableViewDelegate, UITableViewDat
 
         case .none:
             print(".none ????")
+        @unknown default:
+            print("@unknown default of UITableViewCell.EditingStyle")
         }
     }
 

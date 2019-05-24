@@ -25,27 +25,27 @@ class MockTableView: UITableView {
     var insertionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
     var deletionSectionIndexSet: NSMutableIndexSet = NSMutableIndexSet()
 
-    override func insertSections(_ sections: IndexSet, with animation: UITableViewRowAnimation) {
+    override func insertSections(_ sections: IndexSet, with animation: UITableView.RowAnimation) {
         insertionSectionIndexSet.add(sections)
         insertSectionsCallback?(sections)
     }
 
-    override func deleteSections(_ sections: IndexSet, with animation: UITableViewRowAnimation) {
+    override func deleteSections(_ sections: IndexSet, with animation: UITableView.RowAnimation) {
         deletionSectionIndexSet.add(sections)
         deleteSectionsCallback?(sections)
     }
 
-    override func insertRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
+    override func insertRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
         insertionRowIndexPaths.append(contentsOf: indexPaths)
         insertRowsCallback?(indexPaths)
     }
 
-    override func deleteRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
+    override func deleteRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
         deletionRowIndexPaths.append(contentsOf: indexPaths)
         deleteRowsCallback?(indexPaths)
     }
 
-    override func reloadRows(at indexPaths: [IndexPath], with animation: UITableViewRowAnimation) {
+    override func reloadRows(at indexPaths: [IndexPath], with animation: UITableView.RowAnimation) {
         reloadRowIndexPaths.append(contentsOf: indexPaths)
         reloadRowsCallback?(indexPaths)
     }

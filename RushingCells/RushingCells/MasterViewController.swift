@@ -59,7 +59,7 @@ class MasterViewController: UITableViewController {
 
             let dequeuedCell = self.dataSource?.dequeueReusableCell(withIdentifier: "Cell", sectionID: inLocation.sectionID, item: inLocation.item)
 
-            let cell: UITableViewCell = dequeuedCell ?? UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: "Cell")
+            let cell: UITableViewCell = dequeuedCell ?? UITableViewCell(style: UITableViewCell.CellStyle.subtitle, reuseIdentifier: "Cell")
 
             let rusher = inLocation.item
             cell.textLabel?.text = rusher.date.description
@@ -79,13 +79,13 @@ class MasterViewController: UITableViewController {
         self.dataSource?.sectionHeaderTitleForSectionID = { return "header: \($0)" }
         self.dataSource?.sectionFooterTitleForSectionID = { return "footer: \($0)" }
 
-        let deleteAction = TableViewRowAction(style: UITableViewRowActionStyle.destructive, title: "XXX", handler: { (_: TableViewRowAction, location: Location<Rusher>) in
+        let deleteAction = TableViewRowAction(style: UITableViewRowAction.Style.destructive, title: "XXX", handler: { (_: TableViewRowAction, location: Location<Rusher>) in
             print("delete \(location.item.identifier)")
             self.dataSource?.deleteItems([location.item])
         })
         deleteAction.title = "Nuke it!"
         deleteAction.backgroundColor = UIColor.brown
-        deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffectStyle.extraLight))
+        deleteAction.backgroundEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: UIBlurEffect.Style.extraLight))
 
         self.dataSource?.editActionsForLocation = { (location: Location<Rusher>) -> [TableViewRowAction<Rusher>] in
             return [deleteAction]

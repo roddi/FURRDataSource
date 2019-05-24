@@ -15,7 +15,7 @@ public class TableViewRowAction <T> where T: DataItem {
     private let handler: (TableViewRowAction, Location<T>) -> Void
     internal var engine: DataSourceEngine<T>?
 
-    public var style: UITableViewRowActionStyle {
+    public var style: UITableViewRowAction.Style {
         return uiTableViewRowAction?.style ?? .default
     }
     public var title: String? {
@@ -40,7 +40,7 @@ public class TableViewRowAction <T> where T: DataItem {
         }
     }
 
-    public init(style: UITableViewRowActionStyle, title: String?, handler: @escaping (TableViewRowAction, Location<T>) -> Void) {
+    public init(style: UITableViewRowAction.Style, title: String?, handler: @escaping (TableViewRowAction, Location<T>) -> Void) {
         self.handler = handler
 
         uiTableViewRowAction = UITableViewRowAction(style: style, title: title, handler: handle)

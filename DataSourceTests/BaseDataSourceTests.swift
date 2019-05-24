@@ -55,7 +55,7 @@ func == (lhs: MockTVItem, rhs: MockTVItem) -> Bool {
 
 func cellForSectionID(inSectionID: String, item inItem: MockTVItem, tableView inTableView: UITableView) -> UITableViewCell {
     let rowID = inItem.identifier
-    let cell = UITableViewCell(style: UITableViewCellStyle.subtitle, reuseIdentifier: inSectionID+rowID)
+    let cell = UITableViewCell(style: UITableViewCell.CellStyle.subtitle, reuseIdentifier: inSectionID+rowID)
     cell.textLabel?.text = inSectionID
     cell.detailTextLabel?.text = rowID + "_" + (inItem.additionalString ?? "nil")
     return cell

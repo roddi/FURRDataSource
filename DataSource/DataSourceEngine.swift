@@ -282,7 +282,7 @@ internal class DataSourceEngine <T> where T: DataItem {
             return nil
         }
 
-        guard let rowIndex = rows.index(of: inRowItem) else {
+        guard let rowIndex = rows.firstIndex(of: inRowItem) else {
             return nil
         }
 
@@ -294,7 +294,7 @@ internal class DataSourceEngine <T> where T: DataItem {
             return nil
         }
 
-        return self.sectionIDsInternal.index(of: sectionID)
+        return self.sectionIDsInternal.firstIndex(of: sectionID)
     }
 
     func locationWithOptionalItem(forIndexPath indexPath: IndexPath) -> LocationWithOptionalItem<T>? {
@@ -344,7 +344,7 @@ internal class DataSourceEngine <T> where T: DataItem {
             case .insert:
                 for rowID in diff.array {
                     // find index of new row
-                    let rowIDIndex = rowsToUpdate.index(where: { rowID == $0.identifier })
+                    let rowIDIndex = rowsToUpdate.firstIndex(where: { rowID == $0.identifier })
                     if let actualIndex = rowIDIndex {
                         let newRow = rowsToUpdate[actualIndex]
                         newRows.insert(newRow, at: rowIndex)
@@ -359,8 +359,8 @@ internal class DataSourceEngine <T> where T: DataItem {
             case .equal:
                 if !doNotCopy {
                     for rowID in diff.array {
-                        let sourceRowIDIndex = rowsToUpdate.index(where: { rowID == $0.identifier })
-                        let destinationRowIDIndex = newRows.index(where: { rowID == $0.identifier })
+                        let sourceRowIDIndex = rowsToUpdate.firstIndex(where: { rowID == $0.identifier })
+                        let destinationRowIDIndex = newRows.firstIndex(where: { rowID == $0.identifier })
 
                         if let sourceItem = rowsToUpdate.optionalElement(index: sourceRowIDIndex), let destinationIndex = destinationRowIDIndex {
                             if let destinationItem = newRows.optionalElement(index: destinationIndex), sourceItem != destinationItem {

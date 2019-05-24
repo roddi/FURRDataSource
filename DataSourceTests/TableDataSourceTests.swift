@@ -65,7 +65,7 @@ class TableDataSourceTests: BaseDataSourceTests {
     // MARK: - given
 
     override func givenDelegateAndDataSource() {
-        self.tableView = MockTableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: UITableViewStyle.plain)
+        self.tableView = MockTableView(frame: CGRect(x: 0, y: 0, width: 320, height: 960), style: UITableView.Style.plain)
         guard let tableView = self.tableView else {
             XCTFail("could not instantiate table view")
             return
@@ -510,7 +510,7 @@ class TableDataSourceTests: BaseDataSourceTests {
             XCTFail("no table view")
             return
         }
-        dataSource.tableView(tableView, commit: UITableViewCellEditingStyle.delete, forRowAt: IndexPath(row: 1, section: 0))
+        dataSource.tableView(tableView, commit: UITableViewCell.EditingStyle.delete, forRowAt: IndexPath(row: 1, section: 0))
         waitForExpectations(timeout: 10, handler: nil)
     }
 

@@ -317,6 +317,7 @@ class CollectionDataSourceTests: BaseDataSourceTests {
     // MARK: - override test
 
     // This test crashes from time to time but only for the collection view.
+    // Or it used to, I haven't seen it happening on iOS 12.2 yet. Maybe Apple fixed it.
     func testDataSourceSections() {
         self.baseTestDataSourceSections()
     }
